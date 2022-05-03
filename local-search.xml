@@ -8,7 +8,7 @@
     <link href="/2022/05/03/newBlog/"/>
     <url>/2022/05/03/newBlog/</url>
     
-    <content type="html"><![CDATA[<p>###测试标题</p><p>#内容1</p><p>#内容2</p>]]></content>
+    <content type="html"><![CDATA[<h3 id="测试标题"><a href="#测试标题" class="headerlink" title="测试标题"></a>测试标题</h3><h1 id="内容1"><a href="#内容1" class="headerlink" title="内容1"></a>内容1</h1><h1 id="内容2"><a href="#内容2" class="headerlink" title="内容2"></a>内容2</h1>]]></content>
     
     
     
