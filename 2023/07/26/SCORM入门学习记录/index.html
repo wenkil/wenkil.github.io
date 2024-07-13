@@ -1,0 +1,562 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="SCORM文档：https:&#x2F;&#x2F;scorm.com&#x2F;scorm-explained&#x2F;technical-scorm&#x2F; 1. SCORM1.2规范SCORM是”Sharable Content Object Reference Model（可共享课程对象参考模型）”的缩写，是由ADL组织所拟定的标准。已作为全世界通用的标准规格。 SCORM规定一个标准的课件包应满足以下条件： 打包成ZIP文件。 在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SCORM入门学习记录">
+<meta property="og:url" content="http://example.com/2023/07/26/SCORM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="SCORM文档：https:&#x2F;&#x2F;scorm.com&#x2F;scorm-explained&#x2F;technical-scorm&#x2F; 1. SCORM1.2规范SCORM是”Sharable Content Object Reference Model（可共享课程对象参考模型）”的缩写，是由ADL组织所拟定的标准。已作为全世界通用的标准规格。 SCORM规定一个标准的课件包应满足以下条件： 打包成ZIP文件。 在">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/scorm/1.png">
+<meta property="og:image" content="http://example.com/img/blog/scorm/2.png">
+<meta property="og:image" content="http://example.com/img/blog/scorm/3.png">
+<meta property="og:image" content="http://example.com/img/blog/scorm/4.png">
+<meta property="article:published_time" content="2023-07-26T03:47:00.000Z">
+<meta property="article:modified_time" content="2024-07-13T12:21:27.077Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="SCORM">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/scorm/1.png">
+  
+  <title>SCORM入门学习记录 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SCORM入门学习记录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2023-07-26 11:47" pubdate>
+        2023年7月26日 11:47:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SCORM入门学习记录</h1>
+            
+            <div class="markdown-body">
+              <p>SCORM文档：<a target="_blank" rel="noopener" href="https://scorm.com/scorm-explained/technical-scorm/">https://scorm.com/scorm-explained/technical-scorm/</a></p>
+<h2 id="1-SCORM1-2规范"><a href="#1-SCORM1-2规范" class="headerlink" title="1. SCORM1.2规范"></a>1. SCORM1.2规范</h2><p>SCORM是”Sharable Content Object Reference Model（可共享课程对象参考模型）”的缩写，是由ADL组织所拟定的标准。已作为全世界通用的标准规格。</p>
+<h3 id="SCORM规定一个标准的课件包应满足以下条件："><a href="#SCORM规定一个标准的课件包应满足以下条件：" class="headerlink" title="SCORM规定一个标准的课件包应满足以下条件："></a>SCORM规定一个标准的课件包应满足以下条件：</h3><ul>
+<li>打包成ZIP文件。</li>
+<li>在XML文件中描述。</li>
+<li>通过JavaScript进行通信。</li>
+<li>使用XML中的规则排序。</li>
+</ul>
+<h3 id="SCORM由三个子规范组成"><a href="#SCORM由三个子规范组成" class="headerlink" title="SCORM由三个子规范组成"></a>SCORM由三个子规范组成</h3><ul>
+<li>CAM（Content Aggregation Model）： 指定应如何打包和描述内容。它主要基于XML。</li>
+<li>Run-Time：指定内容应该如何启动以及它如何与LMS通信。它主要基于ECMAScript（JavaScript）。</li>
+<li>Sequencing：指定学习者如何在课程的各个部分（SCOs）之间导航。它由一组用XML编写的规则和属性定义。</li>
+</ul>
+<p><img src="/img/blog/scorm/1.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<h2 id="2-LMS的API与DATA-MODEL"><a href="#2-LMS的API与DATA-MODEL" class="headerlink" title="2. LMS的API与DATA MODEL"></a>2. LMS的API与DATA MODEL</h2><p>API地址：<a target="_blank" rel="noopener" href="https://scorm.com/scorm-explained/technical-scorm/run-time/run-time-reference/#section-2">https://scorm.com/scorm-explained/technical-scorm/run-time/run-time-reference/#section-2</a></p>
+<p>常用API整理：</p>
+<div class="code-wrapper"><pre><code class="hljs text">LMSInitialize 开始与LMS的通信会话。 
+LMSFinish 结束与LMS的通信会话。 
+LMSGetValue 存值 
+LMSSetValue 取值 
+LMSCommit 向LMS指示所有数据都应保存 
+LMSGetLastError 返回上次API调用导致的错误代码。 
+LMSGetErrorString 返回描述指定错误代码的短字符串。 
+LMSGetDiagnostic 返回有关上次发生的错误的详细信息。</code></pre></div>
+
+<p>DATA MODEL:一组定义的数据点，内容和LMS可以通过SCORM API交换.示例数据模型元素包括“cmi.score.scaled”（以记录用户的测试分数）和“cmi.completion_status”以记录学习者何时/是否已经完成一些训练。<br>常用MODEL整理：</p>
+<ul>
+<li>cmi.core._children - returns “student_id, student_name, lesson_location, credit, lesson_status, entry, score, total_time, exit, session_time”</li>
+<li>cmi.core.student_id</li>
+<li>cmi.core.student_name</li>
+<li>cmi.core.lesson_location - 255 char string typically used for bookmarking</li>
+<li>cmi.core.credit - returns “no-credit” or “credit”</li>
+<li>cmi.core.lesson_status - indicates SCO completion - returns one of the following: “passed”, “completed”, “failed”, “incomplete”, “browsed”, or “not attempted”</li>
+<li>cmi.core.entry - returns “ab-initio”, “resume”, or “”</li>
+<li>cmi.core.score._children - returns “raw, min, max”</li>
+<li>cmi.core.score.raw - the raw score value</li>
+<li>cmi.core.score.max - the maximum possible score - if not set, assumed 100</li>
+<li>cmi.core.score.min - the minimum possible score - if not set, assumed 0</li>
+<li>cmi.core.total_time - returns the sum of all a learner’s session times</li>
+<li>cmi.core.lesson_mode - returns “browse”, “normal”, or “review”</li>
+<li>cmi.suspend_data - 4096 char string usually used for progress data</li>
+<li>cmi.launch_data - 4096 char string used to pass data to the SCO on launch from the LMS</li>
+<li>cmi.objectives._children - returns “id, score, status”</li>
+<li>cmi.objectives._count - returns the number of objectives currently stored for this SCO.</li>
+<li>cmi.objectives.n.id - returns the objective identifier where “n” is the objective number</li>
+<li>cmi.objectives.n.score._children - returns “raw, min, max “</li>
+<li>cmi.objectives.n.score.raw - the raw objective score value</li>
+<li>cmi.objectives.n.score.min - The minimum possible score - if not set, assumed 0</li>
+<li>cmi.objectives.n.score.max - the maximum possible objective score - if not set, assumed 100</li>
+<li>cmi.objectives.n.status - indicates if the learner has completed the objective - returns one of the following: “passed”, “completed”, “failed”, “incomplete”, “browsed”, or “not attempted”</li>
+<li>cmi.core.exit</li>
+<li>cmi.core.session_time</li>
+</ul>
+<h2 id="3-imsmanifest-xml"><a href="#3-imsmanifest-xml" class="headerlink" title="3. imsmanifest.xml"></a>3. imsmanifest.xml</h2><p>在SCORM 1.2规范中每个课程必须包含一个imsmanifest.xml文件，该文件向LMS描述其结构和其他特征。<br>清单文件由4个主要部分组成：</p>
+<ol>
+<li>Meta-data：内容包数据描述的入口。</li>
+<li>Organizations：包含了学习资源的组织或内容结构。</li>
+<li>Resources：在内容包中定义的学习资源（集合）。</li>
+<li>SubManifest：嵌套的子清单。</li>
+</ol>
+<p>在”imsmanifest.xml”文件中，使用XML标记语言来定义课件包的结构和内容。以下是一些常用的XML标记和元素：</p>
+<ul>
+<li><code>&lt;manifest&gt;</code>：根元素，定义课件包的基本信息。</li>
+<li><code>&lt;metadata&gt;</code>：元数据元素，用于描述课件包的相关信息，如标题、作者、描述等。</li>
+<li><code>&lt;organizations&gt;</code>：组织元素，用于定义课程的组织结构和章节。</li>
+<li><code>&lt;resources&gt;</code>：资源元素，用于定义课程所需的资源文件，如HTML、CSS、JavaScript等。</li>
+<li><code>&lt;item&gt;</code>：项目元素，用于定义课程的章节和子章节。</li>
+<li><code>&lt;file&gt;</code>：文件元素，用于引用课程所需的资源文件。<br>下面是一个基础的模板示例：</li>
+</ul>
+<div class="code-wrapper"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">manifest</span> <span class="hljs-attr">identifier</span>=<span class="hljs-string">&quot;com.scorm.manifesttemplates.scorm12&quot;</span> <span class="hljs-attr">version</span>=<span class="hljs-string">&quot;1&quot;</span></span>
+<span class="hljs-tag">       <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://www.imsproject.org/xsd/imscp_rootv1p1p2&quot;</span></span>
+<span class="hljs-tag">       <span class="hljs-attr">xmlns:adlcp</span>=<span class="hljs-string">&quot;http://www.adlnet.org/xsd/adlcp_rootv1p2&quot;</span></span>
+<span class="hljs-tag">       <span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span>
+<span class="hljs-tag">       <span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">&quot;http://www.imsproject.org/xsd/imscp_rootv1p1p2 imscp_rootv1p1p2.xsd</span></span>
+<span class="hljs-string"><span class="hljs-tag">                           http://www.imsglobal.org/xsd/imsmd_rootv1p2p1 imsmd_rootv1p2p1.xsd</span></span>
+<span class="hljs-string"><span class="hljs-tag">                           http://www.adlnet.org/xsd/adlcp_rootv1p2 adlcp_rootv1p2.xsd&quot;</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">metadata</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">schema</span>&gt;</span>ADL SCORM<span class="hljs-tag">&lt;/<span class="hljs-name">schema</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">schemaversion</span>&gt;</span>1.2<span class="hljs-tag">&lt;/<span class="hljs-name">schemaversion</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">metadata</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">organizations</span> <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;B0&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">organization</span> <span class="hljs-attr">identifier</span>=<span class="hljs-string">&quot;B0&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>演示文件<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span> 
+                        <span class="hljs-tag">&lt;<span class="hljs-name">item</span> <span class="hljs-attr">identifier</span>=<span class="hljs-string">&quot;i1&quot;</span> <span class="hljs-attr">identifierref</span>=<span class="hljs-string">&quot;r1&quot;</span>&gt;</span>
+                                <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Title<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span> 
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">item</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">organization</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">organizations</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">resources</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">resource</span> <span class="hljs-attr">identifier</span>=<span class="hljs-string">&quot;r1&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;webcontent&quot;</span> <span class="hljs-attr">adlcp:scormtype</span>=<span class="hljs-string">&quot;sco&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;index.html&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">file</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;index.html&quot;</span> /&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">resource</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">resources</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">manifest</span>&gt;</span></code></pre></div>
+<p>组织结构示例：</p>
+<p><img src="/img/blog/scorm/2.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p>有必要特别指出的是以下几点：</p>
+<ol>
+<li>各节点的“identifier”属性应该唯一；</li>
+<li>“organizations”节点下可以有多个“organization”节点，通过“organizations”的“default”属性指向某一个</li>
+<li>“organization”来决定使用那一种组织结构；</li>
+<li>“organization”下的“item”节点是可以嵌套的，用来实现课程章节的层次关系；</li>
+<li>“item”节点的“identifierref”属性的值为某一个“resource”节点的“identifier”属性的值，使某一章节与课程资源建立对应关系；</li>
+<li>“title”节点里的文本是课程以及章节在平台上的显示文本；</li>
+<li>“resource”节点的“href”属性是课程资源的存储位置。</li>
+</ol>
+<h2 id="4-制作一个SCORM课件"><a href="#4-制作一个SCORM课件" class="headerlink" title="4. 制作一个SCORM课件"></a>4. 制作一个SCORM课件</h2><p>基础示例：<br><img src="/img/blog/scorm/3.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<h2 id="5-SCORM打包流程图"><a href="#5-SCORM打包流程图" class="headerlink" title="5. SCORM打包流程图"></a>5. SCORM打包流程图</h2><p><img src="/img/blog/scorm/4.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/SCORM/">SCORM</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/10/30/%E5%85%B3%E4%BA%8EChrome%E6%96%B0%E7%89%88%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AD%98%E5%82%A8%E5%88%86%E5%8C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E5%89%8D%E7%9E%BB/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于Chrome新版浏览器存储分区的技术前瞻（2023.10）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/12/WEB%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94%E8%A7%86%E9%A2%91%E5%88%87%E7%89%87%E6%92%AD%E6%94%BE/">
+                        <span class="hidden-mobile">WEB技术调研：【视频切片+播放】</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

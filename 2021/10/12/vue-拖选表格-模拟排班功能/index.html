@@ -1,0 +1,725 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="演示在线访问:   https:&#x2F;&#x2F;wenkil.github.io&#x2F;drag_table_demo   (请使用PC端打开)预览 源码&lt;template&gt;   &lt;div&gt;     &lt;div style&#x3D;&quot;margin: 30px 0; text-align: right;&quot;&gt;       &lt;el-button @click&#x3D;&amp;quot">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue 拖选表格: 模拟排班功能">
+<meta property="og:url" content="http://example.com/2021/10/12/vue-%E6%8B%96%E9%80%89%E8%A1%A8%E6%A0%BC-%E6%A8%A1%E6%8B%9F%E6%8E%92%E7%8F%AD%E5%8A%9F%E8%83%BD/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="演示在线访问:   https:&#x2F;&#x2F;wenkil.github.io&#x2F;drag_table_demo   (请使用PC端打开)预览 源码&lt;template&gt;   &lt;div&gt;     &lt;div style&#x3D;&quot;margin: 30px 0; text-align: right;&quot;&gt;       &lt;el-button @click&#x3D;&amp;quot">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/drag_table/d1.png">
+<meta property="article:published_time" content="2021-10-12T08:25:01.000Z">
+<meta property="article:modified_time" content="2022-01-24T06:07:34.984Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Element UI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/drag_table/d1.png">
+  
+  <title>Vue 拖选表格: 模拟排班功能 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Vue 拖选表格: 模拟排班功能">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-12 16:25" pubdate>
+        2021年10月12日 16:25:01
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Vue 拖选表格: 模拟排班功能</h1>
+            
+            <div class="markdown-body">
+              <h3 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h3><h4 id="在线访问-https-wenkil-github-io-drag-table-demo-请使用PC端打开"><a href="#在线访问-https-wenkil-github-io-drag-table-demo-请使用PC端打开" class="headerlink" title="在线访问:   https://wenkil.github.io/drag_table_demo   (请使用PC端打开)"></a>在线访问:   <a target="_blank" rel="noopener" href="https://wenkil.github.io/drag_table_demo">https://wenkil.github.io/drag_table_demo</a>   (请使用PC端打开)</h4><h4 id="预览"><a href="#预览" class="headerlink" title="预览"></a>预览</h4><p><img src="/img/blog/drag_table/d1.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><div class="code-wrapper"><pre><code class="hljs vue">&lt;template&gt;
+  &lt;div&gt;
+    &lt;div style=&quot;margin: 30px 0; text-align: right;&quot;&gt;
+      &lt;el-button @click=&quot;reset&quot; class=&quot;reset-btn&quot;&gt;重置&lt;/el-button&gt;
+      &lt;!--      &lt;el-button type=&quot;primary&quot; @click=&quot;changeGrid&quot;&gt;确认修改&lt;/el-button&gt;--&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;box&quot; @mousedown=&quot;handleMouseDown&quot;&gt;
+      &lt;div class=&quot;mask&quot; v-show=&quot;is_show_mask&quot;
+           :style=&quot;&#x27;width:&#x27;+mask_width+&#x27;left:&#x27;+mask_left+&#x27;height:&#x27;+mask_height+&#x27;top:&#x27;+mask_top&quot;&gt;
+      &lt;/div&gt;
+      &lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; class=&quot;table&quot;&gt;
+        &lt;th v-for=&quot;(item,index) in weekEnum&quot; class=&quot;week-data-th&quot; :key=&quot;index&quot;&gt;
+          &#123;&#123; item &#125;&#125;
+        &lt;/th&gt;
+        &lt;tr v-for=&quot;(item,index) in list&quot;&gt;
+          &lt;td
+              v-for=&quot;(temp,idx) in item.child&quot;
+              @click=&quot;handleClickTimeData(temp,index)&quot;
+              :key=&quot;idx&quot;
+              class=&quot;week-data-td&quot;
+              :style=&quot;`background:$&#123;temp.checked?&#x27;#3af&#x27;:&#x27;&#x27;&#125;`&quot;
+          &gt;
+            &lt;p&gt;&#123;&#123; temp.val &#125;&#125;&lt;/p&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+
+
+&lt;script&gt;
+export default &#123;
+  components: &#123;&#125;,
+  props: &#123;
+    tHead: &#123;
+      type: Array,
+      default: () =&gt; []
+    &#125;,
+    tBody: &#123;
+      type: Array,
+      default: () =&gt; []
+    &#125;
+  &#125;,
+  data() &#123;
+    return &#123;
+      is_show_mask: false,
+      start_x: 0,
+      start_y: 0,
+      end_x: 0,
+      end_y: 0,
+      box_screen_left: 0,
+      box_screen_top: 0,
+      weekEnum: [
+        &quot;星期一&quot;,
+        &quot;星期二&quot;,
+        &quot;星期三&quot;,
+        &quot;星期四&quot;,
+        &quot;星期五&quot;,
+        &quot;星期六&quot;,
+        &quot;星期日&quot;
+      ],
+      list: [],
+      tdLength: 30
+    &#125;;
+  &#125;,
+  computed: &#123;
+    // 框选操作
+    mask_width() &#123;
+      return `$&#123;Math.abs(this.end_x - this.start_x)&#125;px;`;
+    &#125;,
+
+
+    mask_height() &#123;
+      return `$&#123;Math.abs(this.end_y - this.start_y)&#125;px;`;
+    &#125;,
+
+
+    mask_left() &#123;
+      return `$&#123;
+          Math.min(this.start_x, this.end_x) - this.box_screen_left
+      &#125;px;`;
+    &#125;,
+
+
+    mask_top() &#123;
+      return `$&#123;
+          Math.min(this.start_y, this.end_y) - this.box_screen_top
+      &#125;px;`;
+    &#125;
+  &#125;,
+  mounted() &#123;
+    window.addEventListener(&quot;scroll&quot;, this.windowScroll);//监听页面滚动
+    this.initTable();
+    this.initWidth();
+  &#125;,
+  beforeDestroy() &#123;
+    window.removeEventListener(&quot;scroll&quot;, this.windowScroll);
+  &#125;,
+  methods: &#123;
+    initWidth() &#123;
+      const dom_box = document.querySelector(&quot;.box&quot;);
+      this.box_screen_left = dom_box.getBoundingClientRect().left;
+      this.box_screen_top = dom_box.getBoundingClientRect().top;
+      console.log(&quot;this.box_screen_left&quot;, this.box_screen_left);
+      console.log(&quot;this.box_screen_top&quot;, this.box_screen_top);
+    &#125;,
+    //页面滚动时初始化位置
+    windowScroll() &#123;
+      this.resSetXY();
+      this.initWidth();
+    &#125;,
+    initTable() &#123;
+      let tableList = [...new Array(this.tdLength).keys()];
+      console.log(&quot;tableList&quot;, tableList);
+      this.list = tableList.map((item, index) =&gt; &#123;
+        let temp = Array.from(new Array(7).keys());
+        console.log(&quot;temp&quot;, temp);
+        let child = temp.map((v, key) =&gt; &#123;
+          return &#123;
+            key: key + index * 7,
+            val: &quot;&quot;
+          &#125;;
+        &#125;);
+        console.log(&quot;child&quot;, child);
+        return &#123; child &#125;;
+      &#125;);
+      console.log(&quot;this.list&quot;, this.list);
+    &#125;,
+
+
+    reset() &#123;
+      let tableList = JSON.parse(JSON.stringify(this.list));
+      tableList.map((item) =&gt; &#123;
+        item.child.map((temp) =&gt; &#123;
+          temp.checked = false;
+        &#125;);
+      &#125;);
+      this.list = tableList;
+    &#125;,
+
+
+    handleClickTimeData(obj, index) &#123;
+      let tableList = JSON.parse(JSON.stringify(this.list));
+      console.log(&quot;tableList&quot;, tableList);
+      tableList[index].child.map((item) =&gt; &#123;
+        if (item.key == obj.key) &#123;
+          item.checked = !item.checked;
+        &#125;
+      &#125;);
+      this.list = tableList;
+    &#125;,
+
+
+    changeGrid() &#123;
+      this.handleDomSelect();//选中后的判断,找到框选内的格子
+      this.resSetXY();//调用此方法让框选消失
+    &#125;,
+
+
+    handleMouseDown(e) &#123;
+      console.log(&quot;event&quot;, e);
+      this.is_show_mask = true;
+      this.start_x = e.clientX;
+      this.start_y = e.clientY;
+      this.end_x = e.clientX;
+      this.end_y = e.clientY;
+      window.addEventListener(&quot;mousemove&quot;, this.handleMouseMove);
+      window.addEventListener(&quot;mouseup&quot;, this.handleMouseUp);
+    &#125;,
+    handleMouseMove(event) &#123;
+      this.end_x = event.clientX;
+      this.end_y = event.clientY;
+    &#125;,
+    handleMouseUp() &#123;
+      window.removeEventListener(&quot;mousemove&quot;, this.handleMouseMove);
+      window.removeEventListener(&quot;mouseup&quot;, this.handleMouseUp);
+      this.changeGrid();
+    &#125;,
+    resSetXY() &#123;
+      this.start_x = 0;
+      this.start_y = 0;
+      this.end_x = 0;
+      this.end_y = 0;
+    &#125;,
+    handleDomSelect() &#123;
+      const dom_mask = window.document.querySelector(&quot;.mask&quot;);
+      const rect_select = dom_mask.getClientRects()[0];
+      console.log(&quot;rect_select&quot;, rect_select);
+
+
+      let selectKeys = [];
+      document.querySelectorAll(&quot;.week-data-td&quot;).forEach((node, index) =&gt; &#123;
+        const rects = node.getClientRects()[0];
+        console.log(&quot;rects&quot;, rects);
+        if (this.collide(rects, rect_select) === true) &#123;
+          selectKeys.push(index);
+        &#125;
+      &#125;);
+      console.log(&quot;selectKeys&quot;, selectKeys);
+      if (selectKeys.length &lt; 2) return;
+      let tableList = JSON.parse(JSON.stringify(this.list));
+      tableList = tableList.map((item, key) =&gt; &#123;
+        let child = item.child.map((temp) =&gt; &#123;
+          if (selectKeys.indexOf(temp.key) &gt; -1) &#123;
+            temp.checked = !temp.checked;
+          &#125;
+          return temp;
+        &#125;);
+        return &#123; child &#125;;
+      &#125;);
+      this.list = tableList;
+      console.log(&quot;this.list&quot;, this.list);
+    &#125;,
+    collide(rect1, rect2) &#123;
+      const maxX = Math.max(rect1.x + rect1.width, rect2.x + rect2.width);
+      const maxY = Math.max(rect1.y + rect1.height, rect2.y + rect2.height);
+      const minX = Math.min(rect1.x, rect2.x);
+      const minY = Math.min(rect1.y, rect2.y);
+      if (maxX - minX &lt;= rect1.width + rect2.width &amp;&amp; maxY - minY &lt;= rect1.height + rect2.height) &#123;
+        return true;
+      &#125;
+      else &#123;
+        return false;
+      &#125;
+    &#125;
+
+
+  &#125;
+&#125;;
+&lt;/script&gt;
+
+
+&lt;style lang=&quot;scss&quot; scoped&gt;
+td &#123;
+  width: 300px;
+  text-align: center;
+&#125;
+
+
+.box &#123;
+  width: 100%;
+  height: auto;
+  margin: 20px auto;
+  position: relative;
+  user-select: none;
+
+
+  .table &#123;
+    width: 100%;
+  &#125;
+
+
+  .mask &#123;
+    position: absolute;
+    background: #409eff;
+    opacity: 0.4;
+  &#125;
+&#125;
+
+
+.week-data-th &#123;
+  min-width: 100px;
+  height: 30px;
+&#125;
+
+
+.week-data-td &#123;
+  height: 50px;
+&#125;
+&lt;/style&gt;</code></pre></div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Vue/">Vue</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Element-UI/">Element UI</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/13/%E4%BD%BF%E7%94%A8vue-init-webpack-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE%EF%BC%8C%E6%89%93%E5%8C%85%E5%90%8E%E5%9C%A8-github-io%E4%B8%8A%E6%97%A0%E6%B3%95%E8%BF%90%E8%A1%8C/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【转载】 使用vue init  webpack 创建项目，打包后在 github.io上无法运行</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/01/%E5%85%B3%E4%BA%8E%E6%AD%A4%E5%8D%9A%E5%AE%A2%E7%9A%84%E6%90%AD%E5%BB%BA/">
+                        <span class="hidden-mobile">关于此博客的搭建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

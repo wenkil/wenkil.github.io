@@ -1,0 +1,557 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="背景前端进行展示图片、视频、pdf等媒体资源时，对于私有化知识的资源需要做一个保护机制，即防止用户下载留存。 防范维度：  无任何web技术的人群：大众用户  懂web技术的人群   此文档记录的技术方向主要是针对第一类：大众用户 视频针对视频，可使用现成js插件来实现防下载功能，推荐以下两个插件：  video.js GitHub 37.5k；Demo地址：https:&#x2F;&#x2F;videojs.com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端页面媒体资源防下载">
+<meta property="og:url" content="http://example.com/2024/07/04/%E5%AA%92%E4%BD%93%E8%B5%84%E6%BA%90%E9%98%B2%E4%B8%8B%E8%BD%BD/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="背景前端进行展示图片、视频、pdf等媒体资源时，对于私有化知识的资源需要做一个保护机制，即防止用户下载留存。 防范维度：  无任何web技术的人群：大众用户  懂web技术的人群   此文档记录的技术方向主要是针对第一类：大众用户 视频针对视频，可使用现成js插件来实现防下载功能，推荐以下两个插件：  video.js GitHub 37.5k；Demo地址：https:&#x2F;&#x2F;videojs.com">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/js/07.png">
+<meta property="article:published_time" content="2024-07-04T07:25:00.000Z">
+<meta property="article:modified_time" content="2024-07-13T12:52:31.121Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/js/07.png">
+  
+  <title>前端页面媒体资源防下载 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="前端页面媒体资源防下载">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-07-04 15:25" pubdate>
+        2024年7月4日 15:25:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">前端页面媒体资源防下载</h1>
+            
+            <div class="markdown-body">
+              <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>前端进行展示图片、视频、pdf等媒体资源时，对于私有化知识的资源需要做一个保护机制，即防止用户下载留存。</p>
+<p>防范维度：</p>
+<ul>
+<li><p>无任何web技术的人群：大众用户</p>
+</li>
+<li><p>懂web技术的人群</p>
+</li>
+</ul>
+<p>此文档记录的技术方向主要是针对第一类：大众用户</p>
+<h2 id="视频"><a href="#视频" class="headerlink" title="视频"></a>视频</h2><p>针对视频，可使用现成js插件来实现防下载功能，推荐以下两个插件：</p>
+<ul>
+<li><p>video.js GitHub 37.5k；Demo地址：<br><a target="_blank" rel="noopener" href="https://videojs.com/advanced/?video=disneys-oceans">https://videojs.com/advanced/?video=disneys-oceans</a></p>
+</li>
+<li><p>plyr  Github 26k；Demo地址：<a target="_blank" rel="noopener" href="https://plyr.io/">https://plyr.io/</a> </p>
+</li>
+</ul>
+<p>video-js使用示例：</p>
+<div class="code-wrapper"><pre><code class="hljs javascript">&lt;link href=<span class="hljs-string">&quot;https://vjs.zencdn.net/7.11.4/video-js.css&quot;</span> rel=<span class="hljs-string">&quot;stylesheet&quot;</span>&gt;
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://vjs.zencdn.net/7.11.4/video.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">video</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;my-video&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;video-js&quot;</span> <span class="hljs-attr">controls</span> <span class="hljs-attr">preload</span>=<span class="hljs-string">&quot;auto&quot;</span> <span class="hljs-attr">width</span>=<span class="hljs-string">&quot;640&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;264&quot;</span> <span class="hljs-attr">poster</span>=<span class="hljs-string">&quot;MY_VIDEO_POSTER.jpg&quot;</span> <span class="hljs-attr">data-setup</span>=<span class="hljs-string">&quot;&#123;&#125;&quot;</span>&gt;</span></span>
+<span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">source</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;MY_VIDEO.mp4&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;video/mp4&quot;</span>&gt;</span></span>
+<span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;vjs-no-js&quot;</span>&gt;</span></span>
+<span class="xml">    To view this video please enable JavaScript, and consider upgrading to a web browser that</span>
+<span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://videojs.com/html5-video-support/&quot;</span> <span class="hljs-attr">target</span>=<span class="hljs-string">&quot;_blank&quot;</span>&gt;</span>supports HTML5 video<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></span>
+<span class="xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>
+<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">video</span>&gt;</span></span>
+<span class="xml"></span>
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">var</span> player = videojs(<span class="hljs-string">&#x27;my-video&#x27;</span>);</span></span>
+<span class="javascript"><span class="xml">  player.ready(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-comment">// 禁用右键菜单</span></span></span>
+<span class="javascript"><span class="xml">    player.el().oncontextmenu = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; &#125;;</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-comment">// 隐藏下载按钮</span></span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-keyword">var</span> controlBar = player.getChild(<span class="hljs-string">&#x27;controlBar&#x27;</span>);</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-keyword">var</span> fullscreenToggle = controlBar.getChild(<span class="hljs-string">&#x27;fullscreenToggle&#x27;</span>);</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-keyword">if</span> (fullscreenToggle) &#123;</span></span>
+<span class="javascript"><span class="xml">      fullscreenToggle.hide();</span></span>
+<span class="javascript"><span class="xml">    &#125;</span></span>
+<span class="javascript"><span class="xml">  &#125;);</span></span>
+<span class="javascript"><span class="xml"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span></code></pre></div>
+
+<p>ply使用示例:</p>
+<div class="code-wrapper"><pre><code class="hljs javascript">&lt;link rel=<span class="hljs-string">&quot;stylesheet&quot;</span> href=<span class="hljs-string">&quot;https://cdn.plyr.io/3.6.8/plyr.css&quot;</span> /&gt;
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdn.plyr.io/3.6.8/plyr.polyfilled.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">video</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;player&quot;</span> <span class="hljs-attr">playsinline</span> <span class="hljs-attr">controls</span>&gt;</span></span>
+<span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">source</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;MY_VIDEO.mp4&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;video/mp4&quot;</span> /&gt;</span></span>
+<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">video</span>&gt;</span></span>
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">const</span> player = <span class="hljs-keyword">new</span> Plyr(<span class="hljs-string">&#x27;#player&#x27;</span>, &#123;</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-attr">controls</span>: [<span class="hljs-string">&#x27;play&#x27;</span>, <span class="hljs-string">&#x27;progress&#x27;</span>, <span class="hljs-string">&#x27;current-time&#x27;</span>, <span class="hljs-string">&#x27;mute&#x27;</span>, <span class="hljs-string">&#x27;volume&#x27;</span>, <span class="hljs-string">&#x27;fullscreen&#x27;</span>]</span></span>
+<span class="javascript"><span class="xml">  &#125;);</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-comment">// 禁用右键菜单</span></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;player&#x27;</span>).oncontextmenu = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123; <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; &#125;;</span></span>
+<span class="javascript"><span class="xml"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span></code></pre></div>
+
+
+<h2 id="PDF"><a href="#PDF" class="headerlink" title="PDF"></a>PDF</h2><p>如果使用浏览器打开pdf会有浏览器自带的下载功能，这里推荐使用以下插件来展示pdf：</p>
+<p>pdf.js GitHub 47.1k；Demo地址：<a target="_blank" rel="noopener" href="https://mozilla.github.io/pdf.js/examples/index.html#interactive-examples">https://mozilla.github.io/pdf.js/examples/index.html#interactive-examples</a></p>
+<p>使用效果，在矩形区域显示一个pdf文件的内容：</p>
+<p><img src="/img/blog/js/07.png" srcset="/img/loading.gif" lazyload alt="img.png"></p>
+<p><strong>但是：在矩形区域上方点击鼠标右键会出现一个【图片另存为】，这时候需要使用下方和【图片】一样的设置</strong></p>
+<h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><p>利用css设置禁止选中和js中的禁止右键：<br>css:</p>
+<div class="code-wrapper"><pre><code class="hljs css"><span class="hljs-selector-tag">img</span> &#123;
+    -webkit-user-select: none; <span class="hljs-comment">/* Safari */</span>
+    -moz-user-select: none;    <span class="hljs-comment">/* Firefox */</span>
+    -ms-user-select: none;     <span class="hljs-comment">/* IE10+/Edge */</span>
+    user-select: none;         <span class="hljs-comment">/* Standard */</span>
+    <span class="hljs-attribute">pointer-events</span>: none;
+&#125;</code></pre></div>
+<p>js：</p>
+<div class="code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">//防止右键下载图片</span>
+<span class="hljs-built_in">document</span>.oncontextmenu = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+&#125;
+
+<span class="hljs-comment">// 或者</span>
+
+&lt;div id=<span class="hljs-string">&quot;myElement&quot;</span> oncontextmenu=<span class="hljs-string">&quot;return false;&quot;</span>&gt;...&lt;/div&gt;</code></pre></div>
+
+
+<p>vue中的写法示例：</p>
+<div class="code-wrapper"><pre><code class="hljs vue">&lt;template&gt;
+  &lt;img ref=&quot;myImage&quot; src=&quot;your-image.jpg&quot; /&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default &#123;
+  mounted() &#123;
+    this.$refs.myImage.oncontextmenu = function(event) &#123;
+      event.preventDefault();
+      return false;
+    &#125;;
+  &#125;
+&#125;
+&lt;/script&gt;</code></pre></div>
+
+
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JavaScript/">JavaScript</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Vue/">Vue</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/07/07/CrewAI%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">CrewAI学习记录（未完待续...）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/04/%E5%89%8D%E7%AB%AF%E8%AE%B0%E5%BD%95%E9%A1%B5%E9%9D%A2%E5%81%9C%E7%95%99%E6%97%B6%E9%95%BF/">
+                        <span class="hidden-mobile">前端记录页面停留时长</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

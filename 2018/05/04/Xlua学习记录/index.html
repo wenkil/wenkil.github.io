@@ -1,0 +1,534 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="下载Xlua在github上下载xlua之后，将 xlua-master&#x2F;Assets下的内容拷贝到我们的工程里，如图所示： 执行字符串：执行时直接使用luaEnv.DoString方法来执行lua的操作 using System.Collections; using System.Collections.Generic; using UnityEngine; using XLua; public">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xlua学习记录">
+<meta property="og:url" content="http://example.com/2018/05/04/Xlua%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="下载Xlua在github上下载xlua之后，将 xlua-master&#x2F;Assets下的内容拷贝到我们的工程里，如图所示： 执行字符串：执行时直接使用luaEnv.DoString方法来执行lua的操作 using System.Collections; using System.Collections.Generic; using UnityEngine; using XLua; public">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a1.png">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a2.png">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a7.png">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a4.png">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a8.png">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a5.png">
+<meta property="og:image" content="http://example.com/img/blog/xlua/a6.png">
+<meta property="article:published_time" content="2018-05-04T01:35:03.000Z">
+<meta property="article:modified_time" content="2022-01-24T06:07:34.981Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Unity">
+<meta property="article:tag" content="Xlua">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/xlua/a1.png">
+  
+  <title>Xlua学习记录 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Xlua学习记录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-05-04 09:35" pubdate>
+        2018年5月4日 09:35:03
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Xlua学习记录</h1>
+            
+            <div class="markdown-body">
+              <h3 id="下载Xlua"><a href="#下载Xlua" class="headerlink" title="下载Xlua"></a>下载Xlua</h3><p>在github上下载xlua之后，将 xlua-master/Assets下的内容拷贝到我们的工程里，如图所示：<br><img src="/img/blog/xlua/a1.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="执行字符串："><a href="#执行字符串：" class="headerlink" title="执行字符串："></a>执行字符串：</h3><p>执行时直接使用luaEnv.DoString方法来执行lua的操作</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using XLua;
+public class XluaTest : MonoBehaviour &#123;
+    LuaEnv luaEnv;
+    void Start () &#123;
+        luaEnv = new LuaEnv();
+        luaEnv.DoString(&quot;print(&#x27;运行xlua&#x27;)&quot;);
+        luaEnv.Dispose();
+       &#125;
+  
+&#125;</code></pre></div>
+
+<p>运行后显示以下内容:<br><img src="/img/blog/xlua/a2.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="执行加载Lua文件"><a href="#执行加载Lua文件" class="headerlink" title="执行加载Lua文件"></a>执行加载Lua文件</h3><p>在Resources文件夹下创建一个文本文档命名为luaTest，后缀名以.lua.txt结束。打开文档编写简单lua代码：<br><img src="/img/blog/xlua/a7.png" srcset="/img/loading.gif" lazyload></p>
+<p> 回到代码中,直接使用下面的方式加载Resources文件下的lua文档，luaEnv.Dostring方法会直接进行编译:</p>
+<div class="code-wrapper"><pre><code class="hljs c#">TextAsset t = Resources.Load&lt;TextAsset&gt;(&quot;luaTest.lua&quot;)
+luaEnc.DoString(t.text)</code></pre></div>
+
+<p>运行后如下图所示：<br><img src="/img/blog/xlua/a4.png" srcset="/img/loading.gif" lazyload></p>
+<p>或者不使用上面的这个方式可以直接使用lua里的方法来加载lua文件：</p>
+<div class="code-wrapper"><pre><code class="hljs vbscript">luaEnv.<span class="hljs-keyword">Do</span><span class="hljs-built_in">String</span>(<span class="hljs-string">&quot;require &#x27;luaTest&#x27;&quot;</span>);</code></pre></div>
+
+<h3 id="自定义loder"><a href="#自定义loder" class="headerlink" title="自定义loder"></a>自定义loder</h3><p><img src="/img/blog/xlua/a8.png" srcset="/img/loading.gif" lazyload></p>
+<p>官方文档介绍loder的用法，下面演示一下自定义loder，方便之处在于可以自定义执行lua时想要的一些操作：<br>新建一个文件夹StreamingAssets，再新建一个lua文件lua007.lua.txt编辑内容为print(“I am 007”)<br>在脚本中更改以下代码：</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+using XLua;
+public class CreatLoder : MonoBehaviour &#123;
+    void Start () 
+    &#123;
+        LuaEnv luaEnv = new LuaEnv();
+        luaEnv.AddLoader(Myloder);
+        luaEnv.DoString(&quot;require&#x27;test007&#x27;&quot;);
+        luaEnv.Dispose();
+    &#125;
+       
+    public byte[]Myloder(ref string feilPath)
+    &#123;
+        string absPayh = Application.streamingAssetsPath + &quot;/&quot; + feilPath+&quot;.lua.txt&quot;;
+        return System.Text.Encoding.UTF8.GetBytes(File.ReadAllText(absPayh));
+    &#125;
+&#125;</code></pre></div>
+
+<p>运行后：</p>
+<p><img src="/img/blog/xlua/a5.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="通过C-访问lua中的全局变量"><a href="#通过C-访问lua中的全局变量" class="headerlink" title="通过C#访问lua中的全局变量"></a>通过C#访问lua中的全局变量</h3><p>在新场景中新建一个Resources文件夹，新建一个lua文件，编辑为：<br> a=100<br> name=”Andy”<br> IsRoot=false<br>打开脚本进行编辑</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using XLua;
+public class CSharpCalllua : MonoBehaviour &#123;
+       void Start () &#123;
+        LuaEnv luaEnv = new LuaEnv();
+        luaEnv.DoString(&quot;require&#x27;CSharpCalllua&#x27;&quot;);//先打开lua文件，再获取lua中的全局变量
+        int a = luaEnv.Global.Get&lt;int&gt;(&quot;a&quot;);s
+        string name = luaEnv.Global.Get&lt;string&gt;(&quot;name&quot;);
+        bool isroot = luaEnv.Global.Get&lt;bool&gt;(&quot;IsRoot&quot;);
+        Debug.Log(a);
+        Debug.Log(name);
+        Debug.Log(isroot);
+    &#125;
+       
+       void Update () &#123;
+              
+       &#125;
+&#125;</code></pre></div>
+
+<p>点击运行后显示：<br><img src="/img/blog/xlua/a6.png" srcset="/img/loading.gif" lazyload></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Unity/">Unity</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Xlua/">Xlua</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/05/23/Xlua-%E6%89%93%E8%A1%A5%E4%B8%81%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Xlua 打补丁流程实验记录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/05/02/Unity%E4%B8%AD%E8%A7%A3%E6%9E%90xml%E6%96%87%E6%A1%A3%E7%9A%84%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95/">
+                        <span class="hidden-mobile">Unity中解析xml文档的简单用法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

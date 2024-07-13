@@ -1,0 +1,653 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="效果预览支持自定义：展示列数 超出多行时：隐藏多余格子 使用方式1. npm安装方式npm 包地址： https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;wenkil-transverse-table npm i wenkil-transverse-table  项目中需要使用以下方式引入element-ui和样式 &lt;template&gt;   &lt;div class&#x3D;&amp;quo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Element Table 自定义表格横向展示">
+<meta property="og:url" content="http://example.com/2021/06/16/Element-Table-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A1%A8%E6%A0%BC%E6%A8%AA%E5%90%91%E5%B1%95%E7%A4%BA/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="效果预览支持自定义：展示列数 超出多行时：隐藏多余格子 使用方式1. npm安装方式npm 包地址： https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;wenkil-transverse-table npm i wenkil-transverse-table  项目中需要使用以下方式引入element-ui和样式 &lt;template&gt;   &lt;div class&#x3D;&amp;quo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/element/transverse-table1.png">
+<meta property="og:image" content="http://example.com/img/blog/element/transverse-table2.png">
+<meta property="article:published_time" content="2021-06-16T08:31:27.000Z">
+<meta property="article:modified_time" content="2022-01-24T06:07:34.976Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Element UI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/element/transverse-table1.png">
+  
+  <title>Element Table 自定义表格横向展示 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Element Table 自定义表格横向展示">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-16 16:31" pubdate>
+        2021年6月16日 16:31:27
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.8k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Element Table 自定义表格横向展示</h1>
+            
+            <div class="markdown-body">
+              <h2 id="效果预览"><a href="#效果预览" class="headerlink" title="效果预览"></a>效果预览</h2><h3 id="支持自定义：展示列数"><a href="#支持自定义：展示列数" class="headerlink" title="支持自定义：展示列数"></a>支持自定义：展示列数</h3><p><img src="/img/blog/element/transverse-table1.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="超出多行时：隐藏多余格子"><a href="#超出多行时：隐藏多余格子" class="headerlink" title="超出多行时：隐藏多余格子"></a>超出多行时：隐藏多余格子</h3><p><img src="/img/blog/element/transverse-table2.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><h3 id="1-npm安装方式"><a href="#1-npm安装方式" class="headerlink" title="1. npm安装方式"></a>1. npm安装方式</h3><p>npm 包地址： <a target="_blank" rel="noopener" href="https://www.npmjs.com/package/wenkil-transverse-table">https://www.npmjs.com/package/wenkil-transverse-table</a></p>
+<div class="code-wrapper"><pre><code class="hljs css">npm <span class="hljs-selector-tag">i</span> wenkil-transverse-<span class="hljs-selector-tag">table</span></code></pre></div>
+
+<p>项目中需要使用以下方式引入element-ui和样式</p>
+<div class="code-wrapper"><pre><code class="hljs xquery"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span></span>
+<span class="xml">  </span><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;app-container&quot;</span>&gt;</span></span>
+<span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">TransverseTable</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;transverseTable&quot;</span>  <span class="hljs-attr">:tableData</span>=<span class="hljs-string">&quot;[</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">            </span></span></span><span class="xquery"><span class="hljs-built_in">&#123;key</span>:<span class="hljs-string">&#x27;test&#x27;</span>,value: <span class="hljs-number">1</span>&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">            </span></span></span><span class="xquery"><span class="hljs-built_in">&#123;key</span>:<span class="hljs-string">&#x27;test&#x27;</span>,value: <span class="hljs-number">1</span>&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">            </span></span></span><span class="xquery"><span class="hljs-built_in">&#123;key</span>:<span class="hljs-string">&#x27;test&#x27;</span>,value: <span class="hljs-number">1</span>&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">            </span></span></span><span class="xquery"><span class="hljs-built_in">&#123;key</span>:<span class="hljs-string">&#x27;test&#x27;</span>,value: <span class="hljs-number">1</span>&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">            </span></span></span><span class="xquery"><span class="hljs-built_in">&#123;key</span>:<span class="hljs-string">&#x27;test&#x27;</span>,value: <span class="hljs-number">1</span>&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">            </span></span></span><span class="xquery"><span class="hljs-built_in">&#123;key</span>:<span class="hljs-string">&#x27;test&#x27;</span>,value: <span class="hljs-number">1</span>&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml"></span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml"></span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">          ]&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">TransverseTable</span>&gt;</span></span><span class="xml"></span>
+<span class="xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+&lt;/template&gt;
+
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">import</span> Element <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;element-ui&quot;</span>;</span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;element-ui/lib/theme-chalk/index.css&#x27;</span>;</span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">import</span> TransverseTable <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;wenkil-transverse-table&#x27;</span></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> </span></span><span class="xquery">&#123;</span>
+<span class="xquery">   <span class="hljs-built_in"> name</span>: <span class="hljs-string">&quot;test&quot;</span>,</span>
+<span class="xquery">    components: &#123;TransverseTable&#125;</span><span class="xml">,</span>
+<span class="xml">    data() </span><span class="xquery">&#123;</span>
+<span class="xquery">      <span class="hljs-keyword">return</span> &#123;&#125;</span><span class="xml"></span>
+<span class="xml">    &#125;,</span>
+<span class="xml">    created() </span><span class="xquery">&#123;</span>
+<span class="xquery"></span>
+<span class="xquery">    &#125;</span><span class="xml">,</span>
+<span class="xml">    mounted() </span><span class="xquery">&#123;</span>
+<span class="xquery">      this.<span class="hljs-variable">$refs</span>.transverseTable.setTable()</span>
+<span class="xquery">    &#125;</span><span class="xml">,</span>
+<span class="xml">    methods: </span><span class="xquery">&#123;&#125;</span><span class="xml">,</span>
+<span class="xml">  &#125;</span>
+<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+
+
+&lt;style scoped&gt;
+
+
+&lt;/style&gt;</code></pre></div>
+
+<h3 id="2-组件方式"><a href="#2-组件方式" class="headerlink" title="2. 组件方式"></a>2. 组件方式</h3><p>在项目里自定义组件目录,写入以下代码</p>
+<div class="code-wrapper"><pre><code class="hljs handlebars"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span></span>
+<span class="xml">  <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span>
+<span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">el-table</span></span></span>
+<span class="hljs-tag"><span class="xml">      <span class="hljs-attr">border</span></span></span>
+<span class="hljs-tag"><span class="xml">      <span class="hljs-attr">:data</span>=<span class="hljs-string">&quot;tableList&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">      <span class="hljs-attr">:show-header</span>=<span class="hljs-string">&quot;false&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">      <span class="hljs-attr">:cell-style</span>=<span class="hljs-string">&quot;cellStyle&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">    &gt;</span></span>
+<span class="xml">      <span class="hljs-tag">&lt;<span class="hljs-name">el-table-column</span></span></span>
+<span class="hljs-tag"><span class="xml">        <span class="hljs-attr">min-width</span>=<span class="hljs-string">&quot;50&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">        <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;item in headList&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">        <span class="hljs-attr">:key</span>=<span class="hljs-string">&quot;item.prop&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">        <span class="hljs-attr">:label</span>=<span class="hljs-string">&quot;item.prop&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">        <span class="hljs-attr">:prop</span>=<span class="hljs-string">&quot;item.prop&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">        <span class="hljs-attr">align</span>=<span class="hljs-string">&quot;center&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">      &gt;</span></span>
+<span class="xml">        <span class="hljs-tag">&lt;<span class="hljs-name">template</span> <span class="hljs-attr">slot-scope</span>=<span class="hljs-string">&quot;&#123; row &#125;&quot;</span>&gt;</span></span>
+<span class="xml">          <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span></span><span class="hljs-template-variable">&#123;&#123; <span class="hljs-name">row</span>[item.prop] &#125;&#125;</span><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span></span>
+<span class="xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+<span class="xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">el-table-column</span>&gt;</span></span>
+<span class="xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">el-table</span>&gt;</span></span>
+<span class="xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span></span>
+<span class="xml"></span>
+<span class="xml"></span>
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"></span></span>
+<span class="javascript"><span class="xml">  <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-attr">components</span>: &#123;&#125;,</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-attr">props</span>: &#123;</span></span>
+<span class="javascript"><span class="xml">      <span class="hljs-attr">tableData</span>: &#123; <span class="hljs-comment">//传进key value格式的数组</span></span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-attr">type</span>: <span class="hljs-built_in">Array</span>,</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-attr">default</span>: <span class="hljs-function">() =&gt;</span> &#123;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">return</span> []</span></span>
+<span class="javascript"><span class="xml">        &#125;</span></span>
+<span class="javascript"><span class="xml">      &#125;,</span></span>
+<span class="javascript"><span class="xml">      <span class="hljs-attr">columnNum</span>: &#123;</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-attr">type</span>: <span class="hljs-built_in">Number</span>,</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-attr">default</span>: <span class="hljs-number">6</span></span></span>
+<span class="javascript"><span class="xml">      &#125;</span></span>
+<span class="javascript"><span class="xml">    &#125;,</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-function"><span class="hljs-title">data</span>(<span class="hljs-params"></span>)</span> &#123;</span></span>
+<span class="javascript"><span class="xml">      <span class="hljs-keyword">return</span> &#123;</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-attr">tableList</span>: [],</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-attr">headList</span>: [],</span></span>
+<span class="javascript"><span class="xml">      &#125;</span></span>
+<span class="javascript"><span class="xml">    &#125;,</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-function"><span class="hljs-title">created</span>(<span class="hljs-params"></span>)</span> &#123;</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">    &#125;,</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params"></span>)</span> &#123;</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">    &#125;,</span></span>
+<span class="javascript"><span class="xml">    <span class="hljs-attr">methods</span>: &#123;</span></span>
+<span class="javascript"><span class="xml">      <span class="hljs-function"><span class="hljs-title">setTable</span>(<span class="hljs-params"></span>)</span> &#123;</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-built_in">this</span>.tableList = []</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-built_in">this</span>.headList = []</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">this</span>.columnNum; i++) &#123;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-built_in">this</span>.headList.push(</span></span>
+<span class="javascript"><span class="xml">            &#123;<span class="hljs-attr">prop</span>: <span class="hljs-string">&#x27;key&#x27;</span> + (i + <span class="hljs-number">1</span>)&#125;,</span></span>
+<span class="javascript"><span class="xml">            &#123;<span class="hljs-attr">prop</span>: <span class="hljs-string">&#x27;value&#x27;</span> + (i + <span class="hljs-number">1</span>)&#125;</span></span>
+<span class="javascript"><span class="xml">          )</span></span>
+<span class="javascript"><span class="xml">        &#125;</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">var</span> newArr = [];</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">this</span>.tableData.length; i += <span class="hljs-built_in">this</span>.columnNum) &#123;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">let</span> temp = <span class="hljs-built_in">this</span>.tableData.slice(i, i + <span class="hljs-built_in">this</span>.columnNum)</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">if</span> (temp.length &lt; <span class="hljs-built_in">this</span>.columnNum) &#123;</span></span>
+<span class="javascript"><span class="xml">            <span class="hljs-keyword">let</span> d = temp.length</span></span>
+<span class="javascript"><span class="xml">            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">this</span>.columnNum - d; i++) &#123;</span></span>
+<span class="javascript"><span class="xml">              temp.push(&#123;</span></span>
+<span class="javascript"><span class="xml">                <span class="hljs-attr">key</span>:<span class="hljs-literal">undefined</span>,</span></span>
+<span class="javascript"><span class="xml">                <span class="hljs-attr">value</span>:<span class="hljs-literal">undefined</span></span></span>
+<span class="javascript"><span class="xml">              &#125;)</span></span>
+<span class="javascript"><span class="xml">            &#125;</span></span>
+<span class="javascript"><span class="xml">          &#125;</span></span>
+<span class="javascript"><span class="xml">          newArr.push(temp);</span></span>
+<span class="javascript"><span class="xml">        &#125;</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">let</span> tempArr = []</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i = <span class="hljs-number">0</span>; i &lt; newArr.length; i++) &#123;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">let</span> index = <span class="hljs-number">1</span></span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">let</span> temp = &#123;&#125;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> item <span class="hljs-keyword">of</span> newArr[i]) &#123;</span></span>
+<span class="javascript"><span class="xml">            temp[<span class="hljs-string">&#x27;key&#x27;</span> + index] = item.key</span></span>
+<span class="javascript"><span class="xml">            temp[<span class="hljs-string">&#x27;value&#x27;</span> + index] = item.value</span></span>
+<span class="javascript"><span class="xml">            index++</span></span>
+<span class="javascript"><span class="xml">          &#125;</span></span>
+<span class="javascript"><span class="xml">          tempArr.push(temp)</span></span>
+<span class="javascript"><span class="xml">        &#125;</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-built_in">this</span>.tableList = tempArr</span></span>
+<span class="javascript"><span class="xml">      &#125;,</span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml"></span></span>
+<span class="javascript"><span class="xml">      <span class="hljs-function"><span class="hljs-title">cellStyle</span>(<span class="hljs-params">&#123;row, column, rowIndex, columnIndex&#125;</span>)</span> &#123;</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">if</span> (row[column.property] != <span class="hljs-number">0</span> &amp;&amp; !row[column.property]) &#123;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">return</span> &#123;</span></span>
+<span class="javascript"><span class="xml">            <span class="hljs-attr">visibility</span>: <span class="hljs-string">&#x27;hidden&#x27;</span></span></span>
+<span class="javascript"><span class="xml">          &#125;</span></span>
+<span class="javascript"><span class="xml">        &#125;</span></span>
+<span class="javascript"><span class="xml">        <span class="hljs-keyword">if</span> (columnIndex % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>) &#123;</span></span>
+<span class="javascript"><span class="xml">          <span class="hljs-keyword">return</span> &#123;</span></span>
+<span class="javascript"><span class="xml">            <span class="hljs-attr">background</span>: <span class="hljs-string">&#x27;#f0f0f0&#x27;</span></span></span>
+<span class="javascript"><span class="xml">          &#125;</span></span>
+<span class="javascript"><span class="xml">        &#125;</span></span>
+<span class="javascript"><span class="xml">      &#125;</span></span>
+<span class="javascript"><span class="xml">    &#125;,</span></span>
+<span class="javascript"><span class="xml">  &#125;</span></span>
+<span class="javascript"><span class="xml"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>
+<span class="xml"></span>
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">scoped</span>&gt;</span><span class="css"></span></span>
+<span class="css"><span class="xml">  /deep/ <span class="hljs-selector-class">.el-table--group</span><span class="hljs-selector-pseudo">::after</span>, <span class="hljs-selector-class">.el-table--border</span><span class="hljs-selector-pseudo">::after</span>, <span class="hljs-selector-class">.el-table</span><span class="hljs-selector-pseudo">::before</span> &#123;</span></span>
+<span class="css"><span class="xml">    <span class="hljs-attribute">width</span>: <span class="hljs-number">0</span>;</span></span>
+<span class="css"><span class="xml">    <span class="hljs-attribute">border</span>: none <span class="hljs-meta">!important</span>;</span></span>
+<span class="css"><span class="xml">    <span class="hljs-attribute">background-color</span>: transparent <span class="hljs-meta">!important</span>;</span></span>
+<span class="css"><span class="xml">  &#125;</span></span>
+<span class="css"><span class="xml"></span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span></span></code></pre></div>
+
+<p>使用时：</p>
+<div class="code-wrapper"><pre><code class="hljs dust"><span class="xml">import TransverseTable from &quot;@/components/TransverseTable&quot;;</span>
+<span class="xml"></span>
+<span class="xml">components:</span><span class="hljs-template-variable">&#123;TransverseTable&#125;</span><span class="xml"></span>
+<span class="xml"></span>
+<span class="xml"></span>
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">transverse-table</span></span></span>
+<span class="hljs-tag"><span class="xml">  <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;transverseTable&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">  <span class="hljs-attr">:columnNum</span>=<span class="hljs-string">&quot;4&quot;</span></span></span>
+<span class="hljs-tag"><span class="xml">  <span class="hljs-attr">:tableData</span>=<span class="hljs-string">&quot;[</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,</span></span></span>
+<span class="hljs-string"><span class="hljs-tag"><span class="xml">  </span></span></span><span class="hljs-template-variable">&#123;key:&#x27;测试&#x27;,value: 1&#125;</span><span class="xml"><span class="hljs-tag"><span class="hljs-string">,]&quot;</span>&gt;</span></span>
+<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">transverse-table</span>&gt;</span></span>
+<span class="xml"></span>
+<span class="xml"></span>
+<span class="xml">在父组件里,动态获取数据时需要调用下this.$refs.transverseTable.setTable() 来渲染数据</span></code></pre></div>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Vue/">Vue</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Element-UI/">Element UI</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/09/15/%E9%85%8D%E7%BD%AE%E6%8E%A5%E5%8F%A3%E8%BD%AC%E5%8F%91/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">windows下安装nginx配置接口转发</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/09/Element-UI-%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%8B%E6%8B%89%E6%A1%86%E7%BB%84%E4%BB%B6/">
+                        <span class="hidden-mobile">Element UI 自定义下拉框组件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

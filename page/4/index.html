@@ -1,0 +1,905 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Wenkil的开发笔记">
+<meta property="og:url" content="http://example.com/page/4/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 100vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="The sun also rises.">
+              
+            </span>
+
+            
+          </div>
+
+          
+            <div class="scroll-down-bar">
+              <i class="iconfont icon-arrowdown"></i>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          style=margin-top:0>
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2020/05/10/js-%E6%95%B0%E6%8D%AE%E6%8B%B7%E8%B4%9D%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" target="_self">
+          js 数据拷贝的几种方式
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2020/05/10/js-%E6%95%B0%E6%8D%AE%E6%8B%B7%E8%B4%9D%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" target="_self">
+          
+          
+            
+          
+          js 数据拷贝的几种方式
+JSON.parse(JSON.stringify(obj))
+Object.assign({},obj)
+_.cloneDeep(obj1)
+{…obj }
+
+let obj = &#123;
+  a:1,
+  b:&#123;
+    m:2
+  &#125;,
+  c:[1,1,1],
+  d:null,
+  e:()=&gt;&#123;
+    return 1
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-05-10 14:01" pubdate>
+              2020-05-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JavaScript/">JavaScript</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2020/04/24/nginx%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" target="_self">
+          nginx常用命令
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2020/04/24/nginx%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" target="_self">
+          
+          
+            
+          
+          常用命令启动nginx: start nginx
+nginx -s reload  ：修改配置后重新加载生效
+
+nginx -s reopen  ：重新打开日志文件
+
+nginx -t -c /path/to/nginx.conf 测试nginx配置文件是否正确
+
+关闭nginx：
+nginx -s stop  :快速停止nginx
+
+nginx -s quit  ：完整有序的停止nginx
+li
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-04-24 19:12" pubdate>
+              2020-04-24
+            </time>
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Nginx/">Nginx</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/06/06/Unity-AssetBundle%E4%B8%80%E9%94%AE%E5%91%BD%E5%90%8D%E5%B9%B6%E6%89%93%E5%8C%85/" target="_self">
+          Unity AssetBundle一键命名并打包
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/06/06/Unity-AssetBundle%E4%B8%80%E9%94%AE%E5%91%BD%E5%90%8D%E5%B9%B6%E6%89%93%E5%8C%85/" target="_self">
+          
+          
+            
+          
+          代码将脚本放在项目里Editor文件夹下，设置好要打包的预制体的文件夹路径和打包出来的资源包路径，就可以一键完成预制体的命名和打包
+using UnityEngine;
+using System.Collections;
+using UnityEditor;
+using System.IO;
+
+/// &lt;summary&gt;
+/// 先指定要打包的文件夹，点击后会把整个文件夹里东西自动命名
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-06-06 12:24" pubdate>
+              2018-06-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">C#</a>
+            
+              <a href="/tags/Unity/">Unity</a>
+            
+              <a href="/tags/AssetBundle/">AssetBundle</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/05/23/Xlua-%E6%89%93%E8%A1%A5%E4%B8%81%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" target="_self">
+          Xlua 打补丁流程实验记录
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/05/23/Xlua-%E6%89%93%E8%A1%A5%E4%B8%81%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" target="_self">
+          
+          
+            
+          
+          概述首先将xLua-master里的Assets文件夹下的四个文件夹导入到unity项目里，然后在PlayerSetting里面添加HOTFIX_ENABLE宏。xlua还需要依赖unity的cecil的dll程序集，这个需要到unity的安装目录下去复制。具体是在安装文件夹下的Editor\Data\Managed下，分别是：Unity.Cecil.dll，Unity.Cecil.Mdb.dll
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-05-23 14:37" pubdate>
+              2018-05-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Unity/">Unity</a>
+            
+              <a href="/tags/Xlua/">Xlua</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/05/04/Xlua%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" target="_self">
+          Xlua学习记录
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/05/04/Xlua%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" target="_self">
+          
+          
+            
+          
+          下载Xlua在github上下载xlua之后，将 xlua-master/Assets下的内容拷贝到我们的工程里，如图所示：
+执行字符串：执行时直接使用luaEnv.DoString方法来执行lua的操作
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using XLua;
+public
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-05-04 09:35" pubdate>
+              2018-05-04
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Unity/">Unity</a>
+            
+              <a href="/tags/Xlua/">Xlua</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/05/02/Unity%E4%B8%AD%E8%A7%A3%E6%9E%90xml%E6%96%87%E6%A1%A3%E7%9A%84%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95/" target="_self">
+          Unity中解析xml文档的简单用法
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/05/02/Unity%E4%B8%AD%E8%A7%A3%E6%9E%90xml%E6%96%87%E6%A1%A3%E7%9A%84%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95/" target="_self">
+          
+          
+            
+          
+          创建Xml文件首先，在unity项目中的根目录中创建一个xml文档，例如起名叫item.xml。再创建一个脚本，起名为XmlTest。如图所示：
+
+在item.xml文档中写入以下内容：
+&lt;item&gt;
+    &lt;item1&gt;
+      &lt;id&gt;1&lt;/id&gt;
+      &lt;name&gt;china&lt;/name&gt;
+      &lt
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-05-02 16:20" pubdate>
+              2018-05-02
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">C#</a>
+            
+              <a href="/tags/Unity/">Unity</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/04/12/NHbiernate%E6%98%A0%E5%B0%84%E5%B7%A5%E5%85%B7%E8%BF%9E%E6%8E%A5MySQL%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BD%BF%E7%94%A8/" target="_self">
+          NHbiernate映射工具连接MySQL的基本配置及使用
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/04/12/NHbiernate%E6%98%A0%E5%B0%84%E5%B7%A5%E5%85%B7%E8%BF%9E%E6%8E%A5MySQL%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BD%BF%E7%94%A8/" target="_self">
+          
+          
+            
+          
+          NHbiernate介绍NHibernate是一个面向.NET环境的对象/关系数据库映射工具。对象/关系数据库映射（object/relational mapping，ORM）这个术语表示一种技术，用来把对象模型表示的对象映射到基于SQL的关系模型数据结构中去。
+基本配置NHbiernate基本配置
+
+新建一个项目取名为NHibernateTest，项目中添加MySQL.Data和NHbierna
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-04-12 16:28" pubdate>
+              2018-04-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">C#</a>
+            
+              <a href="/tags/MySql/">MySql</a>
+            
+              <a href="/tags/NHbiernate/">NHbiernate</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/04/12/C-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" target="_self">
+          C#连接数据库初学笔记
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/04/12/C-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" target="_self">
+          
+          
+            
+          
+          打开解决方案，首先添加MySQL文件目录下的Mysql.data的引用，写入以下代码：此脚本最后会打印出要查询的表里的所有数据，要保证数据库名，和用户名密码都正确才可以，不然会报错
+查询using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threadin
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-04-12 14:59" pubdate>
+              2018-04-12
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/C/">C#</a>
+            
+              <a href="/tags/MySql/">MySql</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/04/10/Unity%E5%B1%95%E7%A4%BA%E9%BC%A0%E6%A0%87%E6%BB%9A%E5%8A%A8%E6%95%88%E6%9E%9C/" target="_self">
+          Unity展示鼠标滚动效果
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/04/10/Unity%E5%B1%95%E7%A4%BA%E9%BC%A0%E6%A0%87%E6%BB%9A%E5%8A%A8%E6%95%88%E6%9E%9C/" target="_self">
+          
+          
+            
+          
+          鼠标操作物体旋转做3D展示，以及滚轮滑动远近距离观察功能以下脚本挂在物体上，把场景中相机给到变量中
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+public class test : MonoBehaviour
+&#123;
+    public Camera cam;
+    pub
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-04-10 15:46" pubdate>
+              2018-04-10
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Unity/">Unity</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2018/04/08/DOTween%E6%8F%92%E4%BB%B6%E5%AD%A6%E4%B9%A0/" target="_self">
+          DOTween插件学习
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2018/04/08/DOTween%E6%8F%92%E4%BB%B6%E5%AD%A6%E4%B9%A0/" target="_self">
+          
+          
+            
+          
+          脚本1挂在场景物体上,使物体移动的方法
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using DG.Tweening;//using DoTween的命名空间
+public class test_one : MonoBehaviour &#123;
+    public Vector
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2018-04-08 14:42" pubdate>
+              2018-04-08
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Unity/">Unity</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/page/3/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/#board">5</a><a class="page-number" href="/page/6/#board">6</a><a class="extend next" rel="next" href="/page/5/#board"><i class="iconfont icon-arrowright"></i></a>
+    </span>
+  </nav>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="概述首先将xLua-master里的Assets文件夹下的四个文件夹导入到unity项目里，然后在PlayerSetting里面添加HOTFIX_ENABLE宏。xlua还需要依赖unity的cecil的dll程序集，这个需要到unity的安装目录下去复制。具体是在安装文件夹下的Editor\Data\Managed下，分别是：Unity.Cecil.dll，Unity.Cecil.Mdb.dll">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xlua 打补丁流程实验记录">
+<meta property="og:url" content="http://example.com/2018/05/23/Xlua-%E6%89%93%E8%A1%A5%E4%B8%81%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="概述首先将xLua-master里的Assets文件夹下的四个文件夹导入到unity项目里，然后在PlayerSetting里面添加HOTFIX_ENABLE宏。xlua还需要依赖unity的cecil的dll程序集，这个需要到unity的安装目录下去复制。具体是在安装文件夹下的Editor\Data\Managed下，分别是：Unity.Cecil.dll，Unity.Cecil.Mdb.dll">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-05-23T06:37:06.000Z">
+<meta property="article:modified_time" content="2022-01-24T06:07:34.981Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Unity">
+<meta property="article:tag" content="Xlua">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>Xlua 打补丁流程实验记录 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Xlua 打补丁流程实验记录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-05-23 14:37" pubdate>
+        2018年5月23日 14:37:06
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Xlua 打补丁流程实验记录</h1>
+            
+            <div class="markdown-body">
+              <h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>首先将xLua-master里的Assets文件夹下的四个文件夹导入到unity项目里，然后在PlayerSetting里面添加HOTFIX_ENABLE宏。<br>xlua还需要依赖unity的cecil的dll程序集，这个需要到unity的安装目录下去复制。<br>具体是在安装文件夹下的Editor\Data\Managed下，分别是：Unity.Cecil.dll，Unity.Cecil.Mdb.dll和Unity.Cecil.Pdb.dll这三个，把他们复制到XLua\Src\Editor文件夹下。<br>最后再将xLua-master下的Tools文件夹整个复制到项目根目录下面，和Assets保持同级，到这里整个xlua环境就配置好了。</p>
+<h3 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1"></a>步骤1</h3><p>新建一个场景，随便建一个物体当做玩家，然后新建脚本命名为BoxPlayer，写入以下代码</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using XLua;
+
+
+[Hotfix]
+public class BoxPlayer : MonoBehaviour &#123;
+    public float moveSpeed;
+       void Start () &#123;
+       
+    &#125;
+       
+       // Update is called once per frame
+       void Update () &#123;
+        PlayerMoveTest();
+    &#125;
+    [LuaCallCSharp]
+    private void PlayerMoveTest()
+    &#123;
+        transform.Translate(transform.forward * moveSpeed * Time.deltaTime,Space.World);
+    &#125;
+&#125;</code></pre></div>
+
+<h4 id="逻辑讲解"><a href="#逻辑讲解" class="headerlink" title="逻辑讲解"></a>逻辑讲解</h4><p>首先是using XLua,然后将这个类打上Hotfix标签，代表这个类是要打补丁的。<br>然后在需要打补丁的方法上打一个标签[LuaCallCSharp]。<br>运行场景，这个物体会向前方运动, (场景中public的moveSpeed的速度是5)<br>然后在场景里新建一个StreamingAssets的文件夹, 在这个文件夹下创建一个文本文档：Hotfix.lua.txt 一定要以.lua.txt结尾。</p>
+<p>lua里面调用c#方法需要CS开头来引用unity里面的类和方法，如果不是静态方法，比如transform.TransLate(….);<br>在lua里不能这样直接点出来，需要冒号来引用，self.transform:Translate（…..），<br>比如transform.GetComponent<GameObject>()….在lua里也是要换成冒号，并且不能使用&lt;&gt;的方式来获取组件。需要通过transform : GameObject（“GameObject”）的方式来获取。<br>如果是静态方法，比如说Time.deltaTime,可以直接使用CS.UnityEngine的命名空间来点出来。<br>另外xlua.hotfix（a,’b’,c）这种写法，里面的内容分别代表：a，要更改的C#脚本的脚本名；b,要更改的这个里面的方法名，需要单引号括起来；c,要替换的lua方法</p>
+<div class="code-wrapper"><pre><code class="hljs c#">print(&#x27;执行更改&#x27;)
+xlua.hotfix(CS.BoxPlayer,&#x27;PlayerMoveTest&#x27;,function(self)
+       self.transform:Translate(self.transform.right *CS.UnityEngine.Time.deltaTime *15)
+       self.transform:GetComponent(&quot;MeshRenderer&quot;).material.color =CS.UnityEngine. Color.black
+end)</code></pre></div>
+
+<p>然后新建一个脚本Hotfix脚本挂在相机上，写入以下代码：</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+using XLua;
+public class HotFixScript : MonoBehaviour &#123;
+    LuaEnv LuaEnv = new LuaEnv();
+       void Start () &#123;
+        LuaEnv.AddLoader(MyLoder);
+        LuaEnv.DoString(&quot;require&#x27;Hotfix&#x27;&quot;);
+       &#125;
+       
+       public  byte[]MyLoder(ref string file)
+    &#123;
+        string path = Application.streamingAssetsPath + &quot;/&quot; + file + &quot;.lua.txt&quot;;
+        return System.Text.Encoding.UTF8.GetBytes(File.ReadAllText(path));
+    &#125;
+    private void OnDisable()
+    &#123;
+        LuaEnv.DoString(&quot;require&#x27;callback&#x27;&quot;);
+    &#125;
+    private void OnDestroy()
+    &#123;
+        LuaEnv.Dispose();
+    &#125;
+    void Update () &#123;
+              
+       &#125;
+&#125;</code></pre></div>
+
+<h3 id="逻辑讲解-1"><a href="#逻辑讲解-1" class="headerlink" title="逻辑讲解"></a>逻辑讲解</h3><p>首先是LuaEnv,这个是Xlua的一个入口，通过实例化它来执行操作，然后执行自己的lua文本时需要自定义Loder，来让LuaEnv根据自定义的Loder里面的路径来寻找自己创建的lua文本，否则找不到。然后在销毁这个组件时，关闭luaenv的实例化。<br>在Start里面LuaEnv.DoString(“require’Hotfix’”);就是执行的刚刚创建的Hotfix.lua.txt里面的代码。<br>这个时候点击运行场景，会发现物体的颜色变成了黑色，然后运动也不是向前运动而是向右，速度也从5变成了15。</p>
+<p>另外，在lua更改了unity里面的方法，需要在结束运行时，取消对此方法的更改，否则会报错，更改方式就是，在OnDisable里面执行另一个lua文档，里面写一句话就可以：xlua.hotfix(CS.BoxPlayer,’PlayerMoveTest’,nil) </p>
+<h4 id="以上就完成了一个Xlua更改C-执行方法的演示示例。"><a href="#以上就完成了一个Xlua更改C-执行方法的演示示例。" class="headerlink" title="以上就完成了一个Xlua更改C#执行方法的演示示例。"></a>以上就完成了一个Xlua更改C#执行方法的演示示例。</h4><h3 id="继续学习"><a href="#继续学习" class="headerlink" title="继续学习"></a>继续学习</h3><p>如果只需要更改速度，不更改其他方法，比如速度的变量moveSpeed是私有的并且在c#脚本里赋值为5 了，在lua里面可以这样写：</p>
+<div class="code-wrapper"><pre><code class="hljs lua">xlua.private_accessible(CS.BoxPlayer)
+xlua.hotfix(CS.BoxPlayer,<span class="hljs-string">&#x27;Start&#x27;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(self)</span></span>
+       <span class="hljs-built_in">self</span>.moveSpeed = <span class="hljs-number">15</span>;
+<span class="hljs-keyword">end</span>)</code></pre></div>
+
+<p>xlua.private_accessible(CS.BoxPlayer)就是获取指定类里的私有变量的方式，但是执行LuaEnv.DoString(“require’Hotfix’”);的方法必须放到游戏一开始的Awake里执行，因为修改的是Start，所以有这个先后顺序需要注意。<br>但是如果Start里面不止这一个变量，但是只需要更改某个变量时，其他不变时，岂不是要写很多代码，xlua考虑到这一点，也做了一个方式，就是引用一个lua库：uitl.lua.txt。<br>具体位置是在XLua\Resources\xlua文件夹下，把它复制到和自己写的lua文本一个目录下就可以了。</p>
+<div class="code-wrapper"><pre><code class="hljs lua"><span class="hljs-keyword">local</span> util=<span class="hljs-built_in">require</span> <span class="hljs-string">&#x27;util&#x27;</span>
+
+xlua.private_accessible(CS.BoxPlayer)
+util.hotfix_ex(CS.BoxPlayer,<span class="hljs-string">&#x27;Start&#x27;</span>,<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(self)</span></span>
+       <span class="hljs-built_in">self</span>.Start(<span class="hljs-built_in">self</span>)
+       <span class="hljs-built_in">self</span>.moveSpeed=<span class="hljs-number">15</span>
+<span class="hljs-keyword">end</span>)</code></pre></div>
+
+<p>这样是和上面一样的效果，重点就是local util=require ‘util’有了它才可以更改C#方法里的部分逻辑和变量。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/">游戏开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Unity/">Unity</a>
+                    
+                      <a class="hover-with-bg" href="/tags/Xlua/">Xlua</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/06/06/Unity-AssetBundle%E4%B8%80%E9%94%AE%E5%91%BD%E5%90%8D%E5%B9%B6%E6%89%93%E5%8C%85/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Unity AssetBundle一键命名并打包</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/05/04/Xlua%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/">
+                        <span class="hidden-mobile">Xlua学习记录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

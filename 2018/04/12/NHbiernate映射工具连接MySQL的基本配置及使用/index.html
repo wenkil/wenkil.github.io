@@ -1,0 +1,891 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="NHbiernate介绍NHibernate是一个面向.NET环境的对象&#x2F;关系数据库映射工具。对象&#x2F;关系数据库映射（object&#x2F;relational mapping，ORM）这个术语表示一种技术，用来把对象模型表示的对象映射到基于SQL的关系模型数据结构中去。 基本配置NHbiernate基本配置  新建一个项目取名为NHibernateTest，项目中添加MySQL.Data和NHbierna">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NHbiernate映射工具连接MySQL的基本配置及使用">
+<meta property="og:url" content="http://example.com/2018/04/12/NHbiernate%E6%98%A0%E5%B0%84%E5%B7%A5%E5%85%B7%E8%BF%9E%E6%8E%A5MySQL%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="NHbiernate介绍NHibernate是一个面向.NET环境的对象&#x2F;关系数据库映射工具。对象&#x2F;关系数据库映射（object&#x2F;relational mapping，ORM）这个术语表示一种技术，用来把对象模型表示的对象映射到基于SQL的关系模型数据结构中去。 基本配置NHbiernate基本配置  新建一个项目取名为NHibernateTest，项目中添加MySQL.Data和NHbierna">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n1.png">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n2.png">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n3.png">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n4.png">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n5.png">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n6.png">
+<meta property="og:image" content="http://example.com/img/blog/nhbinate/n7.png">
+<meta property="article:published_time" content="2018-04-12T08:28:57.000Z">
+<meta property="article:modified_time" content="2022-01-24T06:07:34.977Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="C#">
+<meta property="article:tag" content="MySql">
+<meta property="article:tag" content="NHbiernate">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/nhbinate/n1.png">
+  
+  <title>NHbiernate映射工具连接MySQL的基本配置及使用 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="NHbiernate映射工具连接MySQL的基本配置及使用">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2018-04-12 16:28" pubdate>
+        2018年4月12日 16:28:57
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      12k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">NHbiernate映射工具连接MySQL的基本配置及使用</h1>
+            
+            <div class="markdown-body">
+              <h2 id="NHbiernate介绍"><a href="#NHbiernate介绍" class="headerlink" title="NHbiernate介绍"></a>NHbiernate介绍</h2><p>NHibernate是一个面向.NET环境的对象/关系数据库映射工具。对象/关系数据库映射（object/relational mapping，ORM）这个术语表示一种技术，用来把对象模型表示的对象映射到基于SQL的关系模型数据结构中去。</p>
+<h2 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h2><p>NHbiernate基本配置</p>
+<ol>
+<li>新建一个项目取名为NHibernateTest，项目中添加MySQL.Data和NHbiernate的引用。</li>
+</ol>
+<ol start="2">
+<li>在项目下创建一个XML文件，必须叫hibernate.cfg.xml ，因为NHbiernate会在根目录下找这个名字的xml文件，如果不叫这个名字会报错。并把该文件的属性设置 为始终复制。<br>在官网上找到以下代码，打开这个xml文件进行编辑：<br>官网是连的SQL Server, 这里连得是MySQL, 所以更改一下, 这里主要设置了第二行的MySQL5Dialect，和第三行的MySQLDataDriver，第四行的Server=localhost;Database=sikidb;User ID=root;Password=zzzzz;  注意一定把要访问的数据库名和用户名密码写正确。</li>
+</ol>
+<div class="code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">hibernate-configuration</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;urn:nhibernate-configuration-2.2&quot;</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">session-factory</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;connection.provider&quot;</span>&gt;</span>NHibernate.Connection.DriverConnectionProvider<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dialect&quot;</span>&gt;</span>NHibernate.Dialect.MySQL5Dialect<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;connection.driver_class&quot;</span>&gt;</span>NHibernate.Driver.MySqlDataDriver<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;connection.connection_string&quot;</span>&gt;</span>Server=localhost;Database=sikidb;User ID=root;Password=zzzzz;<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;show_sql&quot;</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">session-factory</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">hibernate-configuration</span>&gt;</span></code></pre></div>
+
+<ol start="3">
+<li>再新建一个Model文件夹，在这个文件夹下新建一个User类,把数据库中对应的表中的每行的数据名创建成每个变量，如下:<br>user表里有四列数据就写四个对应的变量，一定要是virtual 类型的，这是NHbiernate要求写法。</li>
+</ol>
+<p><img src="/img/blog/nhbinate/n1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/img/blog/nhbinate/n2.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="4">
+<li>在项目下在创建一个Mappings文件夹，在这个文件夹下创建一个User.hbm.xml命名的xml文件，并把它的属性里的生成操作改为嵌入的资源。打开编辑一下代码:</li>
+</ol>
+<div class="code-wrapper"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">hibernate-mapping</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;urn:nhibernate-mapping-2.2&quot;</span></span>
+<span class="hljs-tag">                   <span class="hljs-attr">assembly</span>=<span class="hljs-string">&quot;NHibernateTest&quot;</span></span>
+<span class="hljs-tag">                   <span class="hljs-attr">namespace</span>=<span class="hljs-string">&quot;NHibernateTest.Model&quot;</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">class</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;User&quot;</span> <span class="hljs-attr">table</span> =<span class="hljs-string">&quot;users&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">id</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Id&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;id&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;Int32&quot;</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">generator</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;native&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">generator</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Username&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;String&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Password&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;String&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;Registerdate&quot;</span> <span class="hljs-attr">column</span>=<span class="hljs-string">&quot;registerdate&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;Date&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">class</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">hibernate-mapping</span>&gt;</span></code></pre></div>
+
+<p>这里主要是配置NHbiernate的映射，数据库里的表的每行数据名和类型都要正确填写，主键要多设置一行自动增长    <generator class="native"></generator>，以下是数据库每行数据名和类型:</p>
+<p><img src="/img/blog/nhbinate/n3.png" srcset="/img/loading.gif" lazyload></p>
+<p>到这里就基本配置完成了，下图是各个文件目录:</p>
+<p><img src="/img/blog/nhbinate/n4.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p>在主函数里写下以下代码，测试一下NHbiernate连接MySql增加数据的功能</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernateTest.Model;//引入自己创建的目录下的类
+namespace NHibernateTest
+&#123;
+    class Program
+    &#123;
+        static void Main(string[] args)
+        &#123;
+            var config = new Configuration();
+            config.Configure();//开始解析文件hibernate.cfg.xml
+            config.AddAssembly(&quot;NHibernateTest&quot;);
+            ISessionFactory sessionFactory = null;
+            ISession session = null;
+            try
+            &#123;
+                sessionFactory = config.BuildSessionFactory();
+                session = sessionFactory.OpenSession();//打开一个跟数据库的会话
+                User user = new User() &#123; Username = &quot;vvvv&quot;, Password = &quot;121212&quot; &#125;;
+                session.Save(user);//NHibernate里面的增加数据的方式,Session实例由ISessionFactory构建
+                //Session是Hibernate持久化操作的基础，提供了众多持久化方法，如save、update、delete等。通过这些方法，透明地完成对象的增加、删除、修改、查找等操作。
+            &#125;
+            catch (Exception e)
+            &#123;
+                Console.WriteLine(e);
+            &#125;
+            finally
+            &#123;
+                if (session != null)
+                &#123;
+                    session.Close();
+                &#125;
+                if (sessionFactory != null)
+                &#123;
+                    sessionFactory.Close();
+                &#125;
+            &#125;
+            Console.ReadKey();
+        &#125;
+    &#125;
+&#125;</code></pre></div>
+<h4 id="运行前后对比"><a href="#运行前后对比" class="headerlink" title="运行前后对比"></a>运行前后对比</h4><p>这张图是以上代码没有运行前数据库中的user表里的数据：</p>
+<p><img src="/img/blog/nhbinate/n5.png" srcset="/img/loading.gif" lazyload></p>
+<p>这个是运行后，数据库的数据，可以看到在最后增加了一条Username = “vvvv”, Password = “121212”，的数据：</p>
+<p><img src="/img/blog/nhbinate/n6.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h4><p>删除的不能直接使用session.Delete(user) ，百度了一下这段话: delete()方法用于从数据库中删除与Java对象对应的记录。如果传入的参数是持久化对象，Session就计划执行一个delete语句。如果传入的参数是游离对象，先使游离对象被Session关联，使它变为持久化对象，然后计划执行一个delete语句。值得注意的是，Session只有在清理缓存的时候的才执行delete语句。此外，只有当调用Session的close()方法时，才会从Session的缓存中删除该对象。需要先清理缓存，才可以执行删除：</p>
+<div class="code-wrapper"><pre><code class="hljs c#">try
+&#123;
+    sessionFactory = config.BuildSessionFactory();
+    session = sessionFactory.OpenSession();//打开一个跟数据库的会话
+    ITransaction transaction = session.BeginTransaction();//开启事务。删除的话需要写上这一句话，在提交事务时才可以删掉，不写的话，控制台不报任何错误，但是也没有删掉数据
+    User user = new User() &#123;Id=18&#125;;
+    session.Delete(user);
+    transaction.Commit();// 提交事务,清理缓存，执行delete语句 
+&#125;
+catch (Exception e)
+&#123;
+    Console.WriteLine(e);
+&#125;
+finally
+&#123;
+    if (session != null)
+    &#123;
+        session.Close();
+    &#125;
+    if (sessionFactory != null)
+    &#123;
+        sessionFactory.Close();
+    &#125;
+&#125;</code></pre></div>
+
+<p>siki视频中的利用NHbiernate事务机制来增加和删除：<br>关于关闭这些需要注意，先开启的后关闭，后开启的先关闭</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernateTest.Model;//引入自己创建的目录下的类
+namespace NHibernateTest
+&#123;
+    class Program
+    &#123;
+        static void Main(string[] args)
+        &#123;
+            var config = new Configuration();
+            config.Configure();//开始解析文件hibernate.cfg.xml
+            config.AddAssembly(&quot;NHibernateTest&quot;);
+            ISessionFactory sessionFactory = null;
+            ISession session = null;
+            ITransaction transaction = null;
+            try
+            &#123;
+                sessionFactory = config.BuildSessionFactory();
+                session = sessionFactory.OpenSession();//打开一个跟数据库的会话
+                transaction = session.BeginTransaction();//注册事务
+                User user = new User() &#123; Username = &quot;qwrrtu&quot;, Password = &quot;131313&quot; &#125;;
+                User user1 = new User() &#123; Id = 26 &#125;; //删除操作，只给主键值就可以了
+                session.Save(user);
+                session.Delete(user1);
+                transaction.Commit();//开启事务
+            &#125;
+            catch (Exception e)
+            &#123;
+                Console.WriteLine(e);
+            &#125;
+            finally //关于关闭这些需要注意，先开启的后关闭，后开启的先关闭
+            &#123;
+                if (transaction != null)
+                &#123;
+                    transaction.Dispose();
+                &#125;
+                if (session != null)
+                &#123;
+                    session.Close();
+                &#125;
+                if (sessionFactory != null)
+                &#123;
+                    sessionFactory.Close();
+                &#125;
+            &#125;
+            Console.ReadKey();
+        &#125;
+    &#125;
+&#125;</code></pre></div>
+
+<hr>
+<h2 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h2><p>以上就是基本写法，但是由于执行增删改查时频繁的使用ISessionFactory来创建会话，所以封装一个类来创建会话，需要执行这些操作的时候直接引用这个管理类里面的方法就可以了: </p>
+<h3 id="1"><a href="#1" class="headerlink" title="1."></a>1.</h3><p>首先添加一个类,命名为NHibernateHelper ,添加以下代码：(在这里进行创建会话，不用每次使用时都新开一个会话)</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernate.Criterion;
+namespace NHibernateTest
+&#123;
+    public class NHibernateHelper
+    &#123;
+        private static ISessionFactory _sessionFactory;
+        public static ISessionFactory SessionFactory
+        &#123;
+            get
+            &#123;
+                if (_sessionFactory == null)
+                &#123;
+                    var config = new Configuration();
+                    config.Configure();//开始解析文件hibernate.cfg.xml
+                    config.AddAssembly(&quot;NHibernateTest&quot;);
+                    _sessionFactory = config.BuildSessionFactory();
+                &#125;
+                return _sessionFactory;
+            &#125;
+        &#125;
+        public static ISession OpenSession()
+        &#123;
+            return SessionFactory.OpenSession();
+        &#125;
+    &#125;
+&#125;</code></pre></div>
+
+<h3 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h3><p>在目录下创建一个叫Manager的文件夹，添加一个接口，命名为IUsermanager ，写入以下代码：<br>(这里定义了一些增删改查的方法，和通过ID查询用户数据的复杂查询方法，和验证用户名密码是否存在的方法)</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NHibernateTest.Model;
+namespace NHibernateTest.Manager
+&#123;
+    public interface IUserManager
+    &#123;
+        /// &lt;summary&gt;
+        /// 添加数据
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;user&quot;&gt;User表中的数据&lt;/param&gt;
+        void Add(User user);
+        /// &lt;summary&gt;
+        /// 更新数据
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;user&quot;&gt;User表中的数据&lt;/param&gt;
+        void Updata(User user);
+        /// &lt;summary&gt;
+        /// 删除某条指定数据
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;user&quot;&gt;User表中的数据&lt;/param&gt;
+        void Delete(User user);
+        /// &lt;summary&gt;
+        /// 通过用户ID查询数据
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;id&quot;&gt;&lt;/param&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        User GetUserById(int id);
+        /// &lt;summary&gt;
+        /// 通过用户名查询数据
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;username&quot;&gt;&lt;/param&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        User GetUserByUsername(string username);
+        /// &lt;summary&gt;
+        /// 查询表中所有数据
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        ICollection&lt;User&gt; GetAllUsers();
+        /// &lt;summary&gt;
+        /// 验证用户名密码是否存在
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;username&quot;&gt;用户名&lt;/param&gt;
+        /// &lt;param name=&quot;password&quot;&gt;密码&lt;/param&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        bool VerifyUser(string username, string password);
+    &#125;
+&#125;</code></pre></div>
+
+
+<h3 id="3"><a href="#3" class="headerlink" title="3."></a>3.</h3><p>在这个文件夹下，再添加一个叫Usermanager的类，继承自IUsermanager这个接口，写入以下代码</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NHibernateTest.Model;
+using NHibernate;
+using NHibernate.Criterion;
+namespace NHibernateTest.Manager
+&#123;
+    public class UserManager : IUserManager
+    &#123;
+        public void Add(User user)
+        &#123;
+            //第一种写法：
+            //ISession session = NHibernateHelper.OpenSession();
+            //session.Save(user);
+            //session.Close();
+            //第二种写法：
+            //Using语句意思是在大括号里的代码执行完以后释放小括号里面的资源
+            //使用using，定义范围，在该范围结束时回收资源。功能等同于try&#123; &#125;Finally&#123; &#125;。
+            using (ISession session = NHibernateHelper.OpenSession()) //下面的代码执行完会在这路关闭session
+            &#123;
+                using(ITransaction transaction = session.BeginTransaction())
+                &#123;
+                    session.Save(user);
+                          transaction.Commit();//开启事务,执行完以后才会在using里关闭
+                &#125;
+               
+            &#125;
+        &#125;
+        public void Delete(User user)
+        &#123;
+            using (ISession session = NHibernateHelper.OpenSession())
+            &#123;
+                using (ITransaction transaction = session.BeginTransaction())
+                &#123;
+                    session.Delete(user);
+                          transaction.Commit();
+                &#125;
+            &#125;
+        &#125;
+        public void Updata(User user)
+        &#123;
+            using (ISession session = NHibernateHelper.OpenSession())
+            &#123;
+                using (ITransaction transaction = session.BeginTransaction())
+                &#123;
+                    session.Update(user);
+                          transaction.Commit();
+                &#125;
+            &#125;
+        &#125;
+        public User GetUserById(int id)
+        &#123;
+            using (ISession session = NHibernateHelper.OpenSession())
+            &#123;
+                using (ITransaction transaction = session.BeginTransaction())
+                &#123;
+                    User user = session.Get&lt;User&gt;(id);
+                          transaction.Commit();
+                    return user;//获取到user里的id后返回
+                &#125;
+            &#125;
+        &#125;
+       
+        public ICollection&lt;User&gt; GetAllUsers()
+        &#123;
+            using (ISession session = NHibernateHelper.OpenSession())
+            &#123;
+                IList&lt;User&gt; users = session.CreateCriteria(typeof(User)).List&lt;User&gt;();//返回User里的多个值，就不能用UniqueResult了
+                return users;
+            &#125;
+        &#125;
+        public User GetUserByUsername(string username)
+        &#123;
+            using(ISession session = NHibernateHelper.OpenSession())
+            &#123;
+                //第一种写法：
+                //CreateCriteria方法是指定要查询哪个表格，接收类型参数,把user这个类型传给他就可以了
+                //ICriteria criteria = session.CreateCriteria(typeof(User));
+                //criteria.Add(Restrictions.Eq(&quot;Username&quot;, username));//Restrictions.Eq 等于的意思
+                //User user = criteria.UniqueResult&lt;User&gt;();//UniqueResult 这里只返回一个值
+                //第一种的简写方式:
+                User user = session.CreateCriteria(typeof(User)).Add(Restrictions.Eq(&quot;Username&quot;, username)).UniqueResult&lt;User&gt;();
+                return user;
+            &#125;
+        &#125;
+        public bool VerifyUser(string username, string password)
+        &#123;
+            using (ISession session = NHibernateHelper.OpenSession())
+            &#123;
+                //和通过用户名查询数据类似，这里多加一个密码条件就可以了
+                User user = session.CreateCriteria(typeof(User)) .Add(Restrictions.Eq(&quot;Username&quot;, username)) .Add(Restrictions.Eq(&quot;Password&quot;, password)) .UniqueResult&lt;User&gt;();
+                if (user == null)
+                &#123;
+                    return false;
+                &#125;
+                return true;
+            &#125;
+        &#125;
+    &#125;
+&#125;</code></pre></div>
+
+<h3 id="4"><a href="#4" class="headerlink" title="4."></a>4.</h3><p>最后在主函数里进行测试这些封装的方法</p>
+<div class="code-wrapper"><pre><code class="hljs c#">using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernateTest.Model;
+using NHibernateTest.Manager;
+namespace NHibernateTest
+&#123;
+    class Program
+    &#123;
+        static void Main(string[] args)
+        &#123;
+            //添加数据
+            //UserManager userManager = new UserManager();
+            //User user = new User &#123; Username = &quot;mmmm&quot;, Password = &quot;00000&quot; &#125;;
+            //userManager.Add(user);
+            //更新数据
+            //UserManager userManager = new UserManager();
+            //User user = new User &#123; Id=29 , Username=&quot;哈哈&quot;,Password=&quot;0000123&quot; &#125;;
+            //userManager.Updata(user);
+            //删除数据
+            //UserManager userManager = new UserManager();
+            //User user = new User &#123; Id = 29&#125;;
+            //userManager.Delete(user);
+            //根据用户ID查询数据
+            //UserManager userManager = new UserManager();
+            //User user = userManager.GetUserById(11);
+            //Console.WriteLine(user.Username+&quot; &quot;+user.Password);
+            //根据用户名查询数据
+            //UserManager userManager = new UserManager();
+            //User user = userManager.GetUserByUsername(&quot;wer23&quot;);
+            //Console.WriteLine(user.Id + &quot; &quot; + user.Password);
+            //查询表里的所有数据
+            //UserManager userManager = new UserManager();
+            //ICollection&lt;User&gt; users = userManager.GetAllUsers();
+            //foreach (var item in users)
+            //&#123;
+            //    Console.WriteLine(item.Id+&quot; &quot;+item.Username+&quot; &quot;+item.Password);
+            //&#125;
+            //验证用户名密码是否存在
+            UserManager userManager = new UserManager();
+            Console.WriteLine(userManager.VerifyUser(&quot;wer&quot;,&quot;123&quot;));//如果存在返回true,不存在返回fasle
+            Console.ReadKey();
+        &#125;
+    &#125;
+&#125;</code></pre></div>
+
+<hr>
+<h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><p>关于Restrictions的各种用法：</p>
+<p><img src="/img/blog/nhbinate/n7.png" srcset="/img/loading.gif" lazyload></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/C/">C#</a>
+                    
+                      <a class="hover-with-bg" href="/tags/MySql/">MySql</a>
+                    
+                      <a class="hover-with-bg" href="/tags/NHbiernate/">NHbiernate</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/05/02/Unity%E4%B8%AD%E8%A7%A3%E6%9E%90xml%E6%96%87%E6%A1%A3%E7%9A%84%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Unity中解析xml文档的简单用法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/04/12/C-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/">
+                        <span class="hidden-mobile">C#连接数据库初学笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

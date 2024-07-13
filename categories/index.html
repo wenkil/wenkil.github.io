@@ -1,0 +1,757 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="分类">
+<meta property="og:url" content="http://example.com/categories/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>分类 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 60vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="分类">
+              
+            </span>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      <div class="container nopadding-x-md">
+        <div class="py-5" id="board"
+          >
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+
+
+
+
+<div class="category-list">
+  
+  
+  
+  
+    
+    
+    <div class="category row">
+      <a
+        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+        id="heading-3b451acfb78b69289662a6dd4d9d042c" role="tab" data-toggle="collapse" href="#collapse-3b451acfb78b69289662a6dd4d9d042c"
+        aria-expanded="false"
+      >
+        Web开发
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="/categories/Web%E5%BC%80%E5%8F%91/" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span>21</span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-3b451acfb78b69289662a6dd4d9d042c" role="tabpanel" aria-labelledby="heading-3b451acfb78b69289662a6dd4d9d042c">
+        
+        
+          
+  <div class="category-post-list">
+    
+    
+      
+      
+        <a href="/2024/07/04/%E5%AA%92%E4%BD%93%E8%B5%84%E6%BA%90%E9%98%B2%E4%B8%8B%E8%BD%BD/" class="list-group-item list-group-item-action">
+          <span class="category-post">前端页面媒体资源防下载</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2024/07/04/%E5%89%8D%E7%AB%AF%E8%AE%B0%E5%BD%95%E9%A1%B5%E9%9D%A2%E5%81%9C%E7%95%99%E6%97%B6%E9%95%BF/" class="list-group-item list-group-item-action">
+          <span class="category-post">前端记录页面停留时长</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2024/04/25/%E8%85%BE%E8%AE%AF%E4%BA%91%E6%90%AD%E5%BB%BAWEB%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%AD%A5%E9%AA%A4%E8%AE%B0%E5%BD%95/" class="list-group-item list-group-item-action">
+          <span class="category-post">腾讯云搭建WEB服务器步骤记录</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2023/12/27/npm%E5%92%8Cyarn%E7%9A%84%E6%BA%90%E8%AE%BE%E7%BD%AE/" class="list-group-item list-group-item-action">
+          <span class="category-post">nvm的安装&amp;使用以及npm和yarn的源设置</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2023/12/22/%E5%89%8D%E7%AB%AF%E7%89%88%E6%9C%AC%E6%9B%B4%E6%96%B0%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/" class="list-group-item list-group-item-action">
+          <span class="category-post">前端版本更新技术方案</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2023/10/30/%E5%85%B3%E4%BA%8EChrome%E6%96%B0%E7%89%88%E6%B5%8F%E8%A7%88%E5%99%A8%E5%AD%98%E5%82%A8%E5%88%86%E5%8C%BA%E7%9A%84%E6%8A%80%E6%9C%AF%E5%89%8D%E7%9E%BB/" class="list-group-item list-group-item-action">
+          <span class="category-post">关于Chrome新版浏览器存储分区的技术前瞻（2023.10）</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2023/07/26/SCORM%E5%85%A5%E9%97%A8%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" class="list-group-item list-group-item-action">
+          <span class="category-post">SCORM入门学习记录</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2023/03/12/WEB%E6%8A%80%E6%9C%AF%E8%B0%83%E7%A0%94%E8%A7%86%E9%A2%91%E5%88%87%E7%89%87%E6%92%AD%E6%94%BE/" class="list-group-item list-group-item-action">
+          <span class="category-post">WEB技术调研：【视频切片+播放】</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2022/05/10/Centos%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%EF%BC%9A%E9%83%A8%E7%BD%B2node%E9%A1%B9%E7%9B%AE%E5%92%8C%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE/" class="list-group-item list-group-item-action">
+          <span class="category-post">Centos系统基础环境搭建：部署node项目和前端项目</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2021/10/13/%E4%BD%BF%E7%94%A8vue-init-webpack-%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE%EF%BC%8C%E6%89%93%E5%8C%85%E5%90%8E%E5%9C%A8-github-io%E4%B8%8A%E6%97%A0%E6%B3%95%E8%BF%90%E8%A1%8C/" class="list-group-item list-group-item-action">
+          <span class="category-post">【转载】 使用vue init  webpack 创建项目，打包后在 github.io上无法运行</span>
+        </a>
+      
+    
+      
+      
+        <a href="/categories/Web%E5%BC%80%E5%8F%91/" class="list-group-item list-group-item-action">
+          <span class="category-post">More...</span>
+        </a>
+        
+  </div>
+
+        
+      </div>
+    </div>
+  
+    
+    
+    <div class="category row">
+      <a
+        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+        id="heading-03af44dfb57651192e1e5ff490e35760" role="tab" data-toggle="collapse" href="#collapse-03af44dfb57651192e1e5ff490e35760"
+        aria-expanded="false"
+      >
+        游戏开发
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span>17</span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-03af44dfb57651192e1e5ff490e35760" role="tabpanel" aria-labelledby="heading-03af44dfb57651192e1e5ff490e35760">
+        
+        
+          
+  <div class="category-post-list">
+    
+    
+      
+      
+        <a href="/2018/06/06/Unity-AssetBundle%E4%B8%80%E9%94%AE%E5%91%BD%E5%90%8D%E5%B9%B6%E6%89%93%E5%8C%85/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity AssetBundle一键命名并打包</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/05/23/Xlua-%E6%89%93%E8%A1%A5%E4%B8%81%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" class="list-group-item list-group-item-action">
+          <span class="category-post">Xlua 打补丁流程实验记录</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/05/04/Xlua%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" class="list-group-item list-group-item-action">
+          <span class="category-post">Xlua学习记录</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/05/02/Unity%E4%B8%AD%E8%A7%A3%E6%9E%90xml%E6%96%87%E6%A1%A3%E7%9A%84%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity中解析xml文档的简单用法</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/04/10/Unity%E5%B1%95%E7%A4%BA%E9%BC%A0%E6%A0%87%E6%BB%9A%E5%8A%A8%E6%95%88%E6%9E%9C/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity展示鼠标滚动效果</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/04/08/DOTween%E6%8F%92%E4%BB%B6%E5%AD%A6%E4%B9%A0/" class="list-group-item list-group-item-action">
+          <span class="category-post">DOTween插件学习</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/04/04/AssetBundle%E8%B5%84%E6%BA%90%E5%8C%85%E7%9A%84%E5%9B%9B%E7%A7%8D%E6%96%B9%E5%BC%8F/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity AssetBundle加载资源包的四种方式</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/03/22/Unity-AssetBundle/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity AssetBundle初体验</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/03/07/Unity%E5%9D%90%E6%A0%87%E7%B3%BB/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity坐标系</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2017/11/05/Unity%E6%8A%80%E8%83%BD%E5%86%B7%E5%8D%B4%E5%8A%9F%E8%83%BD/" class="list-group-item list-group-item-action">
+          <span class="category-post">Unity技能冷却功能</span>
+        </a>
+      
+    
+      
+      
+        <a href="/categories/%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91/" class="list-group-item list-group-item-action">
+          <span class="category-post">More...</span>
+        </a>
+        
+  </div>
+
+        
+      </div>
+    </div>
+  
+    
+    
+    <div class="category row">
+      <a
+        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+        id="heading-3bf8a523aea21a3a0f6c53b0f43429bb" role="tab" data-toggle="collapse" href="#collapse-3bf8a523aea21a3a0f6c53b0f43429bb"
+        aria-expanded="false"
+      >
+        编程语言
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span>12</span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-3bf8a523aea21a3a0f6c53b0f43429bb" role="tabpanel" aria-labelledby="heading-3bf8a523aea21a3a0f6c53b0f43429bb">
+        
+        
+          
+  <div class="category-post-list">
+    
+    
+      
+      
+        <a href="/2021/11/19/Object-defineProperty%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/" class="list-group-item list-group-item-action">
+          <span class="category-post">Object.defineProperty的基本使用</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2021/05/21/ES6%E5%88%A4%E6%96%AD%E4%B8%A4%E4%B8%AA%E6%95%B0%E7%BB%84%E6%98%AF%E5%90%A6%E7%9B%B8%E7%AD%89/" class="list-group-item list-group-item-action">
+          <span class="category-post">ES6判断两个数组是否完全相等</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2020/05/10/js-%E6%95%B0%E6%8D%AE%E6%8B%B7%E8%B4%9D%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" class="list-group-item list-group-item-action">
+          <span class="category-post">js 数据拷贝的几种方式</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/04/12/NHbiernate%E6%98%A0%E5%B0%84%E5%B7%A5%E5%85%B7%E8%BF%9E%E6%8E%A5MySQL%E7%9A%84%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE%E5%8F%8A%E4%BD%BF%E7%94%A8/" class="list-group-item list-group-item-action">
+          <span class="category-post">NHbiernate映射工具连接MySQL的基本配置及使用</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/04/12/C-%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%9D%E5%AD%A6%E7%AC%94%E8%AE%B0/" class="list-group-item list-group-item-action">
+          <span class="category-post">C#连接数据库初学笔记</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/03/06/C-%E6%8E%A5%E5%8F%A3%E5%92%8C%E7%B1%BB%E7%9A%84%E5%8C%BA%E5%88%AB/" class="list-group-item list-group-item-action">
+          <span class="category-post">C#接口和类的区别</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/03/06/C-%E5%8C%BF%E5%90%8D%E6%96%B9%E6%B3%95%E7%9A%84%E4%BD%BF%E7%94%A8/" class="list-group-item list-group-item-action">
+          <span class="category-post">C#匿名方法的使用</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2018/02/24/C-%E7%BD%91%E7%BB%9C%E8%81%8A%E5%A4%A9%E5%AE%A4/" class="list-group-item list-group-item-action">
+          <span class="category-post">C#网络聊天室</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2017/11/08/C-%E7%BB%93%E6%9E%84%E4%BD%93%E5%92%8C%E7%B1%BB%E7%9A%84%E5%8C%BA%E5%88%AB/" class="list-group-item list-group-item-action">
+          <span class="category-post">C#结构体和类的区别</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2017/10/22/C-%E5%BF%AB%E6%8E%92/" class="list-group-item list-group-item-action">
+          <span class="category-post">C#快速排序</span>
+        </a>
+      
+    
+      
+      
+        <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="list-group-item list-group-item-action">
+          <span class="category-post">More...</span>
+        </a>
+        
+  </div>
+
+        
+      </div>
+    </div>
+  
+    
+    
+    <div class="category row">
+      <a
+        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+        id="heading-0a40e3c91a3a55c9a37428c6d194d0e5" role="tab" data-toggle="collapse" href="#collapse-0a40e3c91a3a55c9a37428c6d194d0e5"
+        aria-expanded="false"
+      >
+        AI
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="/categories/AI/" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span>2</span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-0a40e3c91a3a55c9a37428c6d194d0e5" role="tabpanel" aria-labelledby="heading-0a40e3c91a3a55c9a37428c6d194d0e5">
+        
+        
+          
+  <div class="category-post-list">
+    
+    
+      
+      
+        <a href="/2024/07/07/CrewAI%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" class="list-group-item list-group-item-action">
+          <span class="category-post">CrewAI学习记录（未完待续...）</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2024/02/02/prompt%E7%BB%93%E6%9E%84%E5%8C%96%E5%AE%9E%E8%B7%B5/" class="list-group-item list-group-item-action">
+          <span class="category-post">简单结构化prompt实践记录</span>
+        </a>
+      
+    
+  </div>
+
+        
+      </div>
+    </div>
+  
+    
+    
+    <div class="category row">
+      <a
+        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+        id="heading-8936f53b23e9dfe2965d9e2ec23a4779" role="tab" data-toggle="collapse" href="#collapse-8936f53b23e9dfe2965d9e2ec23a4779"
+        aria-expanded="false"
+      >
+        随笔
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="/categories/%E9%9A%8F%E7%AC%94/" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span>2</span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-8936f53b23e9dfe2965d9e2ec23a4779" role="tabpanel" aria-labelledby="heading-8936f53b23e9dfe2965d9e2ec23a4779">
+        
+        
+          
+  <div class="category-post-list">
+    
+    
+      
+      
+        <a href="/2021/11/24/%E5%89%8D%E7%AB%AF%E5%AD%A6%E4%B9%A0%E7%BD%91%E7%AB%99%E5%8F%8A%E5%B8%B8%E7%94%A8%E7%BD%91%E7%AB%99%E6%95%B4%E7%90%86/" class="list-group-item list-group-item-action">
+          <span class="category-post">前端学习网站整理(持续更新...)</span>
+        </a>
+      
+    
+      
+      
+        <a href="/2021/10/01/%E5%85%B3%E4%BA%8E%E6%AD%A4%E5%8D%9A%E5%AE%A2%E7%9A%84%E6%90%AD%E5%BB%BA/" class="list-group-item list-group-item-action">
+          <span class="category-post">关于此博客的搭建</span>
+        </a>
+      
+    
+  </div>
+
+        
+      </div>
+    </div>
+  
+    
+    
+    <div class="category row">
+      <a
+        class="category-item collapsed list-group-item category-item-action col-10 col-md-11"
+        id="heading-d2dff3f05ff8c469cbde9a642ce9631a" role="tab" data-toggle="collapse" href="#collapse-d2dff3f05ff8c469cbde9a642ce9631a"
+        aria-expanded="false"
+      >
+        Cordova
+        <i class="iconfont icon-arrowright"></i>
+      </a>
+      <a href="/categories/Cordova/" class="category-count col-2 col-md-1">
+        <i class="iconfont icon-articles"></i>
+        <span>1</span>
+      </a>
+      <div class="category-collapse collapse" id="collapse-d2dff3f05ff8c469cbde9a642ce9631a" role="tabpanel" aria-labelledby="heading-d2dff3f05ff8c469cbde9a642ce9631a">
+        
+        
+          
+  <div class="category-post-list">
+    
+    
+      
+      
+        <a href="/2024/06/30/Cordova%E6%A1%86%E6%9E%B6%E6%90%AD%E5%BB%BA%E5%8F%8A%E6%89%93%E5%8C%85%E5%B0%9D%E8%AF%95/" class="list-group-item list-group-item-action">
+          <span class="category-post">Cordova框架搭建及打包尝试（过程记录）</span>
+        </a>
+      
+    
+  </div>
+
+        
+      </div>
+    </div>
+  
+</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
