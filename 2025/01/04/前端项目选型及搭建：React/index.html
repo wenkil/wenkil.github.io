@@ -1,0 +1,789 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="为什么推荐用React搭建项目各个主流框架的使用情况1. npm下载量 数据来源：npm trends 框架对比数据  通过下面这张图可以看出react的全球下载量在最近一年的下载量稳居第一； GitHub上的一些数据也可以通过对比明显看出，无论是Star数还是开源库的维护频率都是非常高的；    框架 Stars Issues 最后一次更新（2025.1.05） 总开源时长    React 2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端项目选型及搭建：React">
+<meta property="og:url" content="http://example.com/2025/01/04/%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E9%80%89%E5%9E%8B%E5%8F%8A%E6%90%AD%E5%BB%BA%EF%BC%9AReact/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="为什么推荐用React搭建项目各个主流框架的使用情况1. npm下载量 数据来源：npm trends 框架对比数据  通过下面这张图可以看出react的全球下载量在最近一年的下载量稳居第一； GitHub上的一些数据也可以通过对比明显看出，无论是Star数还是开源库的维护频率都是非常高的；    框架 Stars Issues 最后一次更新（2025.1.05） 总开源时长    React 2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/Js_Research/1.PNG">
+<meta property="og:image" content="http://example.com/img/blog/Js_Research/2.PNG">
+<meta property="og:image" content="http://example.com/img/blog/Js_Research/3.PNG">
+<meta property="og:image" content="http://example.com/img/blog/Js_Research/4.PNG">
+<meta property="article:published_time" content="2025-01-04T12:25:00.000Z">
+<meta property="article:modified_time" content="2025-01-05T07:40:11.910Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/Js_Research/1.PNG">
+  
+  <title>前端项目选型及搭建：React - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="前端项目选型及搭建：React">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-01-04 20:25" pubdate>
+        2025年1月4日 20:25:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.1k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">前端项目选型及搭建：React</h1>
+            
+            <div class="markdown-body">
+              <h2 id="为什么推荐用React搭建项目"><a href="#为什么推荐用React搭建项目" class="headerlink" title="为什么推荐用React搭建项目"></a>为什么推荐用React搭建项目</h2><h3 id="各个主流框架的使用情况"><a href="#各个主流框架的使用情况" class="headerlink" title="各个主流框架的使用情况"></a>各个主流框架的使用情况</h3><h4 id="1-npm下载量"><a href="#1-npm下载量" class="headerlink" title="1. npm下载量"></a>1. npm下载量</h4><blockquote>
+<p>数据来源：<a target="_blank" rel="noopener" href="https://npmtrends.com/@angular/core-vs-jquery-vs-react-vs-svelte-vs-vue">npm trends 框架对比数据</a></p>
+</blockquote>
+<p>通过下面这张图可以看出react的全球下载量在最近一年的下载量稳居第一；<br><img src="/img/blog/Js_Research/1.PNG" srcset="/img/loading.gif" lazyload></p>
+<p>GitHub上的一些数据也可以通过对比明显看出，无论是Star数还是开源库的维护频率都是非常高的；</p>
+<table>
+<thead>
+<tr>
+<th>框架</th>
+<th>Stars</th>
+<th>Issues</th>
+<th>最后一次更新（2025.1.05）</th>
+<th>总开源时长</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>React</td>
+<td>231,030</td>
+<td>933</td>
+<td>1个月前</td>
+<td>13年</td>
+</tr>
+<tr>
+<td>Vue</td>
+<td>48,294</td>
+<td>920</td>
+<td>2个月前</td>
+<td>11年</td>
+</tr>
+<tr>
+<td>Angular</td>
+<td>96,575</td>
+<td>1740</td>
+<td>17天前</td>
+<td>9年</td>
+</tr>
+<tr>
+<td>jQuery</td>
+<td>59,282</td>
+<td>91</td>
+<td>1年前</td>
+<td>14年</td>
+</tr>
+<tr>
+<td>Svelte</td>
+<td>80750</td>
+<td>803</td>
+<td>2天前</td>
+<td>8年</td>
+</tr>
+</tbody></table>
+<h4 id="2-Stack-Overflow-标签数量排行"><a href="#2-Stack-Overflow-标签数量排行" class="headerlink" title="2. Stack Overflow 标签数量排行"></a>2. Stack Overflow 标签数量排行</h4><blockquote>
+<p>数据来源：<a target="_blank" rel="noopener" href="https://trends.stackoverflow.co/?tags=reactjs,vue.js,angular,svelte,jquery">Stack Overflow 标签数量排行</a></p>
+</blockquote>
+<p>通过该标签排行可以看出在Stack Overflow社区里React目前是最受欢迎的现代前端框架、社区活跃度最高、技术问题解决资源最丰富；<br><img src="/img/blog/Js_Research/2.PNG" srcset="/img/loading.gif" lazyload></p>
+<h4 id="3-JS现状调查"><a href="#3-JS现状调查" class="headerlink" title="3. JS现状调查"></a>3. JS现状调查</h4><blockquote>
+<p>数据来源：<a target="_blank" rel="noopener" href="https://2024.stateofjs.com/en-US/libraries/front-end-frameworks/">JS现状调查</a></p>
+</blockquote>
+<p>通过该图可以看到目前主流js库的【使用量】中，react一直是多年来排名最高的，但近几年前端发展迅速有了新的js库，后面几个tag里的【关注量】和【留存量】，react并没有始终排在第一，但也在前几名里；<br><img src="/img/blog/Js_Research/3.PNG" srcset="/img/loading.gif" lazyload></p>
+<h4 id="4-百度搜索指数"><a href="#4-百度搜索指数" class="headerlink" title="4. 百度搜索指数"></a>4. 百度搜索指数</h4><blockquote>
+<p>数据来源：<a target="_blank" rel="noopener" href="https://index.baidu.com/v2/main/index.html#/trend/react?words=react,vue.js,angular,jquery,">百度搜索指数</a></p>
+</blockquote>
+<p>国内开发在不借助魔法网络的情况下基本依赖百度搜索，以下是几个主流框架的搜索指数：<br><img src="/img/blog/Js_Research/4.PNG" srcset="/img/loading.gif" lazyload></p>
+<h3 id="综合搜索及AI总结："><a href="#综合搜索及AI总结：" class="headerlink" title="综合搜索及AI总结："></a>综合搜索及AI总结：</h3><table>
+<thead>
+<tr>
+<th>评估维度</th>
+<th>React</th>
+<th>Vue</th>
+<th>Angular</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>学习曲线</td>
+<td>中等</td>
+<td>较低</td>
+<td>较陡</td>
+</tr>
+<tr>
+<td>生态系统</td>
+<td>非常成熟（国内外）</td>
+<td>成熟,但相对国内使用者较多</td>
+<td>成熟，国外使用较多</td>
+</tr>
+<tr>
+<td>灵活性</td>
+<td>高</td>
+<td>中等</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>社区活跃度</td>
+<td>极高</td>
+<td>高</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>工程化支持</td>
+<td>完善</td>
+<td>完善</td>
+<td>完善</td>
+</tr>
+</tbody></table>
+<h3 id="哪些常见国内应用是基于React开发的？"><a href="#哪些常见国内应用是基于React开发的？" class="headerlink" title="哪些常见国内应用是基于React开发的？"></a>哪些常见国内应用是基于React开发的？</h3><p>云效、飞书、蚂蚁数据可视化、飞猪、虾米音乐、斗鱼直播、知乎、豆瓣、美团外卖H5、石墨文档、36氪、优酷、携程、滴滴官网、今日头条…</p>
+<h3 id="哪些AI产品是基于React开发的？"><a href="#哪些AI产品是基于React开发的？" class="headerlink" title="哪些AI产品是基于React开发的？"></a>哪些AI产品是基于React开发的？</h3><p>AI应用：Openai、讯飞星火、通一千问、Deepseek…</p>
+<p>AI应用开发平台：Coze、Dify、Lobechat…</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>综上所述，React 凭借其组件化开发、虚拟 DOM、单向数据流等优势，以及庞大的生态系统（组件库、UI库）和活跃的社区，成为构建现代 Web 应用的理想选择。众多知名 AI 应用和平台的成功案例也证明了 React 的可靠性和高效性。因此，推荐使用 React 作为项目开发的首选框架。</p>
+<h2 id="项目搭建"><a href="#项目搭建" class="headerlink" title="项目搭建"></a>项目搭建</h2><h3 id="环境依赖"><a href="#环境依赖" class="headerlink" title="环境依赖"></a>环境依赖</h3><p>Node &gt;= 18+ (本地版本：18.20.4)</p>
+<h3 id="路由、工具、组件库"><a href="#路由、工具、组件库" class="headerlink" title="路由、工具、组件库"></a>路由、工具、组件库</h3><table>
+<thead>
+<tr>
+<th>类别</th>
+<th>依赖包</th>
+<th>版本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>核心框架</td>
+<td>React</td>
+<td>^18.3.1</td>
+<td>用于构建用户界面的 JavaScript 库</td>
+</tr>
+<tr>
+<td></td>
+<td>TypeScript</td>
+<td>^5.4.5</td>
+<td>JavaScript 的超集，添加了类型系统</td>
+</tr>
+<tr>
+<td></td>
+<td>Vite</td>
+<td>^5.2.11</td>
+<td>现代化的前端构建工具，开发体验好，构建速度快</td>
+</tr>
+<tr>
+<td></td>
+<td>@vitejs/plugin-react-swc</td>
+<td>^3.7.0</td>
+<td>基于 SWC 的 React 插件，提供更快的编译速度</td>
+</tr>
+<tr>
+<td>状态管理与路由</td>
+<td>Zustand</td>
+<td>^4.5.2</td>
+<td>轻量级状态管理库，使用简单，支持 Hooks</td>
+</tr>
+<tr>
+<td></td>
+<td>React Router</td>
+<td>^6.23.1</td>
+<td>React 官方路由方案</td>
+</tr>
+<tr>
+<td></td>
+<td>Ahooks</td>
+<td>^3.8.4</td>
+<td>阿里出品的 React Hooks 库，提供丰富的自定义 Hooks</td>
+</tr>
+<tr>
+<td>UI组件库</td>
+<td>Ant Design</td>
+<td>^5.22.7</td>
+<td>企业级 UI 组件库，提供丰富的组件和主题定制</td>
+</tr>
+<tr>
+<td></td>
+<td>@iconify/react</td>
+<td>^4.1.1</td>
+<td>图标库，支持多个图标集合</td>
+</tr>
+<tr>
+<td></td>
+<td>@livekit/components-react</td>
+<td>^2.6.7</td>
+<td>LiveKit 的 React 组件库，用于实时音视频</td>
+</tr>
+<tr>
+<td></td>
+<td>@livekit/components-styles</td>
+<td>^1.1.4</td>
+<td>LiveKit 组件样式库</td>
+</tr>
+<tr>
+<td>工具库</td>
+<td>Axios</td>
+<td>^1.7.2</td>
+<td>基于 Promise 的 HTTP 客户端</td>
+</tr>
+<tr>
+<td></td>
+<td>Dayjs</td>
+<td>^1.11.11</td>
+<td>轻量级日期处理库，支持链式操作</td>
+</tr>
+<tr>
+<td></td>
+<td>Lodash-unified</td>
+<td>^1.0.3</td>
+<td>实用工具库，提供数组、对象等操作方法</td>
+</tr>
+<tr>
+<td></td>
+<td>Qs</td>
+<td>^6.13.0</td>
+<td>URL 参数解析和字符串化工具</td>
+</tr>
+<tr>
+<td></td>
+<td>axios-mock-adapter</td>
+<td>^1.22.0</td>
+<td>Axios 的模拟请求适配器，用于开发调试</td>
+</tr>
+</tbody></table>
+<h3 id="整体项目结构"><a href="#整体项目结构" class="headerlink" title="整体项目结构"></a>整体项目结构</h3><div class="code-wrapper"><pre><code class="hljs plaintext">├── src/ # 源代码目录
+├── public/ # 静态资源目录
+├── node_modules/ # 依赖包目录
+├── index.html # HTML 入口文件
+├── vite.config.ts # Vite 配置文件
+├── package.json # 项目配置和依赖管理
+├── tsconfig.json # TypeScript 配置
+│
+├── 环境配置文件
+│ ├── .env.dev # 开发环境配置
+│ └── .env.prod # 生产环境配置
+│
+├── 代码规范配置
+│ ├── .eslintrc.cjs # ESLint 配置
+│ ├── .prettierrc.cjs # Prettier 配置
+│ ├── .stylelintrc.cjs # StyleLint 配置
+│ ├── .editorconfig # 编辑器配置
+│ └── .commitlintrc.cjs # Git 提交规范配置
+│
+├── 忽略文件配置
+│ ├── .gitignore # Git 忽略文件
+│ ├── .eslintignore # ESLint 忽略文件
+│ ├── .prettierignore # Prettier 忽略文件
+│ └── .stylelintignore # StyleLint 忽略文件
+│
+└── 项目文档
+├── README.md # 项目说明文档
+└── LICENSE # 开源协议</code></pre></div>
+
+<h3 id="源代码目录结构"><a href="#源代码目录结构" class="headerlink" title="源代码目录结构"></a>源代码目录结构</h3><div class="code-wrapper"><pre><code class="hljs plaintext">src/
+├── apis/ # API 接口管理
+│ ├── request.ts # Axios 请求封装
+│ └── modules/ # 按模块划分的 API
+│
+├── assets/ # 静态资源
+│ ├── images/ # 图片资源
+│ ├── icons/ # 图标资源
+│ └── styles/ # 全局样式
+│
+├── components/ # 全局公共组件
+│ ├── Layout/ # 布局组件
+│ ├── Button/ # 按钮组件
+│ └── Form/ # 表单组件
+│
+├── constants/ # 常量定义
+│ ├── index.ts # 公共常量
+│ └── routes.ts # 路由常量
+│
+├── hooks/ # 自定义 Hooks
+│ ├── useRequest.ts # 请求 Hook
+│ └── useAuth.ts # 认证 Hook
+│
+├── pages/ # 页面组件
+│ ├── Home/ # 首页
+│ ├── Login/ # 登录页
+│ └── User/ # 用户页面
+│
+├── router/ # 路由配置
+│ ├── index.tsx # 路由入口
+│ └── routes.tsx # 路由定义
+│
+├── store/ # 状态管理
+│ ├── index.ts # Store 入口
+│ └── modules/ # 状态模块
+│
+├── types/ # TypeScript 类型定义
+│ ├── global.d.ts # 全局类型
+│ └── api.d.ts # API 相关类型
+│
+├── utils/ # 工具函数
+│ ├── storage.ts # 存储工具
+│ └── validator.ts # 验证工具
+│
+├── App.tsx # 应用根组件
+├── main.tsx # 应用入口
+└── env.d.ts # 环境变量类型声明</code></pre></div>
+
+<h3 id="项目命令"><a href="#项目命令" class="headerlink" title="项目命令"></a>项目命令</h3><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm run dev</code></td>
+<td>启动开发服务器，默认端口 8000</td>
+</tr>
+<tr>
+<td><code>npm run build</code></td>
+<td>构建生产环境代码</td>
+</tr>
+<tr>
+<td><code>npm run analyzer</code></td>
+<td>构建并分析打包结果</td>
+</tr>
+<tr>
+<td><code>npm run serve</code></td>
+<td>预览生产环境构建</td>
+</tr>
+<tr>
+<td><code>npm run lint:js</code></td>
+<td>JavaScript/TypeScript 代码检查</td>
+</tr>
+<tr>
+<td><code>npm run lint:css</code></td>
+<td>CSS 代码检查</td>
+</tr>
+<tr>
+<td><code>npm run check</code></td>
+<td>TypeScript 类型检查</td>
+</tr>
+<tr>
+<td><code>npm run commit</code></td>
+<td>规范化的 Git 提交</td>
+</tr>
+</tbody></table>
+<h3 id="开发规范"><a href="#开发规范" class="headerlink" title="开发规范"></a>开发规范</h3><ul>
+<li>使用 ESLint 进行代码检查</li>
+<li>使用 Prettier 进行代码格式化</li>
+<li>使用 StyleLint 进行样式检查</li>
+<li>使用 Commitlint 进行提交信息检查</li>
+<li>遵循 TypeScript 开发规范</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JavaScript/">JavaScript</a>
+                    
+                      <a class="hover-with-bg" href="/tags/React/">React</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/04/%E5%AA%92%E4%BD%93%E8%B5%84%E6%BA%90%E9%98%B2%E4%B8%8B%E8%BD%BD/">
+                        <span class="hidden-mobile">前端页面媒体资源防下载</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
