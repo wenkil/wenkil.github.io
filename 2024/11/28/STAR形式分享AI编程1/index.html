@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="开发环境编码工具： CursorAI模型： claude-3.5-sonnet 实践描述Situation &amp; Task在开发某个统计功能时，需要根据后端返回的数据结构计算不同管理者类型的分布情况。传统的纯文字prompt方式往往需要多轮对话才能获得准确的代码实现。 为了提升效率，我们采用了以下方案：  设计一个清晰的伪代码prompt，包含： 完整的数据结构示例 详细的计算逻辑规则 预期">
+<meta property="og:type" content="article">
+<meta property="og:title" content="STAR形式分享AI编程-1">
+<meta property="og:url" content="http://example.com/2024/11/28/STAR%E5%BD%A2%E5%BC%8F%E5%88%86%E4%BA%ABAI%E7%BC%96%E7%A8%8B1/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="开发环境编码工具： CursorAI模型： claude-3.5-sonnet 实践描述Situation &amp; Task在开发某个统计功能时，需要根据后端返回的数据结构计算不同管理者类型的分布情况。传统的纯文字prompt方式往往需要多轮对话才能获得准确的代码实现。 为了提升效率，我们采用了以下方案：  设计一个清晰的伪代码prompt，包含： 完整的数据结构示例 详细的计算逻辑规则 预期">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-28T08:48:00.000Z">
+<meta property="article:modified_time" content="2025-03-12T12:59:10.005Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Prompt">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>STAR形式分享AI编程-1 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="STAR形式分享AI编程-1">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-11-28 16:48" pubdate>
+        2024年11月28日 16:48:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.7k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">STAR形式分享AI编程-1</h1>
+            
+            <div class="markdown-body">
+              <h2 id="开发环境"><a href="#开发环境" class="headerlink" title="开发环境"></a>开发环境</h2><p><strong>编码工具：</strong> Cursor<br><strong>AI模型：</strong> claude-3.5-sonnet</p>
+<h2 id="实践描述"><a href="#实践描述" class="headerlink" title="实践描述"></a>实践描述</h2><h3 id="Situation-amp-Task"><a href="#Situation-amp-Task" class="headerlink" title="Situation &amp; Task"></a>Situation &amp; Task</h3><p>在开发某个统计功能时，需要根据后端返回的数据结构计算不同管理者类型的分布情况。传统的纯文字prompt方式往往需要多轮对话才能获得准确的代码实现。</p>
+<p>为了提升效率，我们采用了以下方案：</p>
+<ol>
+<li>设计一个清晰的伪代码prompt，包含：<ul>
+<li>完整的数据结构示例</li>
+<li>详细的计算逻辑规则</li>
+<li>预期的返回值格式</li>
+</ul>
+</li>
+<li>利用该prompt生成TypeScript代码，并封装为独立方法</li>
+</ol>
+<h3 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h3><p>具体实施步骤如下：</p>
+<ol>
+<li><p>编写伪代码构建清晰化的prompt：</p>
+<ul>
+<li>管理者类型的完整定义</li>
+<li>后端返回的JSON数据结构示例</li>
+<li>使用if-else形式描述的三层判断逻辑</li>
+<li>清晰的返回值数据结构</li>
+</ul>
+</li>
+<li><p>生成<code>CalculationManagerType.ts</code>文件，包含：</p>
+<ul>
+<li>类型定义和函数</li>
+<li>辅助函数的模块化设计</li>
+<li>主计算函数<code>calculateManagerDistribution</code></li>
+<li>完整的TypeScript类型注解和注释</li>
+</ul>
+</li>
+</ol>
+<h3 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h3><h4 id="技术成果"><a href="#技术成果" class="headerlink" title="技术成果"></a>技术成果</h4><ul>
+<li>生成的代码无需过多修改即可投入使用</li>
+<li>代码结构清晰，包含完整的类型定义和注释</li>
+<li>实现了业务逻辑要求</li>
+</ul>
+<h4 id="效率提升"><a href="#效率提升" class="headerlink" title="效率提升"></a>效率提升</h4><ul>
+<li>相比纯文字prompt，减少了多轮对话的需求</li>
+<li>显著提高了代码生成的准确性</li>
+<li>缩短了从需求到实现的时间：1h → 10min</li>
+</ul>
+<h4 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h4><ul>
+<li>证实了结构化伪代码prompt的优势</li>
+<li>为类似场景总结了可复用的prompt写法</li>
+</ul>
+<h2 id="以下是完成此任务的详细prompt和AI生成的代码"><a href="#以下是完成此任务的详细prompt和AI生成的代码" class="headerlink" title="以下是完成此任务的详细prompt和AI生成的代码"></a>以下是完成此任务的详细prompt和AI生成的代码</h2><p>整理的伪代码的prompt如下：</p>
+<div class="code-wrapper"><pre><code class="hljs prolog">以下是管理者类型分布的逻辑：
+
+产品制定的管理者类型：探索方向型，驱动增长型，强化执行型，塑造环境型，待分化型
+
+后端返回的数据结构如下：
+“totalPeople”：<span class="hljs-number">4</span>，
+<span class="hljs-string">&quot;assessmentGroupReportCpaTalentDistributionVO&quot;</span>: [
+			&#123;
+				<span class="hljs-string">&quot;typeName&quot;</span>: <span class="hljs-string">&quot;探索方向型&quot;</span>,
+				<span class="hljs-string">&quot;definition&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本​&quot;</span>,
+				<span class="hljs-string">&quot;exerciseOpportunity&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;cpaTalentDistributionTypeCode&quot;</span>: <span class="hljs-string">&quot;exploratoryDirection&quot;</span>,
+				<span class="hljs-string">&quot;peopleList&quot;</span>: []
+			&#125;,
+			&#123;
+				<span class="hljs-string">&quot;typeName&quot;</span>: <span class="hljs-string">&quot;驱动增长型&quot;</span>,
+				<span class="hljs-string">&quot;definition&quot;</span>: <span class="hljs-string">&quot;作为业务战将，帮助组织实现业务增长​&quot;</span>,
+				<span class="hljs-string">&quot;exerciseOpportunity&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;cpaTalentDistributionTypeCode&quot;</span>: <span class="hljs-string">&quot;growthDriven&quot;</span>,
+				<span class="hljs-string">&quot;peopleList&quot;</span>: [
+					<span class="hljs-string">&quot;用户26&quot;</span>
+				]
+			&#125;,
+			&#123;
+				<span class="hljs-string">&quot;typeName&quot;</span>: <span class="hljs-string">&quot;强化执行型&quot;</span>,
+				<span class="hljs-string">&quot;definition&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本​&quot;</span>,
+				<span class="hljs-string">&quot;exerciseOpportunity&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;cpaTalentDistributionTypeCode&quot;</span>: <span class="hljs-string">&quot;executionEnhancer&quot;</span>,
+				<span class="hljs-string">&quot;peopleList&quot;</span>: [
+					<span class="hljs-string">&quot;用户24&quot;</span>,
+					<span class="hljs-string">&quot;用户27&quot;</span>
+				]
+			&#125;,
+			&#123;
+				<span class="hljs-string">&quot;typeName&quot;</span>: <span class="hljs-string">&quot;塑造环境型&quot;</span>,
+				<span class="hljs-string">&quot;definition&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;exerciseOpportunity&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;cpaTalentDistributionTypeCode&quot;</span>: <span class="hljs-string">&quot;environmentShaper&quot;</span>,
+				<span class="hljs-string">&quot;peopleList&quot;</span>: [
+					<span class="hljs-string">&quot;用户25&quot;</span>
+				]
+			&#125;,
+			&#123;
+				<span class="hljs-string">&quot;typeName&quot;</span>: <span class="hljs-string">&quot;待分化型&quot;</span>,
+				<span class="hljs-string">&quot;definition&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;exerciseOpportunity&quot;</span>: <span class="hljs-string">&quot;一段文本一段文本一段文本一段文本&quot;</span>,
+				<span class="hljs-string">&quot;cpaTalentDistributionTypeCode&quot;</span>: <span class="hljs-string">&quot;pendingDifferentiation&quot;</span>,
+				<span class="hljs-string">&quot;peopleList&quot;</span>: []
+			&#125;
+		]
+
+人数占比计算逻辑：
+if (条件 <span class="hljs-number">1</span>：待分化型的人数最高)：
+&#123;
+return &#123; 待分化型人数最高：true，highList:[], lowList:[] &#125;
+&#125;
+else if( 条件<span class="hljs-number">2</span> ：当非待分化型的四种类型的人数相同 )
+&#123;
+return &#123;  待分化型占比最高：false，highList:[], lowList:[] &#125;
+&#125;
+else
+&#123;
+highList = [找出非待分化型人数最多的那个管理者类型对象，并列的也一起放到这个数组里]
+lowList: = [找出非待分化型人数最少的那个管理者类型对象，并列的也一起放到这个数组里]
+return &#123; 待分化型人数最高：false，highList:highList，lowList:lowList &#125;
+&#125;
+
+根据上面的逻辑和数据返回结构生成一个方法来计算出返回值</code></pre></div>
+
+<p>生成的代码CalculationManagerType.ts：</p>
+<p>可以看到ai直接会把需要定义的数据返回类型和计算逻辑完全按照伪代码prompt里的要求去生成，并且下面这段calculateManagerDistribution 的函数代码是完全没有二次修改的直接可以使用的：</p>
+<div class="code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@fileoverview </span>管理者类型分布计算工具</span>
+<span class="hljs-comment"> */</span>
+
+<span class="hljs-keyword">import</span> &#123; ManagerTypeVO, DistributionResult &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../data&#x27;</span>
+
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@function <span class="hljs-variable">getPendingDifferentiationType</span></span></span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@description </span>从列表中获取待分化类型</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-keyword">const</span> getPendingDifferentiationType = (types: ManagerTypeVO[]): <span class="hljs-function"><span class="hljs-params">ManagerTypeVO</span> =&gt;</span> &#123;
+	<span class="hljs-keyword">return</span> types.find(<span class="hljs-function">(<span class="hljs-params">type</span>) =&gt;</span> type.cpaTalentDistributionTypeCode === <span class="hljs-string">&#x27;pendingDifferentiation&#x27;</span>)!
+&#125;
+
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@function <span class="hljs-variable">getNonPendingTypes</span></span></span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@description </span>获取除待分化类型外的所有类型</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-keyword">const</span> getNonPendingTypes = (types: ManagerTypeVO[]): ManagerTypeVO[] =&gt; &#123;
+	<span class="hljs-keyword">return</span> types.filter(<span class="hljs-function">(<span class="hljs-params">type</span>) =&gt;</span> type.cpaTalentDistributionTypeCode !== <span class="hljs-string">&#x27;pendingDifferentiation&#x27;</span>)
+&#125;
+
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@function <span class="hljs-variable">findExtremeTypes</span></span></span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@description </span>找出人数最多和最少的类型</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-keyword">const</span> findExtremeTypes = (types: ManagerTypeVO[]): &#123; <span class="hljs-attr">highList</span>: ManagerTypeVO[]; lowList: ManagerTypeVO[] &#125; =&gt; &#123;
+	<span class="hljs-keyword">const</span> counts = types.map(<span class="hljs-function">(<span class="hljs-params">type</span>) =&gt;</span> type.peopleList.length)
+	<span class="hljs-keyword">const</span> maxCount = <span class="hljs-built_in">Math</span>.max(...counts)
+	<span class="hljs-keyword">const</span> minCount = <span class="hljs-built_in">Math</span>.min(...counts)
+
+	<span class="hljs-keyword">return</span> &#123;
+		<span class="hljs-attr">highList</span>: types.filter(<span class="hljs-function">(<span class="hljs-params">type</span>) =&gt;</span> type.peopleList.length === maxCount),
+		<span class="hljs-attr">lowList</span>: types.filter(<span class="hljs-function">(<span class="hljs-params">type</span>) =&gt;</span> type.peopleList.length === minCount)
+	&#125;
+&#125;
+
+<span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@function <span class="hljs-variable">calculateManagerDistribution</span></span></span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@description </span>计算管理者类型的分布情况</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@param </span>types 管理者类型数据数组</span>
+<span class="hljs-comment"> * <span class="hljs-doctag">@returns </span>分布计算结果</span>
+<span class="hljs-comment"> */</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> calculateManagerDistribution = (types: ManagerTypeVO[]): <span class="hljs-function"><span class="hljs-params">DistributionResult</span> =&gt;</span> &#123;
+	<span class="hljs-keyword">const</span> pendingType = getPendingDifferentiationType(types)
+	<span class="hljs-keyword">const</span> nonPendingTypes = getNonPendingTypes(types)
+	<span class="hljs-keyword">const</span> pendingCount = pendingType.peopleList.length
+
+	<span class="hljs-comment">// 条件1：待分化类型人数最多</span>
+	<span class="hljs-keyword">const</span> nonPendingCounts = nonPendingTypes.map(<span class="hljs-function">(<span class="hljs-params">type</span>) =&gt;</span> type.peopleList.length)
+	<span class="hljs-keyword">const</span> maxNonPendingCount = <span class="hljs-built_in">Math</span>.max(...nonPendingCounts)
+	<span class="hljs-keyword">if</span> (pendingCount &gt; maxNonPendingCount) &#123;
+		<span class="hljs-keyword">return</span> &#123;
+			<span class="hljs-attr">isPendingDifferentiationHighest</span>: <span class="hljs-literal">true</span>,
+			<span class="hljs-attr">highList</span>: [],
+			<span class="hljs-attr">lowList</span>: []
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">// 条件2：所有非待分化类型人数相等</span>
+	<span class="hljs-keyword">const</span> allNonPendingEqual = nonPendingCounts.every(<span class="hljs-function">(<span class="hljs-params">count</span>) =&gt;</span> count === nonPendingCounts[<span class="hljs-number">0</span>])
+	<span class="hljs-keyword">if</span> (allNonPendingEqual) &#123;
+		<span class="hljs-keyword">return</span> &#123;
+			<span class="hljs-attr">isPendingDifferentiationHighest</span>: <span class="hljs-literal">false</span>,
+			<span class="hljs-attr">highList</span>: [],
+			<span class="hljs-attr">lowList</span>: []
+		&#125;
+	&#125;
+
+	<span class="hljs-comment">// 条件3：找出非待分化类型中人数最多和最少的组</span>
+	<span class="hljs-keyword">const</span> &#123; highList, lowList &#125; = findExtremeTypes(nonPendingTypes)
+	<span class="hljs-keyword">return</span> &#123;
+		<span class="hljs-attr">isPendingDifferentiationHighest</span>: <span class="hljs-literal">false</span>,
+		highList,
+		lowList
+	&#125;
+&#125;
+</code></pre></div>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/AI/">AI</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Prompt/">Prompt</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/01/04/%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E9%80%89%E5%9E%8B%E5%8F%8A%E6%90%AD%E5%BB%BA%EF%BC%9AReact%E6%8A%80%E6%9C%AF%E6%A0%88/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">前端项目选型及搭建：React技术栈</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/04/%E5%AA%92%E4%BD%93%E8%B5%84%E6%BA%90%E9%98%B2%E4%B8%8B%E8%BD%BD/">
+                        <span class="hidden-mobile">前端页面媒体资源防下载</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        沪ICP备2024081975号
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
