@@ -18,7 +18,7 @@
   <meta name="keywords" content="">
   <meta name="description" content="背景目前开发团队会定期使用AI提效进行code review，但由于每个开发人员使用的不同的AI编程工具，有不同的LLM和IDE，各自提交的审查报告风格和统计会因为LLM的不同而不统一。尝试开发一个本地的MCP工具，这样大家可以用统一模型、统一工具进行code review工作，以保证使用相同的AI模型输出结果的质量和风格是区别不大的。之所以开发本地的，是因为前期需要实验这个mcp工具的实际效果，">
 <meta property="og:type" content="article">
-<meta property="og:title" content="开发一个本地MCP工具进行代码review">
+<meta property="og:title" content="开发一个本地AI进行代码review的MCP Server">
 <meta property="og:url" content="http://example.com/2025/03/28/%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0MCP%E5%B7%A5%E5%85%B7%E8%BF%9B%E8%A1%8C%E4%BB%A3%E7%A0%81review/index.html">
 <meta property="og:site_name" content="Wenkil的开发笔记">
 <meta property="og:description" content="背景目前开发团队会定期使用AI提效进行code review，但由于每个开发人员使用的不同的AI编程工具，有不同的LLM和IDE，各自提交的审查报告风格和统计会因为LLM的不同而不统一。尝试开发一个本地的MCP工具，这样大家可以用统一模型、统一工具进行code review工作，以保证使用相同的AI模型输出结果的质量和风格是区别不大的。之所以开发本地的，是因为前期需要实验这个mcp工具的实际效果，">
@@ -40,13 +40,13 @@
 <meta property="og:image" content="http://example.com/img/blog/AI/review_code_mcp/15.png">
 <meta property="og:image" content="http://example.com/img/blog/AI/review_code_mcp/16.png">
 <meta property="article:published_time" content="2025-03-28T09:02:40.824Z">
-<meta property="article:modified_time" content="2025-03-28T10:46:53.990Z">
+<meta property="article:modified_time" content="2025-03-28T12:43:59.543Z">
 <meta property="article:author" content="John Doe">
-<meta property="article:tag" content="MCP Server">
+<meta property="article:tag" content="MCP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="http://example.com/img/blog/AI/review_code_mcp/1.png">
   
-  <title>开发一个本地MCP工具进行代码review - Wenkil的开发笔记</title>
+  <title>开发一个本地AI进行代码review的MCP Server - Wenkil的开发笔记</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -192,7 +192,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="开发一个本地MCP工具进行代码review">
+            <span class="h2" id="subtitle" title="开发一个本地AI进行代码review的MCP Server">
               
             </span>
 
@@ -244,7 +244,7 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">开发一个本地MCP工具进行代码review</h1>
+            <h1 style="display: none">开发一个本地AI进行代码review的MCP Server</h1>
             
             <div class="markdown-body">
               <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>目前开发团队会定期使用AI提效进行code review，但由于每个开发人员使用的不同的AI编程工具，有不同的LLM和IDE，各自提交的审查报告风格和统计会因为LLM的不同而不统一。<br>尝试开发一个本地的MCP工具，这样大家可以用统一模型、统一工具进行code review工作，以保证使用相同的AI模型输出结果的质量和风格是区别不大的。<br>之所以开发本地的，是因为前期需要实验这个mcp工具的实际效果，不需要在工具中再调用git工具去线上取代码提交记录中的文件。</p>
@@ -882,7 +882,7 @@ Proxy server listening on port 3000
 <p><img src="/img/blog/AI/review_code_mcp/8.png" srcset="/img/loading.gif" lazyload><br><img src="/img/blog/AI/review_code_mcp/9.png" srcset="/img/loading.gif" lazyload></p>
 <p>开发client文档<br><a target="_blank" rel="noopener" href="https://github.com/cyanheads/model-context-protocol-resources/blob/main/guides/mcp-client-development-guide.md">https://github.com/cyanheads/model-context-protocol-resources/blob/main/guides/mcp-client-development-guide.md</a></p>
 <p>开发server文档<br><a target="_blank" rel="noopener" href="https://github.com/cyanheads/model-context-protocol-resources/blob/main/guides/mcp-server-development-guide.md">https://github.com/cyanheads/model-context-protocol-resources/blob/main/guides/mcp-server-development-guide.md</a></p>
-<h3 id="第六个问题"><a href="#第六个问题" class="headerlink" title="第六个问题"></a>第六个问题</h3><p>通过查看文档和源码，其实默认是可以通过consoel.error打印的内容被输出在页面上的，用这种方式把执行的每一步都用error的方式打印出来；官方目前只支持’debug’ | ‘info’ | ‘warn’ | ‘error’ ；</p>
+<p>通过查看文档和源码，其实默认是可以通过consoel.error打印的内容被输出在页面上的，用这种方式把执行的每一步都用error的方式打印出来；官方目前只支持’debug’ | ‘info’ | ‘warn’ | ‘error’ ；</p>
 <p><strong>不同SDK的推送日志的方式</strong> ：</p>
 <h4 id="McpServer-SDK"><a href="#McpServer-SDK" class="headerlink" title="McpServer SDK"></a>McpServer SDK</h4><p>如果是使用官网demo里的的McpServer sdk:</p>
 <div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123; McpServer &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@modelcontextprotocol/sdk/server/mcp.js&quot;</span>;</code></pre></div>
@@ -940,7 +940,7 @@ server.sendLoggingMessage(&#123;
 
 <p><img src="/img/blog/AI/review_code_mcp/11.png" srcset="/img/loading.gif" lazyload></p>
 <p>使用这种自定义的SDK（非上面的McpServer）在cursor里也是可以正常使用的：<br><img src="/img/blog/AI/review_code_mcp/12.png" srcset="/img/loading.gif" lazyload></p>
-<h3 id="第七个问题"><a href="#第七个问题" class="headerlink" title="第七个问题"></a>第七个问题</h3><p>这一版改完，测试时偶尔会碰到页面执行超时，但cursor里测试流程正常：<br><img src="/img/blog/AI/review_code_mcp/13.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="第六个问题"><a href="#第六个问题" class="headerlink" title="第六个问题"></a>第六个问题</h3><p>这一版改完，测试时偶尔会碰到页面执行超时，但cursor里测试流程正常：<br><img src="/img/blog/AI/review_code_mcp/13.png" srcset="/img/loading.gif" lazyload></p>
 <p>神奇的是再稍等几分钟就能看到服务器推送到log到调试平台，里面是有打印LLM的审查结果输出的，但在页面上却是等不到LLM的返回就报timeout了，不确定是不是这个调试工具的延迟设置的问题还是代码上的某些地方的异步调用问题；（待深入排查）</p>
 <p><img src="/img/blog/AI/review_code_mcp/14.png" srcset="/img/loading.gif" lazyload></p>
 <p>经过查看和运行官方调试工具的源码<a target="_blank" rel="noopener" href="https://github.com/modelcontextprotocol/inspector/tree/main">https://github.com/modelcontextprotocol/inspector/tree/main</a> </p>
@@ -1337,7 +1337,7 @@ E:\project\Leader_Coach\src\views\recommend\recommend.ts
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/MCP-Server/">MCP Server</a>
+                      <a class="hover-with-bg" href="/tags/MCP/">MCP</a>
                     
                   </div>
                 
