@@ -1,0 +1,967 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="AI搜索工具的比较：Tavily VS DuckDuckGo在构建AI应用程序时，获取准确、实时的外部信息是非常重要的一环。LangChain提供了多种搜索工具来帮助AI系统获取网络上的信息。本文将详细比较两种常用的搜索工具：Tavily和DuckDuckGo，分析它们的使用方法、特点以及性能差异。 搜索工具概述TavilyTavily是一款专为AI应用优化的搜索引擎，提供了结构化的搜索结果。它需">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Langgraph学习3：AI搜索工具的比较">
+<meta property="og:url" content="http://example.com/2025/03/22/Langgraph%E5%AD%A6%E4%B9%A03%EF%BC%9AAI%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7%E7%9A%84%E6%AF%94%E8%BE%83/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="AI搜索工具的比较：Tavily VS DuckDuckGo在构建AI应用程序时，获取准确、实时的外部信息是非常重要的一环。LangChain提供了多种搜索工具来帮助AI系统获取网络上的信息。本文将详细比较两种常用的搜索工具：Tavily和DuckDuckGo，分析它们的使用方法、特点以及性能差异。 搜索工具概述TavilyTavily是一款专为AI应用优化的搜索引擎，提供了结构化的搜索结果。它需">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/AI/langgraph/2025-03-22_19-41-56.png">
+<meta property="article:published_time" content="2025-03-22T14:55:00.000Z">
+<meta property="article:modified_time" content="2025-04-09T12:03:15.436Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Langgraph">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/AI/langgraph/2025-03-22_19-41-56.png">
+  
+  <title>Langgraph学习3：AI搜索工具的比较 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Langgraph学习3：AI搜索工具的比较">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-03-22 22:55" pubdate>
+        2025年3月22日 22:55:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      16k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Langgraph学习3：AI搜索工具的比较</h1>
+            
+            <div class="markdown-body">
+              <h1 id="AI搜索工具的比较：Tavily-VS-DuckDuckGo"><a href="#AI搜索工具的比较：Tavily-VS-DuckDuckGo" class="headerlink" title="AI搜索工具的比较：Tavily VS DuckDuckGo"></a>AI搜索工具的比较：Tavily VS DuckDuckGo</h1><p>在构建AI应用程序时，获取准确、实时的外部信息是非常重要的一环。LangChain提供了多种搜索工具来帮助AI系统获取网络上的信息。本文将详细比较两种常用的搜索工具：Tavily和DuckDuckGo，分析它们的使用方法、特点以及性能差异。</p>
+<h2 id="搜索工具概述"><a href="#搜索工具概述" class="headerlink" title="搜索工具概述"></a>搜索工具概述</h2><h3 id="Tavily"><a href="#Tavily" class="headerlink" title="Tavily"></a>Tavily</h3><p>Tavily是一款专为AI应用优化的搜索引擎，提供了结构化的搜索结果。它需要API密钥才能使用，但能提供高质量的AI友好型搜索结果。</p>
+<p>特点：</p>
+<ul>
+<li>需要API密钥</li>
+<li>结果格式统一，便于AI处理</li>
+<li>专为AI应用优化</li>
+<li>返回结构化数据</li>
+<li>每月1000次免费请求</li>
+</ul>
+<p>需要先到官网进行注册，和创建APIKEY： <a target="_blank" rel="noopener" href="https://app.tavily.com/home">https://app.tavily.com/home</a><br><img src="/img/blog/AI/langgraph/2025-03-22_19-41-56.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="DuckDuckGo"><a href="#DuckDuckGo" class="headerlink" title="DuckDuckGo"></a>DuckDuckGo</h3><p>DuckDuckGo是一个注重隐私的搜索引擎，在LangChain中可以免费使用，无需API密钥。它提供了一种无需额外凭证即可获取网络信息的方式。</p>
+<p>特点：</p>
+<ul>
+<li>无需API密钥</li>
+<li>注重隐私保护</li>
+<li>免费使用</li>
+<li>覆盖范围广泛</li>
+</ul>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><p>以下是完整的比较代码，可以直接运行来测试这两种搜索工具：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-string">搜索工具比较示例：Tavily vs DuckDuckGo</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">该示例比较了LangChain中两个常用的搜索工具：</span>
+<span class="hljs-string">1. Tavily - 需要API密钥的AI优化搜索引擎</span>
+<span class="hljs-string">2. DuckDuckGo - 注重隐私的免费搜索引擎，无需API密钥</span>
+<span class="hljs-string"></span>
+<span class="hljs-string">通过相同的查询，观察两种搜索工具返回结果的差异。</span>
+<span class="hljs-string">&quot;&quot;&quot;</span>
+
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> time
+<span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">from</span> langchain_community.tools.tavily_search <span class="hljs-keyword">import</span> TavilySearchResults
+<span class="hljs-keyword">from</span> langchain_community.tools.ddg_search.tool <span class="hljs-keyword">import</span> DuckDuckGoSearchResults
+
+<span class="hljs-comment"># 设置Tavily API密钥（如果存在）</span>
+tavily_api_key = os.getenv(<span class="hljs-string">&#x27;TAVILY_API_KEY&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)
+<span class="hljs-keyword">if</span> tavily_api_key:
+    os.environ[<span class="hljs-string">&#x27;TAVILY_API_KEY&#x27;</span>] = tavily_api_key
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">format_results</span>(<span class="hljs-params">results, tool_name</span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-string">    格式化搜索结果为易读的格式</span>
+<span class="hljs-string">    </span>
+<span class="hljs-string">    Args:</span>
+<span class="hljs-string">        results (list or str): 搜索结果列表或字符串</span>
+<span class="hljs-string">        tool_name (str): 搜索工具名称</span>
+<span class="hljs-string">        </span>
+<span class="hljs-string">    Returns:</span>
+<span class="hljs-string">        str: 格式化后的搜索结果字符串</span>
+<span class="hljs-string">    &quot;&quot;&quot;</span>
+    formatted_output = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;tool_name&#125;</span> 搜索结果:\n&quot;</span>
+    
+    <span class="hljs-comment"># 如果结果是字符串，尝试解析JSON</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(results, <span class="hljs-built_in">str</span>) <span class="hljs-keyword">and</span> tool_name == <span class="hljs-string">&quot;DuckDuckGo&quot;</span>:
+        <span class="hljs-keyword">try</span>:
+            parsed_results = json.loads(results)
+            results = parsed_results
+        <span class="hljs-keyword">except</span>:
+            <span class="hljs-keyword">return</span> formatted_output + results
+    
+    <span class="hljs-comment"># 根据不同的工具格式化结果</span>
+    <span class="hljs-keyword">if</span> tool_name == <span class="hljs-string">&quot;Tavily&quot;</span>:
+        <span class="hljs-keyword">for</span> i, result <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(results, <span class="hljs-number">1</span>):
+            formatted_output += <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;i&#125;</span>. 标题: <span class="hljs-subst">&#123;result.get(<span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>)&#125;</span>\n&quot;</span>
+            formatted_output += <span class="hljs-string">f&quot;   链接: <span class="hljs-subst">&#123;result.get(<span class="hljs-string">&#x27;url&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>)&#125;</span>\n&quot;</span>
+            formatted_output += <span class="hljs-string">f&quot;   内容: <span class="hljs-subst">&#123;result.get(<span class="hljs-string">&#x27;content&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>)[:<span class="hljs-number">150</span>]&#125;</span>...\n\n&quot;</span>
+    <span class="hljs-keyword">else</span>:  <span class="hljs-comment"># DuckDuckGo</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(results, <span class="hljs-built_in">list</span>):
+            <span class="hljs-keyword">for</span> i, result <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(results, <span class="hljs-number">1</span>):
+                formatted_output += <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;i&#125;</span>. 标题: <span class="hljs-subst">&#123;result.get(<span class="hljs-string">&#x27;title&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>)&#125;</span>\n&quot;</span>
+                formatted_output += <span class="hljs-string">f&quot;   链接: <span class="hljs-subst">&#123;result.get(<span class="hljs-string">&#x27;link&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>)&#125;</span>\n&quot;</span> 
+                formatted_output += <span class="hljs-string">f&quot;   摘要: <span class="hljs-subst">&#123;result.get(<span class="hljs-string">&#x27;snippet&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>)&#125;</span>\n\n&quot;</span>
+        <span class="hljs-keyword">else</span>:
+            formatted_output += <span class="hljs-string">&quot;无法解析搜索结果格式\n&quot;</span>
+            
+    <span class="hljs-keyword">return</span> formatted_output
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search_with_tool</span>(<span class="hljs-params">query, tool_type, max_results</span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-string">    使用指定的搜索工具进行网络搜索</span>
+<span class="hljs-string">    </span>
+<span class="hljs-string">    Args:</span>
+<span class="hljs-string">        query (str): 搜索查询</span>
+<span class="hljs-string">        tool_type (str): 搜索工具类型 (&quot;tavily&quot; 或 &quot;duckduckgo&quot;)</span>
+<span class="hljs-string">        max_results (int, optional): 最大结果数. 默认为5.</span>
+<span class="hljs-string">        </span>
+<span class="hljs-string">    Returns:</span>
+<span class="hljs-string">        dict: 搜索结果和状态信息</span>
+<span class="hljs-string">    &quot;&quot;&quot;</span>
+    <span class="hljs-keyword">try</span>:
+        <span class="hljs-comment"># 根据工具类型创建搜索工具</span>
+        <span class="hljs-keyword">if</span> tool_type.lower() == <span class="hljs-string">&quot;tavily&quot;</span>:
+            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> tavily_api_key:
+                <span class="hljs-keyword">return</span> &#123;
+                    <span class="hljs-string">&quot;success&quot;</span>: <span class="hljs-literal">False</span>,
+                    <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">&quot;未设置Tavily API密钥，无法使用Tavily搜索&quot;</span>,
+                    <span class="hljs-string">&quot;results&quot;</span>: []
+                &#125;
+            search_tool = TavilySearchResults(max_results=max_results)
+            tool_name = <span class="hljs-string">&quot;Tavily&quot;</span>
+        <span class="hljs-keyword">elif</span> tool_type.lower() == <span class="hljs-string">&quot;duckduckgo&quot;</span>:
+            search_tool = DuckDuckGoSearchResults(max_results=max_results, output_format=<span class="hljs-string">&quot;list&quot;</span>)
+            tool_name = <span class="hljs-string">&quot;DuckDuckGo&quot;</span>
+        <span class="hljs-keyword">else</span>:
+            <span class="hljs-keyword">return</span> &#123;
+                <span class="hljs-string">&quot;success&quot;</span>: <span class="hljs-literal">False</span>,
+                <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">f&quot;不支持的搜索工具类型: <span class="hljs-subst">&#123;tool_type&#125;</span>&quot;</span>,
+                <span class="hljs-string">&quot;results&quot;</span>: []
+            &#125;
+        
+        <span class="hljs-comment"># 计时开始</span>
+        start_time = time.time()
+        
+        <span class="hljs-comment"># 调用搜索工具</span>
+        results = search_tool.invoke(&#123;<span class="hljs-string">&quot;query&quot;</span>: query&#125;)
+        
+        <span class="hljs-comment"># 计时结束</span>
+        end_time = time.time()
+        search_time = end_time - start_time
+        
+        <span class="hljs-comment"># 检查结果</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> results:
+            <span class="hljs-keyword">return</span> &#123;
+                <span class="hljs-string">&quot;success&quot;</span>: <span class="hljs-literal">False</span>,
+                <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;tool_name&#125;</span>搜索未返回任何结果&quot;</span>,
+                <span class="hljs-string">&quot;results&quot;</span>: [],
+                <span class="hljs-string">&quot;tool_name&quot;</span>: tool_name,
+                <span class="hljs-string">&quot;search_time&quot;</span>: search_time
+            &#125;
+            
+        <span class="hljs-comment"># 格式化结果</span>
+        formatted_results = format_results(results, tool_name)
+        
+        <span class="hljs-keyword">return</span> &#123;
+            <span class="hljs-string">&quot;success&quot;</span>: <span class="hljs-literal">True</span>,
+            <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;tool_name&#125;</span>搜索成功完成&quot;</span>,
+            <span class="hljs-string">&quot;results&quot;</span>: results,
+            <span class="hljs-string">&quot;formatted_results&quot;</span>: formatted_results,
+            <span class="hljs-string">&quot;tool_name&quot;</span>: tool_name,
+            <span class="hljs-string">&quot;search_time&quot;</span>: search_time
+        &#125;
+        
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        <span class="hljs-keyword">return</span> &#123;
+            <span class="hljs-string">&quot;success&quot;</span>: <span class="hljs-literal">False</span>,
+            <span class="hljs-string">&quot;message&quot;</span>: <span class="hljs-string">f&quot;搜索过程中出现错误: <span class="hljs-subst">&#123;<span class="hljs-built_in">str</span>(e)&#125;</span>&quot;</span>,
+            <span class="hljs-string">&quot;results&quot;</span>: [],
+            <span class="hljs-string">&quot;tool_name&quot;</span>: tool_type
+        &#125;
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compare_search_tools</span>(<span class="hljs-params">query, max_results=<span class="hljs-number">3</span></span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-string">    比较不同搜索工具的结果</span>
+<span class="hljs-string">    </span>
+<span class="hljs-string">    Args:</span>
+<span class="hljs-string">        query (str): 搜索查询</span>
+<span class="hljs-string">        max_results (int, optional): 每个工具返回的最大结果数. 默认为3.</span>
+<span class="hljs-string">    &quot;&quot;&quot;</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;=&quot;</span> * <span class="hljs-number">60</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;搜索查询: &#x27;<span class="hljs-subst">&#123;query&#125;</span>&#x27;&quot;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;=&quot;</span> * <span class="hljs-number">60</span>)
+    
+    <span class="hljs-comment"># 使用DuckDuckGo搜索</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n[1] 使用DuckDuckGo搜索...&quot;</span>)
+    ddg_result = search_with_tool(query, <span class="hljs-string">&quot;duckduckgo&quot;</span>, max_results)
+    
+    <span class="hljs-comment"># 使用Tavily搜索 (如果有API密钥)</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n[2] 使用Tavily搜索...&quot;</span>)
+    tavily_result = search_with_tool(query, <span class="hljs-string">&quot;tavily&quot;</span>, max_results)
+    
+    <span class="hljs-comment"># 打印结果比较</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n&quot;</span> + <span class="hljs-string">&quot;=&quot;</span> * <span class="hljs-number">60</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;搜索结果比较&quot;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;=&quot;</span> * <span class="hljs-number">60</span>)
+    
+    <span class="hljs-comment"># DuckDuckGo结果</span>
+    <span class="hljs-keyword">if</span> ddg_result[<span class="hljs-string">&quot;success&quot;</span>]:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\nDuckDuckGo 搜索时间: <span class="hljs-subst">&#123;ddg_result.get(<span class="hljs-string">&#x27;search_time&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>):<span class="hljs-number">.2</span>f&#125;</span> 秒&quot;</span>)
+        <span class="hljs-built_in">print</span>(ddg_result[<span class="hljs-string">&quot;formatted_results&quot;</span>])
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\nDuckDuckGo 搜索失败: <span class="hljs-subst">&#123;ddg_result[<span class="hljs-string">&#x27;message&#x27;</span>]&#125;</span>&quot;</span>)
+    
+    <span class="hljs-comment"># Tavily结果</span>
+    <span class="hljs-keyword">if</span> tavily_result[<span class="hljs-string">&quot;success&quot;</span>]:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\nTavily 搜索时间: <span class="hljs-subst">&#123;tavily_result.get(<span class="hljs-string">&#x27;search_time&#x27;</span>, <span class="hljs-string">&#x27;N/A&#x27;</span>):<span class="hljs-number">.2</span>f&#125;</span> 秒&quot;</span>)
+        <span class="hljs-built_in">print</span>(tavily_result[<span class="hljs-string">&quot;formatted_results&quot;</span>])
+    <span class="hljs-keyword">else</span>:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;\nTavily 搜索失败: <span class="hljs-subst">&#123;tavily_result[<span class="hljs-string">&#x27;message&#x27;</span>]&#125;</span>&quot;</span>)
+    
+    <span class="hljs-comment"># 添加差异分析</span>
+    <span class="hljs-keyword">if</span> ddg_result[<span class="hljs-string">&quot;success&quot;</span>] <span class="hljs-keyword">and</span> tavily_result[<span class="hljs-string">&quot;success&quot;</span>]:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n&quot;</span> + <span class="hljs-string">&quot;-&quot;</span> * <span class="hljs-number">60</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;结果差异分析:&quot;</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;-&quot;</span> * <span class="hljs-number">60</span>)
+        
+        <span class="hljs-comment"># 比较结果数量</span>
+        ddg_results = ddg_result[<span class="hljs-string">&quot;results&quot;</span>]
+        tavily_results = tavily_result[<span class="hljs-string">&quot;results&quot;</span>]
+        
+        <span class="hljs-comment"># 处理DuckDuckGo的结果数量</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ddg_results, <span class="hljs-built_in">str</span>):
+            <span class="hljs-keyword">try</span>:
+                <span class="hljs-keyword">import</span> json
+                ddg_results = json.loads(ddg_results)
+            <span class="hljs-keyword">except</span>:
+                ddg_results = []
+                
+        ddg_count = <span class="hljs-built_in">len</span>(ddg_results) <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(ddg_results, <span class="hljs-built_in">list</span>) <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>
+        tavily_count = <span class="hljs-built_in">len</span>(tavily_results)
+        
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;DuckDuckGo 返回结果数量: <span class="hljs-subst">&#123;ddg_count&#125;</span>&quot;</span>)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Tavily 返回结果数量: <span class="hljs-subst">&#123;tavily_count&#125;</span>&quot;</span>)
+        
+        <span class="hljs-comment"># 比较响应时间</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;search_time&quot;</span> <span class="hljs-keyword">in</span> ddg_result <span class="hljs-keyword">and</span> <span class="hljs-string">&quot;search_time&quot;</span> <span class="hljs-keyword">in</span> tavily_result:
+            ddg_time = ddg_result[<span class="hljs-string">&quot;search_time&quot;</span>]
+            tavily_time = tavily_result[<span class="hljs-string">&quot;search_time&quot;</span>]
+            faster = <span class="hljs-string">&quot;DuckDuckGo&quot;</span> <span class="hljs-keyword">if</span> ddg_time &lt; tavily_time <span class="hljs-keyword">else</span> <span class="hljs-string">&quot;Tavily&quot;</span>
+            time_diff = <span class="hljs-built_in">abs</span>(ddg_time - tavily_time)
+            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;响应时间差异: <span class="hljs-subst">&#123;faster&#125;</span> 更快 <span class="hljs-subst">&#123;time_diff:<span class="hljs-number">.2</span>f&#125;</span> 秒&quot;</span>)
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span>
+    <span class="hljs-string">&quot;&quot;&quot;主函数，运行搜索工具比较示例&quot;&quot;&quot;</span>
+    <span class="hljs-comment"># 示例搜索查询</span>
+    queries = [
+        <span class="hljs-string">&quot;2024年人工智能的主要发展趋势&quot;</span>,
+        <span class="hljs-string">&quot;LangChain和LlamaIndex的比较&quot;</span>,
+        <span class="hljs-string">&quot;Python和JavaScript的区别&quot;</span>
+    ]
+    
+    <span class="hljs-keyword">for</span> query <span class="hljs-keyword">in</span> queries:
+        compare_search_tools(query)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n\n&quot;</span> + <span class="hljs-string">&quot;=&quot;</span> * <span class="hljs-number">70</span> + <span class="hljs-string">&quot;\n&quot;</span>)
+        
+        <span class="hljs-comment"># 暂停一下，避免搜索频率过高</span>
+        time.sleep(<span class="hljs-number">2</span>)
+
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\n&quot;</span> + <span class="hljs-string">&quot;*&quot;</span> * <span class="hljs-number">70</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;* LangChain搜索工具比较: Tavily vs DuckDuckGo *&quot;</span>.center(<span class="hljs-number">70</span>))
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;*&quot;</span> * <span class="hljs-number">70</span> + <span class="hljs-string">&quot;\n&quot;</span>)
+    
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> tavily_api_key:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;警告: 未设置TAVILY_API_KEY环境变量，Tavily搜索将不可用\n&quot;</span>)
+    
+    main()</code></pre></div>
+
+<h2 id="实际运行结果"><a href="#实际运行结果" class="headerlink" title="实际运行结果"></a>实际运行结果</h2><p>下面是使用上述代码运行三个不同查询的实际对比结果，可以直观地看出两种搜索工具在不同方面的表现差异：</p>
+<div class="code-wrapper"><pre><code class="hljs log">**********************************************************************
+              * LangChain搜索工具比较: Tavily vs DuckDuckGo *
+**********************************************************************
+
+============================================================
+搜索查询: &#x27;2024年人工智能的主要发展趋势&#x27;
+============================================================
+
+[1] 使用DuckDuckGo搜索...
+
+[2] 使用Tavily搜索...
+
+============================================================
+搜索结果比较
+============================================================
+
+DuckDuckGo 搜索时间: 6.33 秒
+DuckDuckGo 搜索结果:
+1. 标题: 李飞飞团队发布《2024年人工智能指数报告》：10大趋势，揭示AI大模型喜与忧_澎湃号·湃客_澎湃新闻-The Paper
+   链接: https://www.thepaper.cn/newsDetail_forward_27045165
+   摘要: 刚刚，由李飞飞联合领导的斯坦福大学以人为本人工智能研究所（Stanford HAI）发布了《2024 年人工智能指数报告》（Artificial Intelligence Index Report 2024）。 这份长达 300 多页的报告是 Stanford HAI 发布的第 7 份 AI Index 研究，追踪了 2023 年全球人工智能的发展趋势。
+
+2. 标题: 《2024年人工智能指数报告》
+   链接: https://cingai.nankai.edu.cn/2024/0914/c10233a550905/page.htm
+   摘要: 2024年4月，斯坦福大学以人为本人工智能研究所（Stanford HAI）发布了《2024 年人工智能指数报告》（Artificial Intelligence Index Report 2024）。 据Stanford HAI 官方介绍道：&quot;这是我们迄今为止最全面的报告，而且是在人工智能对社会的影响从未如此明显的重要时刻发布的。
+
+3. 标题: 中国信息通信研究院发布《人工智能发展报告(2024年)》
+   链接: https://d.wanfangdata.com.cn/periodical/Ch9QZXJpb2RpY2FsQ0hJTmV3UzIwMjUwMTE2MTYzNjE0Eg1tamd5MjAyNTAxMDEwGghkNGwzYXFocg==
+   摘要: 2024年12月10日,中国信息通信研究院发布《人工智能发展报告(2024年)》.《人工智能发展报告(2024年)》立足产业新发展、新变化、新需求,聚
+焦新形势下全球人工智能发展重点,总结梳理人工智能技术创新方向、产业升级重点、行业落地趋势和安全治理进展,展望人工智能发展机遇,以期与业界分享,共同推动 ...
+
+4. 标题: 2024-2025年ai领域重大事件盘点：技术突破、应用落地与未来趋势_2024-2025最新的人工智能&quot;事件-csdn博客
+   链接: https://blog.csdn.net/TGQlovemm/article/details/145548021
+   摘要: 文章浏览阅读4k次，点赞26次，收藏19次。2024-2025年，ai技术从实验室走向大规模应用，生成式ai、多模态融合与具身智能成为核心驱动力。
+然而，技术突破也伴随伦理、隐私与能源消耗的挑战。未来，ai将不仅是工具，更是人类智慧的延伸，需在创新与治理中寻找平衡点，以实现&quot;技术向善&quot;的 终极 ...
+
+
+
+Tavily 搜索时间: 7.20 秒
+Tavily 搜索结果:
+1. 标题: 瞭望| 前瞻2024人工智能四大趋势 - 新华网
+   链接: http://www.news.cn/tech/20240103/06334b17b41c44518168c2dea7bb844d/c.html
+   内容: 瞭望 | 前瞻2024人工智能四大趋势
+2024-01-03 16:01:40 来源：新华社
+据消息人士称，OpenAI正在训练下一代的人工智能，暂名“Q*”（读作Q-star）。新的一年，OpenAI下一代产品可能发布
+数据瓶颈指的是可用于训练AI的高质量数据的有限性，合成数据有望打破这一瓶颈。除...
+
+2. 标题: 2024年人工智能产业十大发展趋势
+   链接: https://zhuanlan.zhihu.com/p/683509691
+   内容: 2024年人工智能产业十大发展趋势技术变革1. 多模态预训练大模型将是人工智能产业的标配2. 高质量数据愈发稀缺将倒逼数据智能飞跃3. 智能 算力无处不在...
+
+3. 标题: 2024 年最重要的AI 趋势 - IBM
+   链接: https://www.ibm.com/cn-zh/think/insights/artificial-intelligence-trends
+   内容: 人工智能主要趋势 | IBM
+2024 年最重要的 AI 趋势
+标签
+Artificial Intelligence
+2024 年 2 月 9 日
+阅读时长：12 分钟
+复制链接
+2022 年是生成式人工智能 (AI) 迅速进入公众意识的一年，而 2023 年则是它开始在商业世界扎根生长的一年。因此...
+
+
+
+------------------------------------------------------------
+结果差异分析:
+------------------------------------------------------------
+DuckDuckGo 返回结果数量: 4
+Tavily 返回结果数量: 3
+响应时间差异: DuckDuckGo 更快 0.87 秒
+
+
+======================================================================
+
+============================================================
+搜索查询: &#x27;LangChain和LlamaIndex的比较&#x27;
+============================================================
+
+[1] 使用DuckDuckGo搜索...
+
+[2] 使用Tavily搜索...
+
+============================================================
+搜索结果比较
+============================================================
+
+DuckDuckGo 搜索时间: 6.44 秒
+DuckDuckGo 搜索结果:
+1. 标题: LangChain vs LlamaIndex：为您的AI应用选择最佳框架
+   链接: https://myscale.com/blog/zh/llamaindex-vs-langchain-detailed-comparison/
+   摘要: 总之，LlamaIndex和LangChain在技术领域的不同用例中提供了独特的优势。它们通过其专业化的功能满足了各种应用需求。它们提高了可用性， 并扩展了AI开发的视野。 # 根据需求做出正确选择. 在考虑选择LlamaIndex和LangChain之间的选择时，仔细评估您的项目需求至关 ...
+
+2. 标题: Langchain与LlamaIndex应该选哪个 - 53AI-AI知识库|大模型知识库|大模型训练|智能体开发
+   链接: https://www.53ai.com/news/langchain/2025040387046.html
+   摘要: 在选择LangChain和LlamaIndex时，需要考虑以下因素： 项目需求： 如果应用主要关注搜索和检索，LlamaIndex可能更适合。对于更多样化的NLP任务和自定义工作流程，LangChain提供更大的灵活性。 使用简易性： LlamaIndex提供更简化和适合初学者的界面，而LangChain需要更深入 ...
+
+3. 标题: LangChain vs LlamaIndex: A Detailed Comparison - DataCamp
+   链接: https://www.datacamp.com/blog/langchain-vs-llamaindex
+   摘要: Langchain vs LlamaIndex: A Comparative Analysis. LlamaIndex is primarily designed for search and retrieval tasks. It excels at indexing large datasets and retrieving relevant information quickly and accurately. LangChain, on the other hand, provides a modular and adaptable framework for building a variety of NLP applications, including chatbots ...
+
+4. 标题: LangChain vs LlamaIndex: In-Depth Comparison and Use
+   链接: https://www.deepchecks.com/langchain-vs-llamaindex-depth-comparison-use/
+   摘要: LangChain and LlamaIndex are both powerful frameworks for building applications with LLMs. While they share some common functionalities, they are usually quite different. In this section, you will explore LangChain vs. LlamaIndex across various aspects. Ease of use and configuration. LlamaIndex is designed with simplicity in mind.
+
+
+
+Tavily 搜索时间: 7.36 秒
+Tavily 搜索结果:
+1. 标题: LangChain 与LlamaIndex：详细比较原创 - CSDN博客
+   链接: https://blog.csdn.net/RamendeusStudio/article/details/140046035
+   内容: LangChain 专注于构建复杂的工作流和交互式应用程序，而LlamaIndex 则强调无缝数据集成和动态数据管理。 本文对这两个框架进行了全面比较，探讨了它们独特...
+
+2. 标题: LangChain vs LlamaIndex：为您的AI应用选择最佳框架 - MyScale
+   链接: https://myscale.com/blog/zh/llamaindex-vs-langchain-detailed-comparison/
+   内容: 让我们讨论一下LlamaIndex和LangChain的一些核心功能和功能。
+
+# 数据索引
+
+在数据索引的背景下比较LlamaIndex和LangChain时，不同的方法浮出水面。LlamaIndex在快速组织和分类大量信息方面表现出色，将信息高效地转化为数值表示（嵌入式）。它专注于高效索引，以确...
+
+3. 标题: LlamaIndex 和Langchain 有啥区别？ - 杰力皓博
+   链接: https://www.aqwu.net/wp/?p=2902
+   内容: 两者之间的主要区别在于它们的使用场景和灵活性。LlamaIndex特别适合于搜索和检索任务，使其成为深度数据探索的有力工具。相比之下，LangChain提供了更广泛的能力和工具集成，...
+
+
+
+------------------------------------------------------------
+结果差异分析:
+------------------------------------------------------------
+DuckDuckGo 返回结果数量: 4
+Tavily 返回结果数量: 3
+响应时间差异: DuckDuckGo 更快 0.92 秒
+
+
+======================================================================
+
+============================================================
+搜索查询: &#x27;Python和JavaScript的区别&#x27;
+============================================================
+
+[1] 使用DuckDuckGo搜索...
+
+[2] 使用Tavily搜索...
+
+============================================================
+搜索结果比较
+============================================================
+
+DuckDuckGo 搜索时间: 6.39 秒
+DuckDuckGo 搜索结果:
+1. 标题: JavaScript与Python编程语言对比：性能、应用场景及学习建议 - 云原生实践
+   链接: https://www.oryoy.com/news/javascript-yu-python-bian-cheng-yu-yan-dui-bi-xing-neng-ying-yong-chang-jing-ji-xue-xi-jian-yi.html  
+   摘要: JavaScript与Python编程语言对比：性能、应用场景及学习建议 在当今的编程世界中，JavaScript和Python无疑是两种最受欢迎且广泛应用的编 程语言。它们各自拥有庞大的开发者社区和丰富的库资源，但同时也存在明显的差异。本文将从性能、应用场景以及学习建议三个方面，对JavaScript和Python进行深入对比 ...
+
+2. 标题: JavaScript 与 Python：您应该先学习哪一个？ - Web前端之家
+   链接: https://www.jiangweishan.com/article/PythonandavaScript.html
+   摘要: 句法 虽然我们已经讨论了这两种语言的语法，但我们将更深入地研究这两种语言的细微差别。我们将研究最标准的编程指令以及 Python 和 JavaScript 的区别。 印刷 任何编程语言中一个基本概念就是打印。在任何优秀的初学者编程教程中，您编写的第一个程序都应该打印短语 Hello, World!。  使用 Python ...
+
+3. 标题: Python vs Java脚本：它们之间的主要区别 - Guru99
+   链接: https://www.guru99.com/zh-CN/python-vs-javascript.html
+   摘要: 之间的区别 Python vs Java脚本 Python 是一种高级面向对象编程语言，具有内置数据结构以及动态绑定和类型，非常适合快速应用程序开发。 JavaScript 是一种脚本语言，可以帮助您创建交互式网页。 Python 具有可变和不可变的数据类型，但是 Java脚本没有可变和不可变的概念。 Python 源 代码默认为 ASCII ...
+
+4. 标题: python 和 javascript 有什么区别 - PingCode
+   链接: https://docs.pingcode.com/ask/ask-ask/164914.html
+   摘要: Python和JavaScript的主要区别在于它们的运行环境、语法、应用范围和设计哲学。 Python通常用于服务器端编程、数据科学和脚本编写，而JavaScript主要用于客户端的Web开发。 Python以简洁易读著称、支持多种编程范式，例如面向对象和函数式编程。
+
+
+
+Tavily 搜索时间: 7.98 秒
+Tavily 搜索结果:
+1. 标题: Python和JavaScript在使用上有什么区别？ - 葡萄城技术团队 - 博客园
+   链接: https://www.cnblogs.com/powertoolsteam/p/14450549.html
+   内容: 两种方法之间的主要区别在于，在Python中，将提示用户在控制台中输入值，而在JavaScript中，浏览器中将显示一个小提示，并要求用户输入值。...
+
+2. 标题: python 和javascript 有什么区别？ - 知乎
+   链接: https://www.zhihu.com/question/583932715
+   内容: 1、语法差异：Python 的语法比较简单，强调代码可读性，比如它使用缩进来表示代码块的范围。 JavaScript 的语法比较复杂，结构更加灵活，比如它没有明显的缩进...
+
+3. 标题: Python与JavaScript有什么区别？ - 稀土掘金
+   链接: https://juejin.cn/post/7112346448229990414
+   内容: 一方面，Python是强类型的，因此类型之间没有隐式转换。另一方面，JavaScript是弱类型的，意味着不相关的类型之间的转换是隐式的。...   
+
+
+
+------------------------------------------------------------
+结果差异分析:
+------------------------------------------------------------
+DuckDuckGo 返回结果数量: 4
+Tavily 返回结果数量: 3
+响应时间差异: DuckDuckGo 更快 1.59 秒
+
+
+======================================================================</code></pre></div>
+
+<h3 id="1-环境设置"><a href="#1-环境设置" class="headerlink" title="1.环境设置"></a>1.环境设置</h3><p>先需要导入必要的库并设置环境变量</p>
+<h3 id="2-结果格式化函数"><a href="#2-结果格式化函数" class="headerlink" title="2. 结果格式化函数"></a>2. 结果格式化函数</h3><p>搜索工具返回的原始数据格式各不相同，需要统一格式化以便比较。</p>
+<p>format_results这个函数接收搜索结果和工具名称，根据不同工具返回的数据结构进行格式化，生成一个易于阅读的字符串输出。对于Tavily，它处理标题、URL和内容摘要；对于DuckDuckGo，它处理标题、链接和snippet摘要。</p>
+<h3 id="3-搜索工具调用函数"><a href="#3-搜索工具调用函数" class="headerlink" title="3. 搜索工具调用函数"></a>3. 搜索工具调用函数</h3><p>search_with_tool核心功能是通过不同的搜索工具执行查询：</p>
+<p>这个函数根据指定的工具类型（”tavily”或”duckduckgo”）创建相应的搜索工具实例，然后执行查询，记录搜索时间，并返回格式化的结果。</p>
+<p>关键API使用：</p>
+<ul>
+<li><code>TavilySearchResults(max_results=max_results)</code> - 创建Tavily搜索工具</li>
+<li><code>DuckDuckGoSearchResults(max_results=max_results, output_format=&quot;list&quot;)</code> - 创建DuckDuckGo搜索工具</li>
+<li><code>search_tool.invoke(&#123;&quot;query&quot;: query&#125;)</code> - 执行搜索查询</li>
+</ul>
+<h3 id="4-搜索工具比较函数"><a href="#4-搜索工具比较函数" class="headerlink" title="4. 搜索工具比较函数"></a>4. 搜索工具比较函数</h3><p>compare_search_tools比较函数协调多个搜索工具的使用并分析差异：</p>
+<p>这个函数执行以下步骤：</p>
+<ol>
+<li>使用DuckDuckGo执行搜索</li>
+<li>使用Tavily执行相同的搜索</li>
+<li>打印两种工具的搜索时间</li>
+<li>显示格式化的搜索结果</li>
+<li>分析结果之间的差异，包括结果数量和响应时间</li>
+</ol>
+<h3 id="5-主函数"><a href="#5-主函数" class="headerlink" title="5. 主函数"></a>5. 主函数</h3><p>在主函数中，定义了三个示例查询，并对每个查询依次运行比较函数。为了避免请求频率过高，每次比较之间添加了短暂的延迟。</p>
+<h2 id="工具性能与结果差异分析"><a href="#工具性能与结果差异分析" class="headerlink" title="工具性能与结果差异分析"></a>工具性能与结果差异分析</h2><p>通过代码的运行，我们可以观察到两种搜索工具的几个关键差异：</p>
+<ol>
+<li><p><strong>结果格式</strong>：Tavily返回结构化的JSON数据，包含标题、URL和内容；DuckDuckGo返回的结果包含标题、链接和摘要。</p>
+</li>
+<li><p><strong>响应时间</strong>：代码会测量并比较两种工具的响应时间，帮助我们了解它们在性能方面的差异。</p>
+</li>
+<li><p><strong>结果质量</strong>：通过运行多个查询，可以主观评估两种工具返回结果的相关性和质量。</p>
+</li>
+<li><p><strong>可用性</strong>：DuckDuckGo无需API密钥，随时可用；Tavily需要有效的API密钥。</p>
+</li>
+</ol>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>不同的搜索工具适合不同的应用场景：</p>
+<ul>
+<li><p><strong>Tavily</strong>：适合需要高质量、结构化结果的专业AI应用，特别是那些有预算支持API调用的项目。</p>
+</li>
+<li><p><strong>DuckDuckGo</strong>：适合开发阶段的项目、教育目的或不需要特别优化的应用，尤其是当预算有限或注重隐私时。</p>
+</li>
+</ul>
+<h2 id="综合比较分析（以下是Claude-3-7-sonnet根据完整log进行的分析结果）"><a href="#综合比较分析（以下是Claude-3-7-sonnet根据完整log进行的分析结果）" class="headerlink" title="综合比较分析（以下是Claude-3.7-sonnet根据完整log进行的分析结果）"></a>综合比较分析（以下是Claude-3.7-sonnet根据完整log进行的分析结果）</h2><p>通过对三种不同查询的测试比较，我们可以总结出以下几点关于Tavily和DuckDuckGo搜索工具的对比：</p>
+<h3 id="结果数量"><a href="#结果数量" class="headerlink" title="结果数量"></a>结果数量</h3><p>在所有测试中，DuckDuckGo都返回了4条结果，而Tavily返回了3条结果。这是因为我们在代码中为两种工具设置了不同的默认返回数量，但也反映了两者在结果处理上的差异。</p>
+<h3 id="响应速度"><a href="#响应速度" class="headerlink" title="响应速度"></a>响应速度</h3><p>在所有测试查询中，DuckDuckGo的响应速度都比Tavily快，平均快约1秒左右：</p>
+<ul>
+<li>查询1：DuckDuckGo快0.87秒</li>
+<li>查询2：DuckDuckGo快0.92秒</li>
+<li>查询3：DuckDuckGo快1.59秒</li>
+</ul>
+<p>这可能是因为DuckDuckGo不需要额外的API认证步骤，且其服务器可能针对简单查询做了更好的优化。</p>
+<h3 id="结果质量与相关性"><a href="#结果质量与相关性" class="headerlink" title="结果质量与相关性"></a>结果质量与相关性</h3><p>两种工具在结果质量上各有特点：</p>
+<ul>
+<li><p><strong>DuckDuckGo</strong>：返回的结果更全面，包含了更多来源的信息。例如在”2024年人工智能的主要发展趋势”的查询中，DuckDuckGo返回了包括斯坦福研究所和中国信息通信研究院的报告，覆盖面较广。</p>
+</li>
+<li><p><strong>Tavily</strong>：虽然结果数量较少，但针对AI应用场景做了优化，返回的内容格式更统一，且内容摘要往往直接切入主题。例如在”Python和JavaScript的区别”查询中，Tavily的结果更直接地列出了语法差异等关键点。</p>
+</li>
+</ul>
+<h3 id="结果格式"><a href="#结果格式" class="headerlink" title="结果格式"></a>结果格式</h3><p>两种工具返回的结果格式有明显差异：</p>
+<ul>
+<li><strong>DuckDuckGo</strong>：返回的字段包括title、link和snippet，更适合传统的搜索结果展示。</li>
+<li><strong>Tavily</strong>：返回的字段包括title、url和content，格式更为结构化，便于AI系统进一步处理。</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通过实际的搜索测试比较，我们可以看到：</p>
+<ol>
+<li><strong>性能方面</strong>：DuckDuckGo在响应速度上略胜一筹。</li>
+<li><strong>可用性方面</strong>：DuckDuckGo无需API密钥，更容易上手使用。</li>
+<li><strong>结果质量方面</strong>：Tavily的结果更适合AI应用处理，而DuckDuckGo提供了更广泛的信息覆盖。</li>
+</ol>
+<p>这些结果验证了理论分析中的预期，并提供了直观的证据帮助开发者根据自己的应用需求选择合适的搜索工具。对于注重速度和无需API密钥的应用，DuckDuckGo是更好的选择；而对于需要高质量、结构化结果的AI专业应用，Tavily则能提供更好的支持。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/AI%E7%9B%B8%E5%85%B3/">AI相关</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Langgraph/">Langgraph</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/03/23/Langgraph%E5%AD%A6%E4%B9%A04%EF%BC%9A%E6%90%AD%E4%B8%80%E4%B8%AAweb%E6%90%9C%E7%B4%A2agent/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Langgraph学习4：搭一个web搜索agent</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/03/22/Langgraph%E5%AD%A6%E4%B9%A02%EF%BC%9ALLM%E8%87%AA%E5%8A%A8%E8%B0%83%E7%94%A8%E5%B7%A5%E5%85%B7/">
+                        <span class="hidden-mobile">Langgraph学习2：LLM自动调用工具</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

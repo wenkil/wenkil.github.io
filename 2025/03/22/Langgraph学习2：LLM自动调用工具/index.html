@@ -1,0 +1,933 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="在上一篇文章中，通过学习官方示例构建了一个基础的Langgraph chatbot工作流。今天更进一步，探索如何让chatbot能够调用工具来完成特定任务。 定义工具简单定义一个无任何逻辑的工具函数，该函数直接会返回天气查询的结果来模拟LLM调用天气api的流程： from langchain_core.tools import tool from langchain_core.utils.fun">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Langgraph学习2：LLM自动调用工具">
+<meta property="og:url" content="http://example.com/2025/03/22/Langgraph%E5%AD%A6%E4%B9%A02%EF%BC%9ALLM%E8%87%AA%E5%8A%A8%E8%B0%83%E7%94%A8%E5%B7%A5%E5%85%B7/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="在上一篇文章中，通过学习官方示例构建了一个基础的Langgraph chatbot工作流。今天更进一步，探索如何让chatbot能够调用工具来完成特定任务。 定义工具简单定义一个无任何逻辑的工具函数，该函数直接会返回天气查询的结果来模拟LLM调用天气api的流程： from langchain_core.tools import tool from langchain_core.utils.fun">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/blog/AI/langgraph/2025-03-22_17-39-01.png">
+<meta property="article:published_time" content="2025-03-22T04:55:00.000Z">
+<meta property="article:modified_time" content="2025-04-09T11:52:48.873Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Langgraph">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/blog/AI/langgraph/2025-03-22_17-39-01.png">
+  
+  <title>Langgraph学习2：LLM自动调用工具 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Langgraph学习2：LLM自动调用工具">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-03-22 12:55" pubdate>
+        2025年3月22日 12:55:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      15k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Langgraph学习2：LLM自动调用工具</h1>
+            
+            <div class="markdown-body">
+              <p>在上一篇文章中，通过学习官方示例构建了一个基础的Langgraph chatbot工作流。今天更进一步，探索如何让chatbot能够调用工具来完成特定任务。</p>
+<h2 id="定义工具"><a href="#定义工具" class="headerlink" title="定义工具"></a>定义工具</h2><p>简单定义一个无任何逻辑的工具函数，该函数直接会返回天气查询的结果来模拟LLM调用天气api的流程：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> langchain_core.tools <span class="hljs-keyword">import</span> tool
+<span class="hljs-keyword">from</span> langchain_core.utils.function_calling <span class="hljs-keyword">import</span> convert_to_openai_function
+
+<span class="hljs-comment"># 定义工具</span>
+<span class="hljs-meta">@tool</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_weather</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;用于获取天气信息。&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">return</span> [<span class="hljs-string">&quot;今天天气晴朗，温度20度&quot;</span>, <span class="hljs-string">&quot;明天天气多云，温度25度&quot;</span>]
+
+<span class="hljs-comment"># 创建工具列表</span>
+tools = [get_weather]
+
+<span class="hljs-comment"># 绑定工具到LLM</span>
+llm_with_tools = llm.bind_tools(tools)
+
+<span class="hljs-comment"># 创建OpenAI函数格式的工具描述</span>
+functions = [convert_to_openai_function(t) <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tools]
+
+<span class="hljs-comment"># 创建tool节点</span>
+<span class="hljs-keyword">from</span> langgraph.prebuilt <span class="hljs-keyword">import</span> ToolNode
+tool_node = ToolNode(tools)</code></pre></div>
+
+<p>使用了@tool装饰器来定义工具函数，这是Langchain提供的便捷方式。然后创建了工具列表并将其绑定到LLM，同时还创建了一个专门的ToolNode来处理工具调用。</p>
+<p><strong>以下是Claude-3.7-sonnet对tool装饰器的用法和解释：</strong></p>
+<div class="code-wrapper"><pre><code class="hljs less"><span class="hljs-variable">@tool</span>装饰器详解
+<span class="hljs-variable">@tool</span>是LangChain提供的装饰器，它的作用是将普通Python函数转换为LangChain工具格式。这个装饰器会自动：
+- 解析函数签名中的参数类型
+- 从函数文档字符串中提取描述信息
+- 创建一个符合LangChain工具标准的包装器
+- 
+使用<span class="hljs-variable">@tool</span>时需要注意：
+- 函数必须有文档字符串（docstring），这将作为工具的描述传递给LLM
+- 参数类型最好有明确的注解，这样LLM才能正确理解参数类型
+- 参数名称应尽量具有描述性，这有助于LLM理解参数的作用
+- 返回值应该是字符串或可序列化为字符串的对象，以便传递回LLM
+
+llm_with_tools = llm.bind_tools(tools)这一步是将工具绑定到LLM实例，这样LLM在生成回复时就能感知到这些工具的存在。
+convert_to_openai_function函数则是将LangChain工具格式转换为OpenAI函数调用格式，因为很多模型都兼容OpenAI的函数调用API标准。</code></pre></div>
+
+
+<h2 id="修改聊天节点函数"><a href="#修改聊天节点函数" class="headerlink" title="修改聊天节点函数"></a>修改聊天节点函数</h2><p>需要改造原来的聊天节点函数，使其支持工具调用：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># llm的调用</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">chat_bot</span>(<span class="hljs-params">state: MessagesState</span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;生成流式回复的节点函数&quot;&quot;&quot;</span>
+    messages = state[<span class="hljs-string">&quot;messages&quot;</span>]
+    <span class="hljs-comment"># 使用支持工具调用的方式调用LLM</span>
+    response = <span class="hljs-keyword">await</span> llm_with_tools.ainvoke(
+        messages,
+        functions=functions,
+        function_call=<span class="hljs-string">&quot;auto&quot;</span>
+    )
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;messages&quot;</span>: [response]&#125;</code></pre></div>
+<p>通过传入functions参数和设置function_call=”auto”，让模型自行决定是否需要调用工具。</p>
+<p>这意味着模型将根据用户的输入自动判断是否需要调用工具。如果模型认为需要调用工具，它会生成一个特殊的回复，包含工具调用信息而不是直接文本回答。</p>
+<h2 id="定义条件路由"><a href="#定义条件路由" class="headerlink" title="定义条件路由"></a>定义条件路由</h2><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Literal</span>
+
+<span class="hljs-comment"># 定义边的逻辑判断（条件边），判断是否继续</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tool_router</span>(<span class="hljs-params">state: MessagesState</span>) -&gt; <span class="hljs-type">Literal</span>[&quot;tools&quot;, &quot;__end__&quot;]:</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;state------&gt;&#x27;</span>,state,<span class="hljs-string">&#x27;\n&#x27;</span>)
+    messages = state[<span class="hljs-string">&#x27;messages&#x27;</span>]
+    last_message = messages[-<span class="hljs-number">1</span>]
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;last_message------&gt;&#x27;</span>,last_message,<span class="hljs-string">&#x27;\n&#x27;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;last_message.tool_calls------&gt;&#x27;</span>,last_message.tool_calls,<span class="hljs-string">&#x27;\n&#x27;</span>)
+    <span class="hljs-keyword">if</span> last_message.tool_calls: <span class="hljs-comment"># 判断模型是否返回tools调用</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;tools&quot;</span>
+    <span class="hljs-keyword">return</span> END</code></pre></div>
+
+<p>这个函数检查模型返回的最后一条消息是否包含工具调用请求。如果有，就路由到”tools”节点；如果没有，就结束工作流。</p>
+<h3 id="工具调用流程详解"><a href="#工具调用流程详解" class="headerlink" title="工具调用流程详解"></a>工具调用流程详解</h3><p>当模型决定调用工具时，整个过程是这样的：</p>
+<ul>
+<li>模型生成一个包含tool_calls属性的AIMessage对象</li>
+<li>tool_router函数检查最新消息是否包含tool_calls</li>
+<li>如果存在tool_calls，函数返回”tools”，指示工作流去执行工具节点</li>
+<li>如果不存在，函数返回END，表示工作流结束</li>
+</ul>
+<p>从日志中可以看到last_message.tool_calls的格式：</p>
+<div class="code-wrapper"><pre><code class="hljs log">last_message.tool_calls------&gt; [&#123;&#x27;name&#x27;: &#x27;get_weather&#x27;, &#x27;args&#x27;: &#123;&#x27;query&#x27;: &#x27;今明两天天气&#x27;&#125;, &#x27;id&#x27;: &#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;, &#x27;type&#x27;: &#x27;tool_call&#x27;&#125;]</code></pre></div>
+
+<p>这个结构包含了关键信息：</p>
+<ul>
+<li>name：要调用的工具名称（对应我们定义的函数名）</li>
+<li>args：传递给工具的参数（这里是查询字符串）</li>
+<li>id：工具调用的唯一标识符（用于后续匹配返回结果）</li>
+<li>type：调用类型，固定为”tool_call”</li>
+</ul>
+<h3 id="ToolNode的工作原理"><a href="#ToolNode的工作原理" class="headerlink" title="ToolNode的工作原理"></a>ToolNode的工作原理</h3><p>当工作流转到tool_node节点时，ToolNode会自动：</p>
+<ul>
+<li>从最后一条消息中提取tool_calls</li>
+<li>根据工具名称找到对应的工具函数</li>
+<li>用提取的参数调用该函数</li>
+<li>将结果封装为ToolMessage添加到消息历史中</li>
+<li>返回更新后的状态给工作流<br>最后，工作流会再次进入chat_bot节点，让模型基于工具返回的结果生成最终回复。</li>
+</ul>
+<h2 id="扩展工作流"><a href="#扩展工作流" class="headerlink" title="扩展工作流"></a>扩展工作流</h2><p>现在可以重新构建一个更复杂的工作流，包含工具调用和条件路由：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 创建工作流程</span>
+workflow = StateGraph(MessagesState)
+<span class="hljs-comment"># 添加节点</span>
+workflow.add_node(<span class="hljs-string">&quot;chat_bot&quot;</span>, chat_bot)
+<span class="hljs-comment"># 设置入口节点</span>
+workflow.set_entry_point(<span class="hljs-string">&quot;chat_bot&quot;</span>)
+<span class="hljs-comment"># 添加tool节点</span>
+workflow.add_node(<span class="hljs-string">&quot;tools&quot;</span>, tool_node)
+<span class="hljs-comment"># 从tools节点指向chat_bot节点，以便可能的后续交互</span>
+workflow.add_edge(<span class="hljs-string">&quot;tools&quot;</span>, <span class="hljs-string">&quot;chat_bot&quot;</span>)
+<span class="hljs-comment"># 添加条件边</span>
+workflow.add_conditional_edges(
+    <span class="hljs-string">&quot;chat_bot&quot;</span>,
+    tool_router,  <span class="hljs-comment"># 判断下一个调用的节点</span>
+)
+<span class="hljs-comment"># 编译图</span>
+app_graph = workflow.<span class="hljs-built_in">compile</span>()</code></pre></div>
+
+<p>与第一篇不同这个工作流有了条件路由，执行路径现在有两种可能：<br>chat_bot → END（如果模型直接回答）<br>chat_bot → tools → chat_bot → END（如果模型需要调用工具）<br>add_conditional_edges方法是关键，它允许工作流根据路由函数的返回值选择不同的执行路径。</p>
+<h2 id="测试工作流"><a href="#测试工作流" class="headerlink" title="测试工作流"></a>测试工作流</h2><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 测试运行函数</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_streaming_chain</span>():</span>
+    <span class="hljs-string">&quot;&quot;&quot;运行graph的链&quot;&quot;&quot;</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;开始生成回复...\n&quot;</span>)
+    messages = [
+        SystemMessage(content=<span class="hljs-string">&quot;你是一个智能助手，使用专业且准确的语言回复用户的问题，且使用中文进行回复&quot;</span>),
+        HumanMessage(content=<span class="hljs-string">&quot;帮我查一下今明两天的天气&quot;</span>)
+    ]
+    
+    <span class="hljs-comment"># 初始化状态</span>
+    initial_state = &#123;<span class="hljs-string">&quot;messages&quot;</span>: messages, <span class="hljs-string">&quot;streamed_output&quot;</span>: []&#125;
+    
+    <span class="hljs-comment"># 使用messages模式捕获流式输出</span>
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> app_graph.astream(initial_state, stream_mode=<span class="hljs-string">&#x27;messages&#x27;</span>):
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, <span class="hljs-built_in">tuple</span>):
+            chunk: AIMessageChunk = event[<span class="hljs-number">0</span>]
+            <span class="hljs-keyword">if</span> chunk.<span class="hljs-built_in">type</span> == <span class="hljs-string">&#x27;AIMessageChunk&#x27;</span>:
+                <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;event里监听到的流式输出------&gt;&#x27;</span>,chunk.content,<span class="hljs-string">&#x27;\n\n&#x27;</span>)</code></pre></div>
+
+<p>与第一篇不同，这次选择了stream_mode=’messages’来观察模型的实时输出。</p>
+<h2 id="执行结果"><a href="#执行结果" class="headerlink" title="执行结果"></a>执行结果</h2><p>测试结果展示了完整的工作流执行过程：</p>
+<ul>
+<li>模型分析用户问题”帮我查一下今明两天的天气”，决定需要调用get_weather工具</li>
+<li>工具调用节点执行get_weather函数，返回天气信息</li>
+<li>模型收到天气信息后，生成了最终回复</li>
+</ul>
+<p>关键是工具调用和路由部分的执行：</p>
+<ul>
+<li>当模型返回包含tool_calls的消息时，tool_router函数返回”tools”</li>
+<li>工作流转到tools节点，执行工具调用</li>
+<li>调用的结果作为新消息被添加到对话历史</li>
+<li>工作流返回到chat_bot节点，让模型基于工具结果生成最终回复</li>
+</ul>
+<p><strong>用户询问</strong>：<br>帮我查一下今明两天的天气</p>
+<p><strong>chatbot回答</strong>：<br>好的，我来帮您查询一下。请稍等片刻经过查询，今天天气晴朗，温度20度，明天天气多云，温度25度。请问还有其他需要我帮忙查询的吗？</p>
+<p>此时的graph图：<br><img src="/img/blog/AI/langgraph/2025-03-22_17-39-01.png" srcset="/img/loading.gif" lazyload></p>
+<p>以下是完整输出过程：</p>
+<div class="code-wrapper"><pre><code class="hljs xl">开始生成回复...
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>
+
+
+<span class="hljs-function"><span class="hljs-title">state</span>------&gt;</span> &#123;<span class="hljs-string">&#x27;messages&#x27;</span>: [SystemMessage(content=<span class="hljs-string">&#x27;你是一个智能助手，使用专业且准确的语言回复用户的问题，且使用中文进行回复&#x27;</span>, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;, id=<span class="hljs-string">&#x27;76b77c29-117e-4a0f-b36c-896e2eaf13ee&#x27;</span>), HumanMessage(content=<span class="hljs-string">&#x27;帮我查一下今明两天的天气&#x27;</span>, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;, id=<span class="hljs-string">&#x27;e0b6808b-a4ad-4ee5-829b-7718dbe06d88&#x27;</span>), AIMessage(content=<span class="hljs-string">&#x27;&#x27;</span>, additional_kwargs=&#123;<span class="hljs-string">&#x27;tool_calls&#x27;</span>: [&#123;<span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;function&#x27;</span>: &#123;<span class="hljs-string">&#x27;arguments&#x27;</span>: <span class="hljs-string">&#x27;&#123;&quot;query&quot;: &quot;今明两天天气&quot;&#125;&#x27;</span>, <span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>&#125;, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;function&#x27;</span>&#125;]&#125;, response_metadata=&#123;<span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-string">&#x27;tool_calls&#x27;</span>, <span class="hljs-string">&#x27;model_name&#x27;</span>: <span class="hljs-string">&#x27;THUDM/glm-4-9b-chat&#x27;</span>&#125;, id=<span class="hljs-string">&#x27;run-6b761404-e237-4cc4-a203-2316e0ecb3e3&#x27;</span>, tool_calls=[&#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>, <span class="hljs-string">&#x27;args&#x27;</span>: &#123;<span class="hljs-string">&#x27;query&#x27;</span>: <span class="hljs-string">&#x27;今明两天天气&#x27;</span>&#125;, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;tool_call&#x27;</span>&#125;], usage_metadata=&#123;<span class="hljs-string">&#x27;input_tokens&#x27;</span>: <span class="hljs-number">2076</span>, <span class="hljs-string">&#x27;output_tokens&#x27;</span>: <span class="hljs-number">65</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">2141</span>, <span class="hljs-string">&#x27;input_token_details&#x27;</span>: &#123;&#125;, <span class="hljs-string">&#x27;output_token_details&#x27;</span>: &#123;&#125;&#125;)]&#125;
+
+<span class="hljs-function"><span class="hljs-title">last_message</span>------&gt;</span> content=<span class="hljs-string">&#x27;&#x27;</span> additional_kwargs=&#123;<span class="hljs-string">&#x27;tool_calls&#x27;</span>: [&#123;<span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;function&#x27;</span>: &#123;<span class="hljs-string">&#x27;arguments&#x27;</span>: <span class="hljs-string">&#x27;&#123;&quot;query&quot;: &quot;今明两天天气&quot;&#125;&#x27;</span>, <span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>&#125;, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;function&#x27;</span>&#125;]&#125; response_metadata=&#123;<span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-string">&#x27;tool_calls&#x27;</span>, <span class="hljs-string">&#x27;model_name&#x27;</span>: <span class="hljs-string">&#x27;THUDM/glm-4-9b-chat&#x27;</span>&#125; id=<span class="hljs-string">&#x27;run-6b761404-e237-4cc4-a203-2316e0ecb3e3&#x27;</span> tool_calls=[&#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>, <span class="hljs-string">&#x27;args&#x27;</span>: &#123;<span class="hljs-string">&#x27;query&#x27;</span>: <span class="hljs-string">&#x27;今明两天天气&#x27;</span>&#125;, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;tool_call&#x27;</span>&#125;] usage_metadata=&#123;<span class="hljs-string">&#x27;input_tokens&#x27;</span>: <span class="hljs-number">2076</span>, <span class="hljs-string">&#x27;output_tokens&#x27;</span>: <span class="hljs-number">65</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">2141</span>, <span class="hljs-string">&#x27;input_token_details&#x27;</span>: &#123;&#125;, <span class="hljs-string">&#x27;output_token_details&#x27;</span>: &#123;&#125;&#125;
+
+<span class="hljs-function"><span class="hljs-title">last_message</span>.tool_calls------&gt;</span> [&#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>, <span class="hljs-string">&#x27;args&#x27;</span>: &#123;<span class="hljs-string">&#x27;query&#x27;</span>: <span class="hljs-string">&#x27;今明两天天气&#x27;</span>&#125;, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;tool_call&#x27;</span>&#125;]
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>
+
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 好的
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> ，
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 我来
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 帮
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 您
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 查询 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 一下
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 。
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 请
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 稍
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 等
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 片刻
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 经过 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 查询
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> ，
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 今天
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 天气
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 晴
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 朗
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> ，
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 温度
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> <span class="hljs-number">20</span>
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 度 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> ，
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 明天
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 天气
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 多云
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> ，
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 温度
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> <span class="hljs-number">25</span>
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 度
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 。
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 请问
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 还有
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 其他 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 需要 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 我 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 帮忙 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 查询 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> 的吗 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span> ？ 
+
+
+<span class="hljs-function"><span class="hljs-title">event</span>里监听到的流式输出------&gt;</span>  
+
+
+<span class="hljs-function"><span class="hljs-title">state</span>------&gt;</span> &#123;<span class="hljs-string">&#x27;messages&#x27;</span>: [SystemMessage(content=<span class="hljs-string">&#x27;你是一个智能助手，使用专业且准确的语言回复用户的问题，且使用中文进行回复&#x27;</span>, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;, id=<span class="hljs-string">&#x27;76b77c29-117e-4a0f-b36c-896e2eaf13ee&#x27;</span>), HumanMessage(content=<span class="hljs-string">&#x27;帮我查一下今明两天的天气&#x27;</span>, additional_kwargs=&#123;&#125;, response_metadata=&#123;&#125;, id=<span class="hljs-string">&#x27;e0b6808b-a4ad-4ee5-829b-7718dbe06d88&#x27;</span>), AIMessage(content=<span class="hljs-string">&#x27;&#x27;</span>, additional_kwargs=&#123;<span class="hljs-string">&#x27;tool_calls&#x27;</span>: [&#123;<span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;function&#x27;</span>: &#123;<span class="hljs-string">&#x27;arguments&#x27;</span>: <span class="hljs-string">&#x27;&#123;&quot;query&quot;: &quot;今明两天天气&quot;&#125;&#x27;</span>, <span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>&#125;, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;function&#x27;</span>&#125;]&#125;, response_metadata=&#123;<span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-string">&#x27;tool_calls&#x27;</span>, <span class="hljs-string">&#x27;model_name&#x27;</span>: <span class="hljs-string">&#x27;THUDM/glm-4-9b-chat&#x27;</span>&#125;, id=<span class="hljs-string">&#x27;run-6b761404-e237-4cc4-a203-2316e0ecb3e3&#x27;</span>, tool_calls=[&#123;<span class="hljs-string">&#x27;name&#x27;</span>: <span class="hljs-string">&#x27;get_weather&#x27;</span>, <span class="hljs-string">&#x27;args&#x27;</span>: &#123;<span class="hljs-string">&#x27;query&#x27;</span>: <span class="hljs-string">&#x27;今明两天天气&#x27;</span>&#125;, <span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>, <span class="hljs-string">&#x27;type&#x27;</span>: <span class="hljs-string">&#x27;tool_call&#x27;</span>&#125;], usage_metadata=&#123;<span class="hljs-string">&#x27;input_tokens&#x27;</span>: <span class="hljs-number">2076</span>, <span class="hljs-string">&#x27;output_tokens&#x27;</span>: <span class="hljs-number">65</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">2141</span>, <span class="hljs-string">&#x27;input_token_details&#x27;</span>: &#123;&#125;, <span class="hljs-string">&#x27;output_token_details&#x27;</span>: &#123;&#125;&#125;), ToolMessage(content=<span class="hljs-string">&#x27;[&quot;今天天气晴朗，温度20度&quot;, &quot;明天天气多云，温度25度&quot;]&#x27;</span>, <span class="hljs-keyword">name</span>=<span class="hljs-string">&#x27;get_weather&#x27;</span>, id=<span class="hljs-string">&#x27;4d8564fa-8301-4672-8e8d-64f6cecbf936&#x27;</span>, tool_call_id=<span class="hljs-string">&#x27;019619eaea388a97f7e451f4cefc4bfe&#x27;</span>), AIMessage(content=<span class="hljs-string">&#x27;\n好的，我来帮您查询一下。请稍等片 刻经过查询，今天天气晴朗，温度20度，明天天气多云，温度25度。请问还有其他需要我帮忙查询的吗？&#x27;</span>, additional_kwargs=&#123;&#125;, response_metadata=&#123;<span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-string">&#x27;stop&#x27;</span>, <span class="hljs-string">&#x27;model_name&#x27;</span>: <span class="hljs-string">&#x27;THUDM/glm-4-9b-chat&#x27;</span>&#125;, id=<span class="hljs-string">&#x27;run-b9e66b49-9301-4343-8e51-67d3d48737c1&#x27;</span>, usage_metadata=&#123;<span class="hljs-string">&#x27;input_tokens&#x27;</span>: <span class="hljs-number">8668</span>, <span class="hljs-string">&#x27;output_tokens&#x27;</span>: <span class="hljs-number">945</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">9613</span>, <span class="hljs-string">&#x27;input_token_details&#x27;</span>: &#123;&#125;, <span class="hljs-string">&#x27;output_token_details&#x27;</span>: &#123;&#125;&#125;)]&#125;
+
+<span class="hljs-function"><span class="hljs-title">last_message</span>------&gt;</span> content=<span class="hljs-string">&#x27;\n好的，我来帮您查询一下。请稍等片刻经过查询，今天天气晴朗，温度20度，明天天气多云，温度25度。请问还有其他需要我帮忙查询的吗？&#x27;</span> additional_kwargs=&#123;&#125; response_metadata=&#123;<span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-string">&#x27;stop&#x27;</span>, <span class="hljs-string">&#x27;model_name&#x27;</span>: <span class="hljs-string">&#x27;THUDM/glm-4-9b-chat&#x27;</span>&#125; id=<span class="hljs-string">&#x27;run-b9e66b49-9301-4343-8e51-67d3d48737c1&#x27;</span> usage_metadata=&#123;<span class="hljs-string">&#x27;input_tokens&#x27;</span>: <span class="hljs-number">8668</span>, <span class="hljs-string">&#x27;output_tokens&#x27;</span>: <span class="hljs-number">945</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">9613</span>, <span class="hljs-string">&#x27;input_token_details&#x27;</span>: &#123;&#125;, <span class="hljs-string">&#x27;output_token_details&#x27;</span>: &#123;&#125;&#125;
+
+<span class="hljs-function"><span class="hljs-title">last_message</span>.tool_calls------&gt;</span> []</code></pre></div>
+
+
+<p>以下是完整代码：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Literal</span>
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime
+<span class="hljs-keyword">from</span> langchain_openai <span class="hljs-keyword">import</span> ChatOpenAI
+<span class="hljs-keyword">from</span> langchain_core.messages <span class="hljs-keyword">import</span> HumanMessage, AIMessage, SystemMessage, AIMessageChunk
+<span class="hljs-keyword">from</span> langgraph.graph <span class="hljs-keyword">import</span> Graph, StateGraph, MessagesState, END
+<span class="hljs-keyword">from</span> langchain_community.chat_models <span class="hljs-keyword">import</span> QianfanChatEndpoint
+<span class="hljs-keyword">from</span> langchain_core.tools <span class="hljs-keyword">import</span> tool
+<span class="hljs-keyword">from</span> langgraph.prebuilt <span class="hljs-keyword">import</span> ToolNode
+<span class="hljs-keyword">import</span> asyncio
+<span class="hljs-keyword">from</span> langchain_core.runnables.graph <span class="hljs-keyword">import</span> MermaidDrawMethod
+<span class="hljs-keyword">from</span> langchain_core.utils.function_calling <span class="hljs-keyword">import</span> convert_to_openai_function
+
+<span class="hljs-comment"># 百度千帆的调用方式</span>
+<span class="hljs-comment"># llm = QianfanChatEndpoint(</span>
+<span class="hljs-comment">#     model=&quot;ERNIE-Speed-128K&quot;,</span>
+<span class="hljs-comment">#     streaming=True,  # 启用流式输出</span>
+<span class="hljs-comment">#     api_key=os.getenv(&#x27;QIANFAN_AK&#x27;, &#x27;&#x27;),</span>
+<span class="hljs-comment">#     secret_key=os.getenv(&#x27;QIANFAN_SK&#x27;, &#x27;&#x27;)</span>
+<span class="hljs-comment"># )</span>
+
+<span class="hljs-comment"># 硅基流动的api调用方式</span>
+llm = ChatOpenAI(
+    <span class="hljs-comment">#THUDM/glm-4-9b-chat</span>
+    <span class="hljs-comment">#Qwen/Qwen2.5-7B-Instruct</span>
+    model=<span class="hljs-string">&quot;THUDM/glm-4-9b-chat&quot;</span>,
+    streaming=<span class="hljs-literal">False</span>,  <span class="hljs-comment"># 启用流式输出</span>
+    api_key=os.getenv(<span class="hljs-string">&#x27;SILICONFLOW_API_KEY&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>), 
+    base_url=os.getenv(<span class="hljs-string">&#x27;SILICONFLOW_BASE_URL&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>),
+    temperature=<span class="hljs-number">0.1</span>,
+)
+
+<span class="hljs-comment"># 定义工具</span>
+<span class="hljs-meta">@tool</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_weather</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span></span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;用于获取天气信息。&quot;&quot;&quot;</span>
+    <span class="hljs-keyword">return</span> [<span class="hljs-string">&quot;今天天气晴朗，温度20度&quot;</span>, <span class="hljs-string">&quot;明天天气多云，温度25度&quot;</span>]
+
+tools = [get_weather]
+llm_with_tools = llm.bind_tools(tools)
+
+<span class="hljs-comment"># 创建工具列表的函数版本</span>
+functions = [convert_to_openai_function(t) <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> tools]
+<span class="hljs-comment"># 创建tool节点</span>
+tool_node = ToolNode(tools)
+
+<span class="hljs-comment"># llm的调用</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">chat_bot</span>(<span class="hljs-params">state: MessagesState</span>):</span>
+    <span class="hljs-string">&quot;&quot;&quot;生成流式回复的节点函数&quot;&quot;&quot;</span>
+    messages = state[<span class="hljs-string">&quot;messages&quot;</span>]
+    <span class="hljs-comment"># response = await llm.ainvoke(messages)</span>
+    response = <span class="hljs-keyword">await</span> llm_with_tools.ainvoke(
+        messages,
+        functions=functions,
+        function_call=<span class="hljs-string">&quot;auto&quot;</span>
+    )
+    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&quot;messages&quot;</span>: [response]&#125;
+
+<span class="hljs-comment"># 4.定义边的逻辑判断（条件边），判断是否继续</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">tool_router</span>(<span class="hljs-params">state: MessagesState</span>) -&gt; <span class="hljs-type">Literal</span>[&quot;tools&quot;, &quot;__end__&quot;]:</span> <span class="hljs-comment">#Literal用于限制返回的值的可选值</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;state------&gt;&#x27;</span>,state,<span class="hljs-string">&#x27;\n&#x27;</span>)
+    messages = state[<span class="hljs-string">&#x27;messages&#x27;</span>]
+    last_message = messages[-<span class="hljs-number">1</span>]
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;last_message------&gt;&#x27;</span>,last_message,<span class="hljs-string">&#x27;\n&#x27;</span>)
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;last_message.tool_calls------&gt;&#x27;</span>,last_message.tool_calls,<span class="hljs-string">&#x27;\n&#x27;</span>)
+    <span class="hljs-keyword">if</span> last_message.tool_calls: <span class="hljs-comment">#判断models是否返回tools调用，有则告诉调用tools节点，否则结束</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;tools&quot;</span>
+    <span class="hljs-keyword">return</span> END
+
+<span class="hljs-comment"># 创建工作流程</span>
+workflow = StateGraph(MessagesState)
+<span class="hljs-comment"># 添加节点</span>
+workflow.add_node(<span class="hljs-string">&quot;chat_bot&quot;</span>, chat_bot)
+<span class="hljs-comment"># 设置入口节点</span>
+workflow.set_entry_point(<span class="hljs-string">&quot;chat_bot&quot;</span>)
+<span class="hljs-comment"># 添加tool节点</span>
+workflow.add_node(<span class="hljs-string">&quot;tools&quot;</span>, tool_node)
+<span class="hljs-comment"># 从tools节点指向chat_bot节点，以便可能的后续交互</span>
+workflow.add_edge(<span class="hljs-string">&quot;tools&quot;</span>, <span class="hljs-string">&quot;chat_bot&quot;</span>)
+workflow.add_conditional_edges(
+    <span class="hljs-string">&quot;chat_bot&quot;</span>,
+    tool_router,    <span class="hljs-comment">#判断下一个调用的节点</span>
+)
+<span class="hljs-comment"># 编译图</span>
+app_graph = workflow.<span class="hljs-built_in">compile</span>()
+
+
+
+<span class="hljs-comment"># 定义一个将图导出为PNG的函数</span>
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">export_graph_to_png</span>():</span>
+    <span class="hljs-string">&quot;&quot;&quot;</span>
+<span class="hljs-string">    将LangGraph图导出为PNG格式</span>
+<span class="hljs-string">    Returns:</span>
+<span class="hljs-string">        str: 生成的PNG文件路径</span>
+<span class="hljs-string">    &quot;&quot;&quot;</span>
+    <span class="hljs-keyword">try</span>:
+        output_file=<span class="hljs-string">&#x27;简单的chatbot-&#x27;</span>+datetime.now().strftime(<span class="hljs-string">&quot;%Y-%m-%d_%H-%M-%S&quot;</span>)+<span class="hljs-string">&quot;.png&quot;</span>
+        app_graph.get_graph().draw_mermaid_png(
+            draw_method=MermaidDrawMethod.API,
+            output_file_path=output_file
+        )
+        <span class="hljs-comment"># return True</span>
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;导出PNG图形时出错: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">None</span>
+
+<span class="hljs-comment"># 测试运行函数</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_streaming_chain</span>():</span>
+    <span class="hljs-string">&quot;&quot;&quot;运行graph的链&quot;&quot;&quot;</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;开始生成回复...\n&quot;</span>)
+    messages = [
+        SystemMessage(content=<span class="hljs-string">&quot;你是一个智能助手，使用专业且准确的语言回复用户的问题，且使用中文进行回复&quot;</span>),
+        HumanMessage(content=<span class="hljs-string">&quot;帮我查一下今明两天的天气&quot;</span>)
+    ]
+    
+    <span class="hljs-comment"># 初始化状态</span>
+    initial_state = &#123;<span class="hljs-string">&quot;messages&quot;</span>: messages, <span class="hljs-string">&quot;streamed_output&quot;</span>: []&#125;
+    
+    <span class="hljs-comment"># stream_mode values的效果</span>
+    <span class="hljs-comment"># async for event in app_graph.astream(initial_state, config=&#123;&quot;configurable&quot;: &#123;&quot;thread_id&quot;: &quot;1&quot;&#125;&#125;, stream_mode=&quot;values&quot;):</span>
+    <span class="hljs-comment">#     # print(&#x27;event------&gt;&#x27;,event,&#x27;\n\n&#x27;)</span>
+    <span class="hljs-comment">#     if &quot;messages&quot; in event:</span>
+    <span class="hljs-comment">#         event[&quot;messages&quot;][-1].pretty_print()</span>
+    <span class="hljs-comment">#     pass</span>
+    
+    <span class="hljs-comment"># stream_mode messages的流式效果</span>
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> app_graph.astream(initial_state, stream_mode=<span class="hljs-string">&#x27;messages&#x27;</span>):
+        <span class="hljs-comment"># print(&#x27;event------&gt;&#x27;,event,&#x27;\n\n&#x27;)</span>
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, <span class="hljs-built_in">tuple</span>):
+            chunk: AIMessageChunk = event[<span class="hljs-number">0</span>]
+            <span class="hljs-keyword">if</span> chunk.<span class="hljs-built_in">type</span> == <span class="hljs-string">&#x27;AIMessageChunk&#x27;</span>:
+                <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;event里监听到的流式输出------&gt;&#x27;</span>,chunk.content,<span class="hljs-string">&#x27;\n\n&#x27;</span>)
+    
+    <span class="hljs-comment"># print(&quot;\n回复完成&quot;)</span>
+    
+    <span class="hljs-comment"># 展示图形</span>
+    <span class="hljs-keyword">try</span>:
+        <span class="hljs-comment"># 导出为PNG</span>
+        export_graph_to_png()
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;图表绘制出错: <span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)
+
+<span class="hljs-comment"># 运行流式输出</span>
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    asyncio.run(run_streaming_chain())
+</code></pre></div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/AI%E7%9B%B8%E5%85%B3/">AI相关</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Langgraph/">Langgraph</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/03/22/Langgraph%E5%AD%A6%E4%B9%A03%EF%BC%9AAI%E6%90%9C%E7%B4%A2%E5%B7%A5%E5%85%B7%E7%9A%84%E6%AF%94%E8%BE%83/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Langgraph学习3：AI搜索工具的比较</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/03/22/Langgraph%E5%AD%A6%E4%B9%A01%EF%BC%9A%E5%9F%BA%E7%A1%80chatbot/">
+                        <span class="hidden-mobile">Langgraph学习1：基础流程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
