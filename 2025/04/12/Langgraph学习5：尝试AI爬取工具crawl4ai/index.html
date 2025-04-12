@@ -1,0 +1,631 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="随着大语言模型(LLM)应用的发展，获取高质量的网络内容成为构建智能应用的重要环节。本文将介绍一个专为AI设计的爬虫工具——crawl4ai，并展示如何将其集成到Langgraph框架中，为AI助手提供更强大的信息获取能力。 1. crawl4ai简介GitHub：https:&#x2F;&#x2F;github.com&#x2F;unclecode&#x2F;crawl4ai文档地址：https:&#x2F;&#x2F;docs.crawl4ai.com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Langgraph学习5：AI爬取工具crawl4ai">
+<meta property="og:url" content="http://example.com/2025/04/12/Langgraph%E5%AD%A6%E4%B9%A05%EF%BC%9A%E5%B0%9D%E8%AF%95AI%E7%88%AC%E5%8F%96%E5%B7%A5%E5%85%B7crawl4ai/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="随着大语言模型(LLM)应用的发展，获取高质量的网络内容成为构建智能应用的重要环节。本文将介绍一个专为AI设计的爬虫工具——crawl4ai，并展示如何将其集成到Langgraph框架中，为AI助手提供更强大的信息获取能力。 1. crawl4ai简介GitHub：https:&#x2F;&#x2F;github.com&#x2F;unclecode&#x2F;crawl4ai文档地址：https:&#x2F;&#x2F;docs.crawl4ai.com">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-12T12:30:00.000Z">
+<meta property="article:modified_time" content="2025-04-12T15:47:52.409Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Langgraph">
+<meta property="article:tag" content="crawl4ai">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>Langgraph学习5：AI爬取工具crawl4ai - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Langgraph学习5：AI爬取工具crawl4ai">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-04-12 20:30" pubdate>
+        2025年4月12日 20:30:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.1k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Langgraph学习5：AI爬取工具crawl4ai</h1>
+            
+            <div class="markdown-body">
+              <p>随着大语言模型(LLM)应用的发展，获取高质量的网络内容成为构建智能应用的重要环节。本文将介绍一个专为AI设计的爬虫工具——crawl4ai，并展示如何将其集成到Langgraph框架中，为AI助手提供更强大的信息获取能力。</p>
+<h2 id="1-crawl4ai简介"><a href="#1-crawl4ai简介" class="headerlink" title="1. crawl4ai简介"></a>1. crawl4ai简介</h2><p>GitHub：<a target="_blank" rel="noopener" href="https://github.com/unclecode/crawl4ai">https://github.com/unclecode/crawl4ai</a><br>文档地址：<a target="_blank" rel="noopener" href="https://docs.crawl4ai.com/">https://docs.crawl4ai.com/</a></p>
+<p>是一个专为LLM应用设计的Python爬虫库，旨在简化网页爬取并提取有价值的信息。与传统爬虫工具相比，它具有以下特点：</p>
+<ul>
+<li><strong>LLM友好的输出格式</strong>：支持JSON、HTML和Markdown等多种输出格式</li>
+<li><strong>异步架构</strong>：支持并行爬取多个URL，提高效率</li>
+<li><strong>智能内容提取</strong>：可自动过滤网页中的广告、导航栏等无关内容</li>
+<li><strong>自定义功能丰富</strong>：支持JavaScript执行、CSS选择器等高级功能</li>
+</ul>
+<p>这些特性使crawl4ai成为构建智能应用时的理想选择，尤其适合需要从多个网页获取信息的场景。</p>
+<h2 id="2-安装与环境准备"><a href="#2-安装与环境准备" class="headerlink" title="2. 安装与环境准备"></a>2. 安装与环境准备</h2><p>首先，需要安装crawl4ai及其依赖：</p>
+<div class="code-wrapper"><pre><code class="hljs bash">pip install crawl4ai</code></pre></div>
+
+<p>crawl4ai基于Playwright实现浏览器自动化，因此需要安装相关的浏览器驱动。安装完成后，我们可以开始使用该工具了。</p>
+<h2 id="3-基础爬虫工具实现"><a href="#3-基础爬虫工具实现" class="headerlink" title="3. 基础爬虫工具实现"></a>3. 基础爬虫工具实现</h2><p>让我们创建一个基础的爬虫工具函数，用于爬取指定URL的内容：</p>
+<p>首先根据官方文档进行相关配置：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 浏览器配置</span>
+browser_config = BrowserConfig(
+    headless=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># 启用无头模式</span>
+    user_agent_mode=<span class="hljs-string">&quot;random&quot;</span>, <span class="hljs-comment"># 随机生成user_agent</span>
+    text_mode=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 只返回文本内容</span>
+)
+
+<span class="hljs-comment"># 爬虫配置</span>
+run_conf = CrawlerRunConfig(
+    cache_mode=CacheMode.ENABLED, <span class="hljs-comment"># 缓存模式</span>
+    stream=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># 是否启用流式模式</span>
+    excluded_tags=[<span class="hljs-string">&quot;form&quot;</span>, <span class="hljs-string">&quot;header&quot;</span>, <span class="hljs-string">&quot;footer&quot;</span>, <span class="hljs-string">&quot;nav&quot;</span>],
+    exclude_external_links=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 是否排除外部链接</span>
+    exclude_social_media_links=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 是否排除社交媒体链接</span>
+    remove_forms=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 移除表单</span>
+    exclude_external_images=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 是否排除外部图片</span>
+)</code></pre></div>
+
+<p>这部分代码设置了两个重要的配置对象：</p>
+<p>浏览器配置 (BrowserConfig):</p>
+<ul>
+<li>headless=True: 无头模式，不显示浏览器界面</li>
+<li>user_agent_mode=”random”: 随机生成User-Agent，降低被网站识别为爬虫的风险</li>
+<li>text_mode=True: 只返回文本内容，忽略图片等多媒体</li>
+</ul>
+<p>爬虫配置 (CrawlerRunConfig):</p>
+<ul>
+<li>cache_mode=CacheMode.ENABLED: 启用缓存，避免重复爬取</li>
+<li>stream=True: 启用流式模式，可以异步处理结果</li>
+<li>excluded_tags=[“form”, “header”, “footer”, “nav”]: 排除不需要的HTML标签<br>其他选项用于过滤无关内容，如外部链接、社交媒体链接、表单等</li>
+</ul>
+<h3 id="异步爬取与结果处理"><a href="#异步爬取与结果处理" class="headerlink" title="异步爬取与结果处理"></a>异步爬取与结果处理</h3><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> AsyncWebCrawler(config=browser_config) <span class="hljs-keyword">as</span> crawler:
+    results = <span class="hljs-keyword">await</span> crawler.arun_many(urls, config=run_conf)
+    
+    <span class="hljs-comment"># 获取当前工作目录</span>
+    current_dir = os.getcwd()
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;current_dir------&gt;&#x27;</span>, current_dir)
+    
+    <span class="hljs-comment"># 生成文件名 (使用时间戳确保唯一性)</span>
+    timestamp = datetime.now().strftime(<span class="hljs-string">&quot;%Y%m%d_%H%M%S&quot;</span>)
+    output_file = os.path.join(current_dir, <span class="hljs-string">f&quot;crawl_results_<span class="hljs-subst">&#123;timestamp&#125;</span>.md&quot;</span>)
+    
+    search_results = <span class="hljs-string">&#x27;&#x27;</span>
+    <span class="hljs-comment"># 创建或打开文件用于写入</span>
+    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output_file, <span class="hljs-string">&#x27;w&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:
+       <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> res <span class="hljs-keyword">in</span> results:
+            <span class="hljs-keyword">if</span> res.success:
+                <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[OK] <span class="hljs-subst">&#123;res.url&#125;</span>, length: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(res.markdown.raw_markdown)&#125;</span>&quot;</span>)
+                <span class="hljs-comment"># 写入URL和内容到文件</span>
+                f.write(<span class="hljs-string">f&quot;# URL: <span class="hljs-subst">&#123;res.url&#125;</span>\n\n&quot;</span>)
+                f.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;res.markdown.raw_markdown&#125;</span>\n\n&quot;</span>)
+                f.write(<span class="hljs-string">&quot;---\n\n&quot;</span>)  <span class="hljs-comment"># 分隔符</span>
+                search_results += <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;res.markdown.raw_markdown&#125;</span>\n\n&quot;</span>
+            <span class="hljs-keyword">else</span>:
+                <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[ERROR] <span class="hljs-subst">&#123;res.url&#125;</span> =&gt; <span class="hljs-subst">&#123;res.error_message&#125;</span>&quot;</span>)
+                <span class="hljs-comment"># 写入错误信息到文件</span>
+                f.write(<span class="hljs-string">f&quot;# ERROR URL: <span class="hljs-subst">&#123;res.url&#125;</span>\n&quot;</span>)
+                f.write(<span class="hljs-string">f&quot;Error: <span class="hljs-subst">&#123;res.error_message&#125;</span>\n\n&quot;</span>)
+                f.write(<span class="hljs-string">&quot;---\n\n&quot;</span>)
+    
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;所有结果已保存到文件: <span class="hljs-subst">&#123;output_file&#125;</span>&quot;</span>)
+    <span class="hljs-keyword">return</span> search_results</code></pre></div>
+
+<p>这部分代码包含以下核心功能：<br>异步爬取多个URL：使用arun_many方法并行爬取所有URL</p>
+<p>结果保存：</p>
+<ul>
+<li>使用当前时间戳创建唯一的Markdown文件名</li>
+<li>将每个URL的爬取结果写入文件，包括URL、内容或错误信息</li>
+<li>使用分隔符区分不同URL的内容</li>
+</ul>
+<p>结果收集与返回：</p>
+<ul>
+<li>将成功爬取的内容累加到search_results变量</li>
+<li>最终返回所有爬取内容的字符串</li>
+</ul>
+<h2 id="4-高级功能与注意事项"><a href="#4-高级功能与注意事项" class="headerlink" title="4. 高级功能与注意事项"></a>4. 高级功能与注意事项</h2><p>crawl4ai还提供了许多高级功能，如：</p>
+<ul>
+<li>结构化数据提取：使用JsonCssExtractionStrategy可以精确提取网页中的结构化数据</li>
+<li>JavaScript执行：可以在爬取前执行自定义JavaScript，适用于需要与动态网页交互的场景</li>
+<li>CSS选择器：支持使用CSS选择器精确定位网页元素</li>
+</ul>
+<p>使用crawl4ai时，需要注意以下几点：</p>
+<ul>
+<li>遵守网站规则：始终遵守robots.txt规则和网站服务条款</li>
+<li>适当的爬取速率：避免短时间内发送过多请求，可能被网站封禁</li>
+<li>处理异常：网络不稳定或网站内容变化可能导致爬取失败，需要妥善处理异常</li>
+</ul>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h2><p>crawl4ai是一个功能强大且易于使用的爬虫工具，尤其适合AI应用场景。通过本文介绍的代码示例，我们可以看到它如何高效地：</p>
+<ul>
+<li>配置浏览器和爬虫行为</li>
+<li>异步并行爬取多个网页</li>
+<li>处理和保存爬取结果</li>
+<li>这些功能使得crawl4ai成为构建需要网络信息的AI应用的理想选择，无论是简单的信息检索还是复杂的数据分析都能轻松应对。</li>
+</ul>
+<p>完整代码：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> crawl4ai <span class="hljs-keyword">import</span> AsyncWebCrawler, CrawlerRunConfig, CacheMode, BrowserConfig
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> asyncio
+<span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime
+
+urls = [
+    <span class="hljs-string">&quot;https://www.huangli.com/huangli/2025/04_12.html&quot;</span>,
+    <span class="hljs-string">&quot;https://www.zhihu.com/question/609483833/answer/3420895685&quot;</span>
+]
+
+<span class="hljs-comment"># 爬虫工具</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">quick_crawl_tool</span>(<span class="hljs-params">urls: <span class="hljs-built_in">list</span>[<span class="hljs-built_in">str</span>]</span>):</span>
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;urls------&gt;&#x27;</span>,urls)
+    
+
+    <span class="hljs-comment"># 浏览器配置</span>
+    browser_config = BrowserConfig(
+        headless=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># 启用无头模式</span>
+        user_agent_mode=<span class="hljs-string">&quot;random&quot;</span>, <span class="hljs-comment"># 随机生成user_agent</span>
+        text_mode=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 只返回文本内容</span>
+    )
+
+    <span class="hljs-comment"># 爬虫配置</span>
+    run_conf = CrawlerRunConfig(
+        cache_mode=CacheMode.ENABLED, <span class="hljs-comment"># 缓存模式</span>
+        stream=<span class="hljs-literal">True</span>,  <span class="hljs-comment"># 是否启用流式模式</span>
+        excluded_tags=[<span class="hljs-string">&quot;form&quot;</span>, <span class="hljs-string">&quot;header&quot;</span>, <span class="hljs-string">&quot;footer&quot;</span>, <span class="hljs-string">&quot;nav&quot;</span>],
+        exclude_external_links=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 是否排除外部链接</span>
+        exclude_social_media_links=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 是否排除社交媒体链接</span>
+        remove_forms=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 移除表单</span>
+        exclude_external_images=<span class="hljs-literal">True</span>, <span class="hljs-comment"># 是否排除外部图片</span>
+    )
+
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">with</span> AsyncWebCrawler(config=browser_config) <span class="hljs-keyword">as</span> crawler:
+        <span class="hljs-comment"># 或者一次性获取所有结果(默认行为)</span>
+        results = <span class="hljs-keyword">await</span> crawler.arun_many(urls, config=run_conf)
+        
+        <span class="hljs-comment"># 获取当前工作目录</span>
+        current_dir = os.getcwd()
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;current_dir------&gt;&#x27;</span>,current_dir)
+        
+        <span class="hljs-comment"># 生成文件名 (使用时间戳确保唯一性)</span>
+        timestamp = datetime.now().strftime(<span class="hljs-string">&quot;%Y%m%d_%H%M%S&quot;</span>)
+        output_file = os.path.join(current_dir, <span class="hljs-string">f&quot;crawl_results_<span class="hljs-subst">&#123;timestamp&#125;</span>.md&quot;</span>)
+        
+        search_results = <span class="hljs-string">&#x27;&#x27;</span>
+        <span class="hljs-comment"># 创建或打开文件用于写入</span>
+        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output_file, <span class="hljs-string">&#x27;w&#x27;</span>, encoding=<span class="hljs-string">&#x27;utf-8&#x27;</span>) <span class="hljs-keyword">as</span> f:
+           <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> res <span class="hljs-keyword">in</span> results:
+                <span class="hljs-keyword">if</span> res.success:
+                    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[OK] <span class="hljs-subst">&#123;res.url&#125;</span>, length: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(res.markdown.raw_markdown)&#125;</span>&quot;</span>)
+                    <span class="hljs-comment"># 写入URL和内容到文件</span>
+                    f.write(<span class="hljs-string">f&quot;# URL: <span class="hljs-subst">&#123;res.url&#125;</span>\n\n&quot;</span>)
+                    f.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;res.markdown.raw_markdown&#125;</span>\n\n&quot;</span>)
+                    f.write(<span class="hljs-string">&quot;---\n\n&quot;</span>)  <span class="hljs-comment"># 分隔符</span>
+                    search_results += <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;res.markdown.raw_markdown&#125;</span>\n\n&quot;</span>
+                <span class="hljs-keyword">else</span>:
+                    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;[ERROR] <span class="hljs-subst">&#123;res.url&#125;</span> =&gt; <span class="hljs-subst">&#123;res.error_message&#125;</span>&quot;</span>)
+                    <span class="hljs-comment"># 写入错误信息到文件</span>
+                    f.write(<span class="hljs-string">f&quot;# ERROR URL: <span class="hljs-subst">&#123;res.url&#125;</span>\n&quot;</span>)
+                    f.write(<span class="hljs-string">f&quot;Error: <span class="hljs-subst">&#123;res.error_message&#125;</span>\n\n&quot;</span>)
+                    f.write(<span class="hljs-string">&quot;---\n\n&quot;</span>)
+        
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;所有结果已保存到文件: <span class="hljs-subst">&#123;output_file&#125;</span>&quot;</span>)
+        <span class="hljs-keyword">return</span> search_results
+
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+   asyncio.run(quick_crawl_tool(urls))</code></pre></div>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/AI%E7%9B%B8%E5%85%B3/">AI相关</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Langgraph/">Langgraph</a>
+                    
+                      <a class="hover-with-bg" href="/tags/crawl4ai/">crawl4ai</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/04/12/Langgraph%E5%AD%A6%E4%B9%A06%EF%BC%9AWebAgent%E6%94%AF%E6%8C%81%E7%BD%91%E9%A1%B5%E5%86%85%E5%AE%B9%E6%8A%93%E5%8F%96/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Langgraph学习6：WebAgent支持网页内容抓取</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/04/11/Langgraph%E5%AD%A6%E4%B9%A04%EF%BC%9A%E6%90%AD%E4%B8%80%E4%B8%AAweb%E6%90%9C%E7%B4%A2agent/">
+                        <span class="hidden-mobile">Langgraph学习4：搭一个web搜索agent</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
