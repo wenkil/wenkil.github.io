@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/blog/AI/langgraph/workflow_graph-2025-04-11_15-32-50.png">
 <meta property="article:published_time" content="2025-04-11T09:23:00.000Z">
-<meta property="article:modified_time" content="2025-04-11T09:32:35.898Z">
+<meta property="article:modified_time" content="2025-04-14T08:38:02.248Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Langgraph">
 <meta name="twitter:card" content="summary_large_image">
@@ -241,10 +241,10 @@
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span></span>):</span>
     <span class="hljs-string">&quot;&quot;&quot;用于浏览网络进行搜索。&quot;&quot;&quot;</span>
     <span class="hljs-comment"># 可选的搜索工具: TavilySearchResults(max_results=3)</span>
-    search_tool = DuckDuckGoSearchResults(max_results=<span class="hljs-number">3</span>) <span class="hljs-comment">#这个配置根据需求来设置 output_format=&quot;list&quot;</span>
+    search_tool = DuckDuckGoSearchResults(num_results=<span class="hljs-number">3</span>) <span class="hljs-comment">#这个配置根据需求来设置 output_format=&quot;list&quot;</span>
     <span class="hljs-keyword">return</span> search_tool.invoke(query)</code></pre></div>
 
-<p>这里我们使用<code>DuckDuckGoSearchResults</code>作为搜索引擎，并设置最大返回结果数为3，输出格式为列表。</p>
+<p>这里我们使用<code>DuckDuckGoSearchResults</code>作为搜索引擎，并设置最大返回结果数为3，输出格式为列表。<strong>注意DuckDuckGoSearchResults要使用num_results</strong></p>
 <h2 id="2-自定义搜索工具节点"><a href="#2-自定义搜索工具节点" class="headerlink" title="2. 自定义搜索工具节点"></a>2. 自定义搜索工具节点</h2><p>与第二篇文章不同，这次不使用Langgraph的ToolNode，而是自定义一个更灵活的搜索节点：</p>
 <div class="code-wrapper"><pre><code class="hljs python">tools_by_name = &#123;tool.name: tool <span class="hljs-keyword">for</span> tool <span class="hljs-keyword">in</span> tools&#125;
 
@@ -447,7 +447,7 @@ os.environ[<span class="hljs-string">&#x27;TAVILY_API_KEY&#x27;</span>] = os.get
 <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">search</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span></span>):</span>
     <span class="hljs-string">&quot;&quot;&quot;用于浏览网络进行搜索。&quot;&quot;&quot;</span>
     <span class="hljs-comment"># search_tool = TavilySearchResults(max_results=3)</span>
-    search_tool = DuckDuckGoSearchResults(max_results=<span class="hljs-number">3</span>, output_format=<span class="hljs-string">&quot;list&quot;</span>) <span class="hljs-comment"># output_format=&quot;list&quot;</span>
+    search_tool = DuckDuckGoSearchResults(num_results=<span class="hljs-number">3</span>, output_format=<span class="hljs-string">&quot;list&quot;</span>) <span class="hljs-comment"># output_format=&quot;list&quot;</span>
     <span class="hljs-keyword">return</span> search_tool.invoke(query)
 tools = [search]
 
