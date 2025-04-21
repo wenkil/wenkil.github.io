@@ -1,0 +1,682 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="学习过程记录1. 背景与需求在开发Vue项目时，大家可能都会遇到一个常见的问题：用户频繁点击按钮触发多次API请求。这不仅会增加服务器负担，还可能导致数据混乱。为了解决这个问题，这里实现一个全局的防抖指令。 2. 防抖原理理解首先，需要理解防抖的核心原理：  防抖（Debounce）：指在事件被触发n秒后再执行回调，如果在这n秒内事件被再次触发，则重新计时 这种技术常用于处理用户输入、搜索、窗口调">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue3中添加全局防抖指令">
+<meta property="og:url" content="http://example.com/2024/04/21/vue3%E4%B8%AD%E6%B7%BB%E5%8A%A0%E5%85%A8%E5%B1%80%E9%98%B2%E6%8A%96%E6%8C%87%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="学习过程记录1. 背景与需求在开发Vue项目时，大家可能都会遇到一个常见的问题：用户频繁点击按钮触发多次API请求。这不仅会增加服务器负担，还可能导致数据混乱。为了解决这个问题，这里实现一个全局的防抖指令。 2. 防抖原理理解首先，需要理解防抖的核心原理：  防抖（Debounce）：指在事件被触发n秒后再执行回调，如果在这n秒内事件被再次触发，则重新计时 这种技术常用于处理用户输入、搜索、窗口调">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-21T09:29:27.000Z">
+<meta property="article:modified_time" content="2025-04-21T09:55:26.497Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>vue3中添加全局防抖指令 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="vue3中添加全局防抖指令">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2024-04-21 17:29" pubdate>
+        2024年4月21日 17:29:27
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">vue3中添加全局防抖指令</h1>
+            
+            <div class="markdown-body">
+              <h2 id="学习过程记录"><a href="#学习过程记录" class="headerlink" title="学习过程记录"></a>学习过程记录</h2><h3 id="1-背景与需求"><a href="#1-背景与需求" class="headerlink" title="1. 背景与需求"></a>1. 背景与需求</h3><p>在开发Vue项目时，大家可能都会遇到一个常见的问题：用户频繁点击按钮触发多次API请求。这不仅会增加服务器负担，还可能导致数据混乱。为了解决这个问题，这里实现一个全局的防抖指令。</p>
+<h3 id="2-防抖原理理解"><a href="#2-防抖原理理解" class="headerlink" title="2. 防抖原理理解"></a>2. 防抖原理理解</h3><p>首先，需要理解防抖的核心原理：</p>
+<ul>
+<li>防抖（Debounce）：指在事件被触发n秒后再执行回调，如果在这n秒内事件被再次触发，则重新计时</li>
+<li>这种技术常用于处理用户输入、搜索、窗口调整等高频触发的事件</li>
+</ul>
+<h3 id="3-Vue3自定义指令学习"><a href="#3-Vue3自定义指令学习" class="headerlink" title="3. Vue3自定义指令学习"></a>3. Vue3自定义指令学习</h3><p>Vue3的自定义指令与Vue2有所不同，主要体现在：</p>
+<ol>
+<li><p>生命周期钩子变化：</p>
+<ul>
+<li><code>bind</code> 改为 <code>mounted</code></li>
+<li><code>update</code> 与 <code>componentUpdated</code> 合并为 <code>updated</code></li>
+<li><code>unbind</code> 改为 <code>beforeUnmount</code></li>
+</ul>
+</li>
+<li><p>指令的参数获取方式：</p>
+<div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">// 获取传入的回调函数</span>
+<span class="hljs-keyword">const</span> func = binding.value;
+<span class="hljs-comment">// 获取等待时间（arg），默认1000ms</span>
+<span class="hljs-keyword">const</span> wait = <span class="hljs-built_in">Number</span>(binding.arg) || <span class="hljs-number">1000</span>;
+<span class="hljs-comment">// 是否立即执行（修饰符）</span>
+<span class="hljs-keyword">const</span> immediate = binding.modifiers.immediate;</code></pre></div></li>
+</ol>
+<h3 id="4-实现思路"><a href="#4-实现思路" class="headerlink" title="4. 实现思路"></a>4. 实现思路</h3><ol>
+<li>为使用指令的元素绑定一个点击事件处理函数</li>
+<li>在处理函数中实现防抖逻辑</li>
+<li>支持自定义延迟时间和立即执行选项</li>
+<li>确保不同元素之间的防抖行为互不影响</li>
+</ol>
+<h3 id="5-关键技术点"><a href="#5-关键技术点" class="headerlink" title="5. 关键技术点"></a>5. 关键技术点</h3><ol>
+<li><p><strong>元素属性扩展</strong>：通过TypeScript扩展HTMLElement接口，为元素添加自定义属性</p>
+<div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">declare</span> <span class="hljs-built_in">global</span> &#123;
+  <span class="hljs-keyword">interface</span> HTMLElement &#123;
+    __debounce_handler__?: EventListener;
+    __debounce_timer__?: <span class="hljs-built_in">number</span> | <span class="hljs-literal">null</span>;
+  &#125;
+&#125;</code></pre></div></li>
+<li><p><strong>闭包与事件处理</strong>：使用闭包创建独立的处理函数，保存状态</p>
+<div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">const</span> createHandler = (func: <span class="hljs-built_in">Function</span>, <span class="hljs-attr">wait</span>: <span class="hljs-built_in">number</span>, <span class="hljs-attr">immediate</span>: <span class="hljs-built_in">boolean</span>): <span class="hljs-function"><span class="hljs-params">EventListener</span> =&gt;</span> &#123;
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event: Event</span>) </span>&#123;
+    <span class="hljs-comment">// 防抖逻辑</span>
+  &#125;;
+&#125;;</code></pre></div></li>
+<li><p><strong>资源清理</strong>：在指令销毁前清理定时器和事件监听，防止内存泄漏</p>
+<div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-function"><span class="hljs-title">beforeUnmount</span>(<span class="hljs-params">el: HTMLElement</span>)</span> &#123;
+  <span class="hljs-comment">// 清除定时器和事件监听</span>
+&#125;</code></pre></div></li>
+</ol>
+<h3 id="6-坑与解决方案"><a href="#6-坑与解决方案" class="headerlink" title="6. 坑与解决方案"></a>6. 坑与解决方案</h3><ol>
+<li><p><strong>问题</strong>：直接传入带参数的函数会在页面加载时立即执行</p>
+<div class="code-wrapper"><pre><code class="hljs html"><span class="hljs-comment">&lt;!-- 错误用法 --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">v-debounce</span>=<span class="hljs-string">&quot;selectTopic(item)&quot;</span>&gt;</span>选择<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></code></pre></div>
+
+<p><strong>解决方案</strong>：使用箭头函数包裹</p>
+<div class="code-wrapper"><pre><code class="hljs html"><span class="hljs-comment">&lt;!-- 正确用法 --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">v-debounce</span>=<span class="hljs-string">&quot;() =&gt; selectTopic(item)&quot;</span>&gt;</span>选择<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></code></pre></div></li>
+<li><p><strong>问题</strong>：多个元素使用同一指令时防抖行为相互影响</p>
+<p><strong>解决方案</strong>：为每个元素创建独立的定时器和处理函数</p>
+<div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">// 为每个元素创建独立的定时器变量</span>
+el.__debounce_timer__ = <span class="hljs-literal">null</span>;
+<span class="hljs-comment">// 为每个元素创建独立的处理函数</span>
+el.__debounce_handler__ = createHandler(func, wait, immediate);</code></pre></div></li>
+</ol>
+<h3 id="7-全局注册"><a href="#7-全局注册" class="headerlink" title="7. 全局注册"></a>7. 全局注册</h3><p>最后，在main.ts中注册全局指令：</p>
+<div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-keyword">import</span> &#123; createApp &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span>
+<span class="hljs-keyword">import</span> App <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App.vue&#x27;</span>
+<span class="hljs-keyword">import</span> debounceDirective <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./directives/debounce&#x27;</span>
+
+<span class="hljs-keyword">const</span> app = createApp(App)
+app.directive(<span class="hljs-string">&#x27;debounce&#x27;</span>, debounceDirective)
+app.mount(<span class="hljs-string">&#x27;#app&#x27;</span>)</code></pre></div>
+
+<h3 id="8-后续优化"><a href="#8-后续优化" class="headerlink" title="8. 后续优化"></a>8. 后续优化</h3><ol>
+<li>考虑扩展支持更多事件类型，如input、change等</li>
+<li>添加节流（Throttle）功能，作为防抖的补充</li>
+<li>增加更多调试选项，方便开发时排查问题</li>
+</ol>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><div class="code-wrapper"><pre><code class="hljs typescript"><span class="hljs-comment">/**</span>
+<span class="hljs-comment"> * 防抖指令</span>
+<span class="hljs-comment"> * 用法：v-debounce:500.immediate=&quot;handler&quot;</span>
+<span class="hljs-comment"> * 参数：</span>
+<span class="hljs-comment"> *   - 数字参数表示延迟时间，默认1000ms</span>
+<span class="hljs-comment"> * 修饰符：</span>
+<span class="hljs-comment"> *   - immediate: 是否立即执行，默认为false</span>
+<span class="hljs-comment"> * </span>
+<span class="hljs-comment"> * 注意事项：</span>
+<span class="hljs-comment"> *   - 在有参数的指令中，必须使用箭头函数包裹处理函数，否则会在页面加载时立即执行</span>
+<span class="hljs-comment"> *     错误用法: v-debounce=&quot;selectTopic(item)&quot;      // 会在元素加载时立即调用函数</span>
+<span class="hljs-comment"> *     正确用法: v-debounce=&quot;() =&gt; selectTopic(item)&quot; // 只有点击时才会调用函数</span>
+<span class="hljs-comment"> *   - 不要在同一个元素上多次使用此指令</span>
+<span class="hljs-comment"> *   - 每个使用此指令的元素都有独立的防抖行为，互不影响</span>
+<span class="hljs-comment"> * </span>
+<span class="hljs-comment"> * 如果是不带参数的函数，正常使用指令即可：</span>
+<span class="hljs-comment"> * v-debounce.immediate=&quot;clickSend&quot;</span>
+<span class="hljs-comment"> */</span>
+
+<span class="hljs-comment">// 扩展HTMLElement类型，添加自定义属性</span>
+<span class="hljs-keyword">declare</span> <span class="hljs-built_in">global</span> &#123;
+  <span class="hljs-keyword">interface</span> HTMLElement &#123;
+    __debounce_handler__?: EventListener;
+    __debounce_timer__?: <span class="hljs-built_in">number</span> | <span class="hljs-literal">null</span>;
+  &#125;
+&#125;
+
+<span class="hljs-comment">// 定义Vue指令绑定的参数类型</span>
+<span class="hljs-keyword">interface</span> DirectiveBinding &#123;
+  <span class="hljs-attr">value</span>: <span class="hljs-built_in">Function</span>;
+  arg?: <span class="hljs-built_in">string</span>;
+  modifiers: &#123;
+    [key: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">boolean</span>;
+  &#125;;
+  instance: <span class="hljs-built_in">any</span>;
+  oldValue?: <span class="hljs-built_in">Function</span>;
+&#125;
+
+<span class="hljs-keyword">const</span> debounceDirective = &#123;
+  <span class="hljs-comment">/**</span>
+<span class="hljs-comment">   * 指令挂载时调用</span>
+<span class="hljs-comment">   * <span class="hljs-doctag">@param <span class="hljs-type">&#123;HTMLElement&#125;</span> <span class="hljs-variable">el</span></span> - 指令绑定的元素</span>
+<span class="hljs-comment">   * <span class="hljs-doctag">@param <span class="hljs-type">&#123;DirectiveBinding&#125;</span> <span class="hljs-variable">binding</span></span> - 指令绑定的值</span>
+<span class="hljs-comment">   */</span>
+  <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params">el: HTMLElement, binding: DirectiveBinding</span>)</span> &#123;
+    <span class="hljs-comment">// 为每个元素创建独立的定时器变量</span>
+    el.__debounce_timer__ = <span class="hljs-literal">null</span>;
+    
+    <span class="hljs-comment">// 创建处理函数</span>
+    <span class="hljs-keyword">const</span> createHandler = (func: <span class="hljs-built_in">Function</span>, <span class="hljs-attr">wait</span>: <span class="hljs-built_in">number</span>, <span class="hljs-attr">immediate</span>: <span class="hljs-built_in">boolean</span>): <span class="hljs-function"><span class="hljs-params">EventListener</span> =&gt;</span> &#123;
+      <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event: Event</span>) </span>&#123;
+        <span class="hljs-comment">// 使用元素自身的定时器，确保每个元素有独立的定时器</span>
+        <span class="hljs-keyword">const</span> callNow = immediate &amp;&amp; !el.__debounce_timer__;
+        
+        <span class="hljs-comment">// 清除此元素自己的定时器</span>
+        <span class="hljs-keyword">if</span> (el.__debounce_timer__) &#123;
+          <span class="hljs-built_in">clearTimeout</span>(el.__debounce_timer__);
+        &#125;
+        
+        <span class="hljs-comment">// 设置新的定时器，存储在元素自己的属性中</span>
+        el.__debounce_timer__ = <span class="hljs-built_in">window</span>.setTimeout(<span class="hljs-function">() =&gt;</span> &#123;
+          <span class="hljs-keyword">if</span> (!immediate) &#123;
+            func.call(binding.instance, event);
+          &#125;
+          el.__debounce_timer__ = <span class="hljs-literal">null</span>;
+        &#125;, wait);
+        
+        <span class="hljs-comment">// 如果是立即执行，并且没有活动的定时器，则立即调用</span>
+        <span class="hljs-keyword">if</span> (callNow) &#123;
+          func.call(binding.instance, event);
+        &#125;
+      &#125;;
+    &#125;;
+    
+    <span class="hljs-comment">// 获取传入的回调函数</span>
+    <span class="hljs-keyword">const</span> func = binding.value;
+    <span class="hljs-comment">// 获取等待时间（arg），默认 1000ms</span>
+    <span class="hljs-keyword">const</span> wait = <span class="hljs-built_in">Number</span>(binding.arg) || <span class="hljs-number">1000</span>;
+    <span class="hljs-comment">// 是否立即执行（修饰符）</span>
+    <span class="hljs-keyword">const</span> immediate = binding.modifiers.immediate;
+
+    <span class="hljs-comment">// 为每个元素创建独立的处理函数</span>
+    el.__debounce_handler__ = createHandler(func, wait, immediate);
+    
+    <span class="hljs-comment">// 添加点击事件监听器</span>
+    el.addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, el.__debounce_handler__);
+  &#125;,
+  
+  <span class="hljs-comment">/**</span>
+<span class="hljs-comment">   * 指令更新时调用，确保更新handler</span>
+<span class="hljs-comment">   * <span class="hljs-doctag">@param <span class="hljs-type">&#123;HTMLElement&#125;</span> <span class="hljs-variable">el</span></span> - 指令绑定的元素 </span>
+<span class="hljs-comment">   * <span class="hljs-doctag">@param <span class="hljs-type">&#123;DirectiveBinding&#125;</span> <span class="hljs-variable">binding</span></span> - 指令绑定的值</span>
+<span class="hljs-comment">   */</span>
+  <span class="hljs-function"><span class="hljs-title">updated</span>(<span class="hljs-params">el: HTMLElement, binding: DirectiveBinding</span>)</span> &#123;
+    <span class="hljs-comment">// 如果函数引用发生变化，需要更新处理函数</span>
+    <span class="hljs-keyword">if</span> (binding.value !== binding.oldValue &amp;&amp; el.__debounce_handler__) &#123;
+      <span class="hljs-comment">// 移除旧的事件监听</span>
+      el.removeEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, el.__debounce_handler__);
+      
+      <span class="hljs-comment">// 获取最新的配置</span>
+      <span class="hljs-keyword">const</span> func = binding.value;
+      <span class="hljs-keyword">const</span> wait = <span class="hljs-built_in">Number</span>(binding.arg) || <span class="hljs-number">1000</span>;
+      <span class="hljs-keyword">const</span> immediate = binding.modifiers.immediate;
+      
+      <span class="hljs-comment">// 创建新的处理函数</span>
+      <span class="hljs-keyword">const</span> createHandler = (func: <span class="hljs-built_in">Function</span>, <span class="hljs-attr">wait</span>: <span class="hljs-built_in">number</span>, <span class="hljs-attr">immediate</span>: <span class="hljs-built_in">boolean</span>): <span class="hljs-function"><span class="hljs-params">EventListener</span> =&gt;</span> &#123;
+        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event: Event</span>) </span>&#123;
+          <span class="hljs-keyword">const</span> callNow = immediate &amp;&amp; !el.__debounce_timer__;
+          
+          <span class="hljs-keyword">if</span> (el.__debounce_timer__) &#123;
+            <span class="hljs-built_in">clearTimeout</span>(el.__debounce_timer__);
+          &#125;
+          
+          el.__debounce_timer__ = <span class="hljs-built_in">window</span>.setTimeout(<span class="hljs-function">() =&gt;</span> &#123;
+            <span class="hljs-keyword">if</span> (!immediate) &#123;
+              func.call(binding.instance, event);
+            &#125;
+            el.__debounce_timer__ = <span class="hljs-literal">null</span>;
+          &#125;, wait);
+          
+          <span class="hljs-keyword">if</span> (callNow) &#123;
+            func.call(binding.instance, event);
+          &#125;
+        &#125;;
+      &#125;;
+      
+      <span class="hljs-comment">// 更新处理函数</span>
+      el.__debounce_handler__ = createHandler(func, wait, immediate);
+      
+      <span class="hljs-comment">// 重新添加事件监听</span>
+      el.addEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, el.__debounce_handler__);
+    &#125;
+  &#125;,
+  
+  <span class="hljs-comment">/**</span>
+<span class="hljs-comment">   * 指令卸载前调用</span>
+<span class="hljs-comment">   * <span class="hljs-doctag">@param <span class="hljs-type">&#123;HTMLElement&#125;</span> <span class="hljs-variable">el</span></span> - 指令绑定的元素</span>
+<span class="hljs-comment">   */</span>
+  <span class="hljs-function"><span class="hljs-title">beforeUnmount</span>(<span class="hljs-params">el: HTMLElement</span>)</span> &#123;
+    <span class="hljs-comment">// 清除定时器</span>
+    <span class="hljs-keyword">if</span> (el.__debounce_timer__) &#123;
+      <span class="hljs-built_in">clearTimeout</span>(el.__debounce_timer__);
+      el.__debounce_timer__ = <span class="hljs-literal">null</span>;
+    &#125;
+    
+    <span class="hljs-comment">// 移除事件监听</span>
+    <span class="hljs-keyword">if</span> (el.__debounce_handler__) &#123;
+      el.removeEventListener(<span class="hljs-string">&#x27;click&#x27;</span>, el.__debounce_handler__);
+      <span class="hljs-comment">// 删除附加的属性</span>
+      el.__debounce_handler__ = <span class="hljs-literal">undefined</span>;
+      el.__debounce_timer__ = <span class="hljs-literal">undefined</span>;
+    &#125;
+  &#125;
+&#125;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> debounceDirective;</code></pre></div>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Web%E5%BC%80%E5%8F%91/">Web开发</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Vue/">Vue</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/04/25/%E8%85%BE%E8%AE%AF%E4%BA%91%E6%90%AD%E5%BB%BAWEB%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%AD%A5%E9%AA%A4%E8%AE%B0%E5%BD%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">腾讯云搭建WEB服务器步骤记录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/02/02/prompt%E7%BB%93%E6%9E%84%E5%8C%96%E5%AE%9E%E8%B7%B5/">
+                        <span class="hidden-mobile">简单结构化prompt实践记录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
