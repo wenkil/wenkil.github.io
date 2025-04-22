@@ -1,0 +1,938 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/titleIcon.png">
+  <link rel="icon" href="/img/titleIcon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  <meta name="description" content="LlamaIndex流式输出在前两篇文章中，学习了LlamaIndex的基本模型对话和会话状态管理。本篇将聚焦于流式输出（Streaming Output）的实现与应用。流式输出是提升用户体验、实现实时交互的关键能力，尤其适用于对话型AI和长文本生成场景。 1. 流式输出的概念与优势传统的LLM调用方式通常是一次性返回完整结果，而流式输出则允许模型边生成边输出内容。这种方式带来了多方面的优势：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LlamaIndex学习3：流式输出">
+<meta property="og:url" content="http://example.com/2025/04/18/LlamaIndex%E5%AD%A6%E4%B9%A03%EF%BC%9A%E6%B5%81%E5%BC%8F%E8%BE%93%E5%87%BA/index.html">
+<meta property="og:site_name" content="Wenkil的开发笔记">
+<meta property="og:description" content="LlamaIndex流式输出在前两篇文章中，学习了LlamaIndex的基本模型对话和会话状态管理。本篇将聚焦于流式输出（Streaming Output）的实现与应用。流式输出是提升用户体验、实现实时交互的关键能力，尤其适用于对话型AI和长文本生成场景。 1. 流式输出的概念与优势传统的LLM调用方式通常是一次性返回完整结果，而流式输出则允许模型边生成边输出内容。这种方式带来了多方面的优势：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-04-18T13:30:00.000Z">
+<meta property="article:modified_time" content="2025-04-21T11:05:22.410Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="LlamaIndex">
+<meta name="twitter:card" content="summary_large_image">
+  
+  <title>LlamaIndex学习3：流式输出 - Wenkil的开发笔记</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Wenkil的开发笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/blog.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="LlamaIndex学习3：流式输出">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2025-04-18 21:30" pubdate>
+        2025年4月18日 21:30:00
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      47k 字
+    </span>
+  
+
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">LlamaIndex学习3：流式输出</h1>
+            
+            <div class="markdown-body">
+              <h1 id="LlamaIndex流式输出"><a href="#LlamaIndex流式输出" class="headerlink" title="LlamaIndex流式输出"></a>LlamaIndex流式输出</h1><p>在前两篇文章中，学习了LlamaIndex的基本模型对话和会话状态管理。本篇将聚焦于流式输出（Streaming Output）的实现与应用。流式输出是提升用户体验、实现实时交互的关键能力，尤其适用于对话型AI和长文本生成场景。</p>
+<h2 id="1-流式输出的概念与优势"><a href="#1-流式输出的概念与优势" class="headerlink" title="1. 流式输出的概念与优势"></a>1. 流式输出的概念与优势</h2><p>传统的LLM调用方式通常是一次性返回完整结果，而流式输出则允许模型边生成边输出内容。这种方式带来了多方面的优势：</p>
+<ul>
+<li><strong>用户体验提升</strong>：显著降低感知延迟，用户能”看到”AI思考的过程</li>
+<li><strong>稳定性增强</strong>：支持长文本生成，避免超时或内存溢出</li>
+<li><strong>交互性增强</strong>：便于前端实现打字机效果、实时反馈等交互体验</li>
+<li><strong>资源利用优化</strong>：可以在内容生成的同时进行处理，减少总体等待时间</li>
+</ul>
+<p>LlamaIndex对流式输出提供了良好的支持，底层兼容OpenAI、OpenRouter等主流API的流式接口。</p>
+<h2 id="2-流式输出API解析"><a href="#2-流式输出API解析" class="headerlink" title="2. 流式输出API解析"></a>2. 流式输出API解析</h2><p>LlamaIndex的流式输出主要通过以下几个核心组件实现：</p>
+<h3 id="2-1-核心事件类型"><a href="#2-1-核心事件类型" class="headerlink" title="2.1 核心事件类型"></a>2.1 核心事件类型</h3><div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> llama_index.core.agent.workflow <span class="hljs-keyword">import</span> (
+    AgentInput,       <span class="hljs-comment"># 输入事件：包含用户输入和系统信息</span>
+    AgentOutput,      <span class="hljs-comment"># 输出事件：包含模型完整响应和工具调用</span>
+    ToolCallResult,   <span class="hljs-comment"># 工具调用结果事件：包含工具的执行结果</span>
+    AgentStream,      <span class="hljs-comment"># 流式输出事件：包含增量文本片段</span>
+)</code></pre></div>
+
+<p>这些事件类型代表着流式输出过程中的不同阶段：</p>
+<ul>
+<li><code>AgentInput</code>：代表输入到模型的内容</li>
+<li><code>AgentOutput</code>：代表模型生成的完整响应</li>
+<li><code>ToolCallResult</code>：代表工具调用的结果</li>
+<li><code>AgentStream</code>：代表流式输出片段，其中<code>event.delta</code>属性包含每次传输的文本片段</li>
+</ul>
+<h3 id="2-2-异步生成器机制"><a href="#2-2-异步生成器机制" class="headerlink" title="2.2 异步生成器机制"></a>2.2 异步生成器机制</h3><p>流式输出本质上是一个异步生成器，使用Python的<code>async for</code>语法逐步获取内容：</p>
+<div class="code-wrapper"><pre><code class="hljs python">handler = workflow.run(user_msg=<span class="hljs-string">&quot;你的问题&quot;</span>)
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, AgentStream):
+        <span class="hljs-built_in">print</span>(event.delta, end=<span class="hljs-string">&quot;&quot;</span>, flush=<span class="hljs-literal">True</span>)  <span class="hljs-comment"># 实时显示增量内容</span></code></pre></div>
+
+<h2 id="3-完整流式输出实现"><a href="#3-完整流式输出实现" class="headerlink" title="3. 完整流式输出实现"></a>3. 完整流式输出实现</h2><p>下面是一个完整的流式输出示例，展示了如何处理不同类型的事件：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> dotenv <span class="hljs-keyword">import</span> load_dotenv
+load_dotenv()
+
+<span class="hljs-keyword">from</span> llama_index.llms.openai_like <span class="hljs-keyword">import</span> OpenAILike
+<span class="hljs-keyword">from</span> llama_index.core.agent.workflow <span class="hljs-keyword">import</span> AgentWorkflow
+<span class="hljs-keyword">import</span> os
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-keyword">from</span> llama_index.core.agent.workflow <span class="hljs-keyword">import</span> (
+    AgentInput,
+    AgentOutput,
+    ToolCallResult,
+    AgentStream,
+)
+
+<span class="hljs-comment"># 导入自定义日志模块</span>
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+<span class="hljs-keyword">from</span> utils.logger <span class="hljs-keyword">import</span> get_logger
+
+<span class="hljs-comment"># 获取日志实例</span>
+logger = get_logger()
+
+<span class="hljs-comment"># 初始化LLM - 这里使用OpenAILike接口调用国内模型</span>
+llm = OpenAILike(
+    model=<span class="hljs-string">&quot;Qwen/Qwen2.5-7B-Instruct&quot;</span>,
+    api_key=os.getenv(<span class="hljs-string">&quot;SILICONFLOW_API_KEY&quot;</span>),
+    api_base=os.getenv(<span class="hljs-string">&quot;SILICONFLOW_BASE_URL&quot;</span>),
+    is_chat_model=<span class="hljs-literal">True</span>  <span class="hljs-comment"># 重要参数：确保返回完整内容</span>
+)
+
+logger.info(<span class="hljs-string">&quot;初始化LLM模型完成&quot;</span>)
+
+<span class="hljs-comment"># 创建工作流</span>
+workflow = AgentWorkflow.from_tools_or_functions(
+    tools_or_functions=[],  <span class="hljs-comment"># 可以添加工具函数</span>
+    llm=llm,
+    system_prompt=<span class="hljs-string">&quot;你是一个智能助手，请热情地回答用户的问题&quot;</span>,
+    verbose=<span class="hljs-literal">False</span>
+)
+
+logger.info(<span class="hljs-string">&quot;初始化AgentWorkflow完成&quot;</span>)
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span>
+    <span class="hljs-keyword">try</span>:
+        logger.info(<span class="hljs-string">&quot;开始执行用户查询&quot;</span>)
+        handler = workflow.run(user_msg=<span class="hljs-string">&quot;怎么把pcm转为MP3？&quot;</span>)
+        
+        <span class="hljs-comment"># 用于累积流式输出的内容</span>
+        accumulated_output = <span class="hljs-string">&quot;&quot;</span>
+        
+        <span class="hljs-comment"># 处理流式输出事件</span>
+        <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+            <span class="hljs-comment"># 处理不同类型的事件</span>
+            <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, AgentStream):
+                <span class="hljs-comment"># 将delta内容追加到累积变量</span>
+                <span class="hljs-keyword">if</span> event.delta:
+                    accumulated_output += event.delta
+                    <span class="hljs-comment"># 实时在控制台展示当前字符（打字机效果）</span>
+                    <span class="hljs-built_in">print</span>(event.delta, end=<span class="hljs-string">&quot;&quot;</span>, flush=<span class="hljs-literal">True</span>)
+                    
+            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(event, AgentInput):
+                <span class="hljs-comment"># 记录输入信息</span>
+                logger.debug(<span class="hljs-string">&quot;Agent输入: %s&quot;</span>, event.<span class="hljs-built_in">input</span>)
+                logger.debug(<span class="hljs-string">&quot;Agent名称: %s&quot;</span>, event.current_agent_name)
+                
+            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(event, AgentOutput):
+                <span class="hljs-comment"># 记录完整输出和工具调用</span>
+                logger.debug(<span class="hljs-string">&quot;Agent输出: %s&quot;</span>, event.response)
+                logger.debug(<span class="hljs-string">&quot;工具调用: %s&quot;</span>, event.tool_calls)
+                
+            <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(event, ToolCallResult):
+                <span class="hljs-comment"># 记录工具调用结果</span>
+                logger.debug(<span class="hljs-string">&quot;调用工具: %s&quot;</span>, event.tool_name)
+                logger.debug(<span class="hljs-string">&quot;工具参数: %s&quot;</span>, event.tool_kwargs)
+                logger.debug(<span class="hljs-string">&quot;工具输出: %s&quot;</span>, event.tool_output)
+        
+        <span class="hljs-comment"># 获取完整响应</span>
+        final_output = <span class="hljs-built_in">str</span>(<span class="hljs-keyword">await</span> handler)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;\n\n完整累积输出:&#x27;</span>, accumulated_output)
+        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;最终输出:&#x27;</span>, final_output)
+        logger.info(<span class="hljs-string">&quot;查询执行完成&quot;</span>)
+        
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        logger.error(<span class="hljs-string">f&quot;执行过程中发生错误: <span class="hljs-subst">&#123;<span class="hljs-built_in">str</span>(e)&#125;</span>&quot;</span>)
+        <span class="hljs-keyword">raise</span>
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:
+    <span class="hljs-keyword">import</span> asyncio
+    logger.info(<span class="hljs-string">&quot;程序启动&quot;</span>)
+    <span class="hljs-keyword">try</span>:
+        asyncio.run(main())
+        logger.info(<span class="hljs-string">&quot;程序正常结束&quot;</span>)
+    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+        logger.critical(<span class="hljs-string">f&quot;程序执行失败: <span class="hljs-subst">&#123;<span class="hljs-built_in">str</span>(e)&#125;</span>&quot;</span>)
+        <span class="hljs-keyword">raise</span></code></pre></div>
+
+<h3 id="3-1-流程解析"><a href="#3-1-流程解析" class="headerlink" title="3.1 流程解析"></a>3.1 流程解析</h3><ol>
+<li><p><strong>初始化阶段</strong>：</p>
+<ul>
+<li>加载环境变量配置API密钥</li>
+<li>初始化LLM（使用OpenAILike接口调用模型）</li>
+<li>设置工作流和系统提示</li>
+</ul>
+</li>
+<li><p><strong>流式处理阶段</strong>：</p>
+<ul>
+<li>创建<code>accumulated_output</code>变量累积输出内容</li>
+<li>通过<code>async for</code>遍历<code>stream_events()</code>生成的事件</li>
+<li>根据事件类型进行不同处理（<code>AgentStream</code>/<code>AgentInput</code>/<code>AgentOutput</code>/<code>ToolCallResult</code>）</li>
+<li>对于<code>AgentStream</code>事件，将<code>delta</code>内容追加到累积变量</li>
+<li>同时使用<code>print(event.delta, end=&quot;&quot;, flush=True)</code>实现实时打字机效果</li>
+</ul>
+</li>
+<li><p><strong>结果获取阶段</strong>：</p>
+<ul>
+<li>使用<code>await handler</code>获取最终完整响应</li>
+<li>输出累积的内容和最终结果以便比对</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-从日志看流式输出的实现原理"><a href="#4-从日志看流式输出的实现原理" class="headerlink" title="4. 从日志看流式输出的实现原理"></a>4. 从日志看流式输出的实现原理</h2><p>通过分析日志文件，我们可以看到流式输出的详细过程：</p>
+<p>截取部分日志：</p>
+<div class="code-wrapper"><pre><code class="hljs pgsql">[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">53</span>,<span class="hljs-number">981</span>] [<span class="hljs-keyword">INFO</span>] [logger.py:<span class="hljs-number">117</span>] - 初始化LLM模型完成
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">53</span>,<span class="hljs-number">981</span>] [<span class="hljs-keyword">INFO</span>] [logger.py:<span class="hljs-number">117</span>] - 初始化AgentWorkflow完成
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">53</span>,<span class="hljs-number">981</span>] [<span class="hljs-keyword">INFO</span>] [logger.py:<span class="hljs-number">117</span>] - 程序启动
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">53</span>,<span class="hljs-number">982</span>] [<span class="hljs-keyword">INFO</span>] [logger.py:<span class="hljs-number">117</span>] - 开始执行用户查询
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">55</span>,<span class="hljs-number">203</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">55</span>,<span class="hljs-number">205</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - input=[ChatMessage(<span class="hljs-keyword">role</span>=&lt;MessageRole.<span class="hljs-keyword">SYSTEM</span>: <span class="hljs-string">&#x27;system&#x27;</span>&gt;, additional_kwargs=&#123;&#125;, blocks=[TextBlock(block_type=<span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-type">text</span>=<span class="hljs-string">&#x27;You are designed to help with a variety of tasks, from answering questions to providing summaries to other types of analyses.\n\n## Tools\n\nYou have access to a wide variety of tools. You are responsible for using the tools in any sequence you deem appropriate to complete the task at hand.\nThis may require breaking the task into subtasks and using different tools to complete each subtask.\n\nYou have access to the following tools:\n\n\n\n## Output Format\n\nPlease answer in the same language as the question and use the following format:\n\n```\nThought: The current language of the user is: (user\&#x27;</span>s <span class="hljs-keyword">language</span>). I need <span class="hljs-keyword">to</span> use a tool <span class="hljs-keyword">to</span> help me answer the question.\nAction: tool <span class="hljs-type">name</span> (one <span class="hljs-keyword">of</span> ) <span class="hljs-keyword">if</span> <span class="hljs-keyword">using</span> a tool.\nAction <span class="hljs-keyword">Input</span>: the <span class="hljs-keyword">input</span> <span class="hljs-keyword">to</span> the tool, <span class="hljs-keyword">in</span> a <span class="hljs-type">JSON</span> <span class="hljs-keyword">format</span> representing the kwargs (e.g. &#123;&quot;input&quot;: &quot;hello world&quot;, &quot;num_beams&quot;: <span class="hljs-number">5</span>&#125;)\n```\n\nPlease <span class="hljs-keyword">ALWAYS</span> <span class="hljs-keyword">start</span> <span class="hljs-keyword">with</span> a Thought.\n\nNEVER surround your response <span class="hljs-keyword">with</span> markdown code markers. You may use code markers <span class="hljs-keyword">within</span> your response <span class="hljs-keyword">if</span> you need <span class="hljs-keyword">to</span>.\n\nPlease use a <span class="hljs-keyword">valid</span> <span class="hljs-type">JSON</span> <span class="hljs-keyword">format</span> <span class="hljs-keyword">for</span> the Action <span class="hljs-keyword">Input</span>. <span class="hljs-keyword">Do</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">do</span> this &#123;\<span class="hljs-string">&#x27;input\&#x27;</span>: \<span class="hljs-string">&#x27;hello world\&#x27;</span>, \<span class="hljs-string">&#x27;num_beams\&#x27;</span>: <span class="hljs-number">5</span>&#125;.\n\nIf this <span class="hljs-keyword">format</span> <span class="hljs-keyword">is</span> used, the tool will respond <span class="hljs-keyword">in</span> the <span class="hljs-keyword">following</span> <span class="hljs-keyword">format</span>:\n\n```\nObservation: tool response\n```\n\nYou should keep repeating the above <span class="hljs-keyword">format</span> till you have enough information <span class="hljs-keyword">to</span> answer the question <span class="hljs-keyword">without</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">any</span> more tools. At that <span class="hljs-type">point</span>, you MUST respond <span class="hljs-keyword">in</span> one <span class="hljs-keyword">of</span> the <span class="hljs-keyword">following</span> two formats:\n\n```\nThought: I can answer <span class="hljs-keyword">without</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">any</span> more tools. I\<span class="hljs-string">&#x27;ll use the user\&#x27;</span>s <span class="hljs-keyword">language</span> <span class="hljs-keyword">to</span> answer\nAnswer: [your answer here (<span class="hljs-keyword">In</span> the same <span class="hljs-keyword">language</span> <span class="hljs-keyword">as</span> the <span class="hljs-keyword">user</span>\<span class="hljs-string">&#x27;s question)]\n```\n\n```\nThought: I cannot answer the question with the provided tools.\nAnswer: [your answer here (In the same language as the user\&#x27;</span>s question)]\n```\n\n## <span class="hljs-keyword">Current</span> Conversation\n\nBelow <span class="hljs-keyword">is</span> the <span class="hljs-keyword">current</span> conversation consisting <span class="hljs-keyword">of</span> interleaving human <span class="hljs-keyword">and</span> assistant messages.\n<span class="hljs-string">&#x27;)]), ChatMessage(role=&lt;MessageRole.USER: &#x27;</span><span class="hljs-keyword">user</span><span class="hljs-string">&#x27;&gt;, additional_kwargs=&#123;&#125;, blocks=[TextBlock(block_type=&#x27;</span><span class="hljs-type">text</span><span class="hljs-string">&#x27;, text=&#x27;</span>你每次都要调用工具嘛？可不可以不用工具回答什么是怎么把pcm转为MP3？<span class="hljs-string">&#x27;)])] current_agent_name=&#x27;</span>Agent<span class="hljs-string">&#x27;</span>
+<span class="hljs-string">[2025-04-18 15:58:55,205] [DEBUG] [logger.py:106] - --------------这里结束event-------------- </span>
+<span class="hljs-string"></span>
+<span class="hljs-string">[2025-04-18 15:58:55,205] [DEBUG] [logger.py:106] - --------------这里开始是AgentInput--------------</span>
+<span class="hljs-string">[2025-04-18 15:58:55,205] [DEBUG] [logger.py:106] - Agent input:  [ChatMessage(role=&lt;MessageRole.SYSTEM: &#x27;</span><span class="hljs-keyword">system</span><span class="hljs-string">&#x27;&gt;, additional_kwargs=&#123;&#125;, blocks=[TextBlock(block_type=&#x27;</span><span class="hljs-type">text</span><span class="hljs-string">&#x27;, text=&#x27;</span>You are designed <span class="hljs-keyword">to</span> help <span class="hljs-keyword">with</span> a variety <span class="hljs-keyword">of</span> tasks, <span class="hljs-keyword">from</span> answering questions <span class="hljs-keyword">to</span> providing summaries <span class="hljs-keyword">to</span> other <span class="hljs-keyword">types</span> <span class="hljs-keyword">of</span> analyses.\n\n## Tools\n\nYou have <span class="hljs-keyword">access</span> <span class="hljs-keyword">to</span> a wide variety <span class="hljs-keyword">of</span> tools. You are responsible <span class="hljs-keyword">for</span> <span class="hljs-keyword">using</span> the tools <span class="hljs-keyword">in</span> <span class="hljs-keyword">any</span> <span class="hljs-keyword">sequence</span> you deem appropriate <span class="hljs-keyword">to</span> complete the task at hand.\nThis may require breaking the task <span class="hljs-keyword">into</span> subtasks <span class="hljs-keyword">and</span> <span class="hljs-keyword">using</span> different tools <span class="hljs-keyword">to</span> complete <span class="hljs-keyword">each</span> subtask.\n\nYou have <span class="hljs-keyword">access</span> <span class="hljs-keyword">to</span> the <span class="hljs-keyword">following</span> tools:\n\n\n\n## Output <span class="hljs-keyword">Format</span>\n\nPlease answer <span class="hljs-keyword">in</span> the same <span class="hljs-keyword">language</span> <span class="hljs-keyword">as</span> the question <span class="hljs-keyword">and</span> use the <span class="hljs-keyword">following</span> <span class="hljs-keyword">format</span>:\n\n```\nThought: The <span class="hljs-keyword">current</span> <span class="hljs-keyword">language</span> <span class="hljs-keyword">of</span> the <span class="hljs-keyword">user</span> <span class="hljs-keyword">is</span>: (<span class="hljs-keyword">user</span>\<span class="hljs-string">&#x27;s language). I need to use a tool to help me answer the question.\nAction: tool name (one of ) if using a tool.\nAction Input: the input to the tool, in a JSON format representing the kwargs (e.g. &#123;&quot;input&quot;: &quot;hello world&quot;, &quot;num_beams&quot;: 5&#125;)\n```\n\nPlease ALWAYS start with a Thought.\n\nNEVER surround your response with markdown code markers. You may use code markers within your response if you need to.\n\nPlease use a valid JSON format for the Action Input. Do NOT do this &#123;\&#x27;</span><span class="hljs-keyword">input</span>\<span class="hljs-string">&#x27;: \&#x27;</span>hello world\<span class="hljs-string">&#x27;, \&#x27;</span>num_beams\<span class="hljs-string">&#x27;: 5&#125;.\n\nIf this format is used, the tool will respond in the following format:\n\n```\nObservation: tool response\n```\n\nYou should keep repeating the above format till you have enough information to answer the question without using any more tools. At that point, you MUST respond in one of the following two formats:\n\n```\nThought: I can answer without using any more tools. I\&#x27;</span>ll use the <span class="hljs-keyword">user</span>\<span class="hljs-string">&#x27;s language to answer\nAnswer: [your answer here (In the same language as the user\&#x27;</span>s question)]\n```\n\n```\nThought: I cannot answer the question <span class="hljs-keyword">with</span> the provided tools.\nAnswer: [your answer here (<span class="hljs-keyword">In</span> the same <span class="hljs-keyword">language</span> <span class="hljs-keyword">as</span> the <span class="hljs-keyword">user</span>\<span class="hljs-string">&#x27;s question)]\n```\n\n## Current Conversation\n\nBelow is the current conversation consisting of interleaving human and assistant messages.\n&#x27;</span>)]), ChatMessage(<span class="hljs-keyword">role</span>=&lt;MessageRole.<span class="hljs-keyword">USER</span>: <span class="hljs-string">&#x27;user&#x27;</span>&gt;, additional_kwargs=&#123;&#125;, blocks=[TextBlock(block_type=<span class="hljs-string">&#x27;text&#x27;</span>, <span class="hljs-type">text</span>=<span class="hljs-string">&#x27;你每次都要调用工具嘛？可不可以不用工具回答什么是怎么把pcm转为MP3？&#x27;</span>)])]
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">55</span>,<span class="hljs-number">205</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - Agent <span class="hljs-type">name</span>: Agent
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">58</span>:<span class="hljs-number">55</span>,<span class="hljs-number">205</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentInput-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;&#x27;</span> response=<span class="hljs-string">&#x27;&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-string">&#x27;assistant&#x27;</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;Thought&#x27;</span> response=<span class="hljs-string">&#x27;Thought&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;Thought&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">1</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">434</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">526</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">527</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - Thought
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">527</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">527</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">527</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;:&#x27;</span> response=<span class="hljs-string">&#x27;Thought:&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;:&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">435</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - :
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27; 我&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27; 我&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">4</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">437</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">528</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">529</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] -  我
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">529</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">597</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">597</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;需要&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;需要&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">5</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">438</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">597</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">597</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">597</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 需要
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">597</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">644</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">644</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;使用&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;使用&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">6</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">439</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">644</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">644</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">644</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 使用
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">644</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">674</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">674</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;工具&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;工具&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">7</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">440</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">674</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">674</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">675</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 工具
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">675</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">809</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">809</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;来&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;来&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">8</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">441</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">809</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">809</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">809</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 来
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">809</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">920</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">920</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;获取&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;获取&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">9</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">442</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">920</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">921</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">921</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 获取
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">921</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">961</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">961</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;关于&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;关于&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">10</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">443</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">961</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">961</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">961</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 关于
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">01</span>,<span class="hljs-number">961</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">008</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">008</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;如何&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;如何&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">11</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">444</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">008</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">008</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">008</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 如何
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">008</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">045</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">045</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;将&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;将&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">12</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">445</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">045</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">045</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">045</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 将
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">045</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">100</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">100</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;pcm&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;pcm&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">13</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">446</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">100</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">100</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">100</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - pcm
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">100</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">135</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">135</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;转换&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;转换&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">14</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">447</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">135</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">135</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">135</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 转换
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">135</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">180</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">180</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;为&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;为&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">15</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">448</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">180</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">180</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">180</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 为
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">181</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">221</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">221</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;MP&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;MP&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">16</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">449</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">221</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">221</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">221</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - MP
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">221</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">270</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">270</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;3&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;3&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">17</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">450</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">270</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">270</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">270</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-number">3</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">270</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">308</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">308</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;的信息&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;的信息&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">18</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">451</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">308</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">308</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">308</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 的信息
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">308</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">357</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">357</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;，&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;，&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">19</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">452</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">357</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">357</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">357</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - ，
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">358</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">391</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">391</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;然后&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;然后&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">20</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">453</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">392</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">392</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">392</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 然后
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">392</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">432</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">432</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;用&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后用&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;用&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">21</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">454</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">432</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">432</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">432</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 用
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">432</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">470</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">470</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;中文&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后用中文&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;中文&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">22</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">455</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">470</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">471</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">471</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 中文
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">471</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">512</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">512</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;回答&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后用中文回答&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;回答&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">23</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">456</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">512</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">513</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">513</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 回答
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">513</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">561</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">561</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;用户&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后用中文回答用户&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;用户&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">24</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">457</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">561</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">561</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">561</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 用户
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">561</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">600</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">600</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;的问题&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后用中文回答用户的问题&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;的问题&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">25</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">458</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">600</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">600</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">600</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 的问题
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">600</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">632</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是event--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">632</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - delta=<span class="hljs-string">&#x27;。\n&#x27;</span> response=<span class="hljs-string">&#x27;Thought: 我需要使用工具来获取关于如何将pcm转换为MP3的信息，然后用中文回答用户的问题。\n&#x27;</span> current_agent_name=<span class="hljs-string">&#x27;Agent&#x27;</span> tool_calls=[] raw=&#123;<span class="hljs-string">&#x27;id&#x27;</span>: <span class="hljs-string">&#x27;019647e8ea426cb39f4fc709d4fb250b&#x27;</span>, <span class="hljs-string">&#x27;choices&#x27;</span>: [&#123;<span class="hljs-string">&#x27;delta&#x27;</span>: &#123;<span class="hljs-string">&#x27;content&#x27;</span>: <span class="hljs-string">&#x27;。\n&#x27;</span>, <span class="hljs-string">&#x27;function_call&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;refusal&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;role&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;tool_calls&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;reasoning_content&#x27;</span>: <span class="hljs-keyword">None</span>&#125;, <span class="hljs-string">&#x27;finish_reason&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;index&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;logprobs&#x27;</span>: <span class="hljs-keyword">None</span>&#125;], <span class="hljs-string">&#x27;created&#x27;</span>: <span class="hljs-number">1744963168</span>, <span class="hljs-string">&#x27;model&#x27;</span>: <span class="hljs-string">&#x27;Qwen/Qwen2.5-7B-Instruct&#x27;</span>, <span class="hljs-string">&#x27;object&#x27;</span>: <span class="hljs-string">&#x27;chat.completion.chunk&#x27;</span>, <span class="hljs-string">&#x27;service_tier&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;system_fingerprint&#x27;</span>: <span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-string">&#x27;usage&#x27;</span>: &#123;<span class="hljs-string">&#x27;completion_tokens&#x27;</span>: <span class="hljs-number">26</span>, <span class="hljs-string">&#x27;prompt_tokens&#x27;</span>: <span class="hljs-number">433</span>, <span class="hljs-string">&#x27;total_tokens&#x27;</span>: <span class="hljs-number">459</span>, <span class="hljs-string">&#x27;completion_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>, <span class="hljs-string">&#x27;prompt_tokens_details&#x27;</span>: <span class="hljs-keyword">None</span>&#125;&#125;
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">632</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束event-------------- </span>
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">632</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里开始是AgentStream--------------</span>
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">633</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - 。
+
+[<span class="hljs-number">2025</span><span class="hljs-number">-04</span><span class="hljs-number">-18</span> <span class="hljs-number">15</span>:<span class="hljs-number">59</span>:<span class="hljs-number">02</span>,<span class="hljs-number">633</span>] [<span class="hljs-keyword">DEBUG</span>] [logger.py:<span class="hljs-number">106</span>] - <span class="hljs-comment">--------------这里结束AgentStream-------------- </span>
+</code></pre></div>
+
+<p>从日志可以清晰看出：</p>
+<ol>
+<li><strong>逐字传输</strong>：模型响应被拆分成最小的字符片段发送</li>
+<li><strong>增量更新</strong>：每个<code>AgentStream</code>事件包含一个小的增量片段（<code>delta</code>）</li>
+<li><strong>即时展示</strong>：接收到的片段立即展示，无需等待全部生成完成</li>
+</ol>
+<h2 id="5-常见问题与解决方案"><a href="#5-常见问题与解决方案" class="headerlink" title="5. 常见问题与解决方案"></a>5. 常见问题与解决方案</h2><h3 id="5-1-输出被截断问题"><a href="#5-1-输出被截断问题" class="headerlink" title="5.1 输出被截断问题"></a>5.1 输出被截断问题</h3><p><strong>问题</strong>：使用某些模型API时，流式输出内容被截断或不完整。</p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li>对于OpenAILike接口，必须设置<code>is_chat_model=True</code></li>
+<li>日志示例：<div class="code-wrapper"><pre><code class="hljs routeros">llm = OpenAILike(
+    <span class="hljs-attribute">model</span>=<span class="hljs-string">&quot;Qwen/Qwen2.5-7B-Instruct&quot;</span>,
+    <span class="hljs-attribute">api_key</span>=os.getenv(&quot;SILICONFLOW_API_KEY&quot;),
+    <span class="hljs-attribute">api_base</span>=os.getenv(&quot;SILICONFLOW_BASE_URL&quot;),
+    <span class="hljs-attribute">is_chat_model</span>=<span class="hljs-literal">True</span>  # 关键参数：确保内容不被截断
+)</code></pre></div></li>
+</ul>
+<h3 id="5-2-如何确保获取完整输出"><a href="#5-2-如何确保获取完整输出" class="headerlink" title="5.2 如何确保获取完整输出"></a>5.2 如何确保获取完整输出</h3><p><strong>问题</strong>：在流式过程中可能漏掉某些片段，导致最终拼接的文本不完整。</p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li>使用累积变量收集所有delta片段</li>
+<li>还可以使用<code>await handler</code>获取最终完整响应进行比对</li>
+<li>日志示例：<div class="code-wrapper"><pre><code class="hljs python">accumulated_output = <span class="hljs-string">&quot;&quot;</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, AgentStream) <span class="hljs-keyword">and</span> event.delta:
+        accumulated_output += event.delta
+        
+<span class="hljs-comment"># 获取最终完整响应进行比对</span>
+final_output = <span class="hljs-built_in">str</span>(<span class="hljs-keyword">await</span> handler)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;累积内容长度: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(accumulated_output)&#125;</span>&quot;</span>)
+<span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;最终响应长度: <span class="hljs-subst">&#123;<span class="hljs-built_in">len</span>(final_output)&#125;</span>&quot;</span>)</code></pre></div></li>
+</ul>
+<h2 id="6-流式输出的应用场景"><a href="#6-流式输出的应用场景" class="headerlink" title="6. 流式输出的应用场景"></a>6. 流式输出的应用场景</h2><h3 id="6-1-Web应用中的实时显示"><a href="#6-1-Web应用中的实时显示" class="headerlink" title="6.1 Web应用中的实时显示"></a>6.1 Web应用中的实时显示</h3><p>使用WebSocket将流式输出实时推送到前端，实现打字机效果：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 后端代码</span>
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">stream_to_websocket</span>(<span class="hljs-params">websocket, query</span>):</span>
+    handler = workflow.run(user_msg=query)
+    
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, AgentStream) <span class="hljs-keyword">and</span> event.delta:
+            <span class="hljs-comment"># 将片段实时发送到WebSocket</span>
+            <span class="hljs-keyword">await</span> websocket.send_text(event.delta)</code></pre></div>
+
+<div class="code-wrapper"><pre><code class="hljs javascript"><span class="hljs-comment">// 前端代码</span>
+<span class="hljs-keyword">const</span> socket = <span class="hljs-keyword">new</span> WebSocket(<span class="hljs-string">&#x27;ws://example.com/stream&#x27;</span>);
+<span class="hljs-keyword">let</span> outputElement = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;output&#x27;</span>);
+
+socket.onmessage = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">event</span>) </span>&#123;
+    <span class="hljs-comment">// 添加新内容到输出元素，实现打字机效果</span>
+    outputElement.textContent += event.data;
+&#125;;</code></pre></div>
+
+<h3 id="6-2-结合状态管理的实时对话"><a href="#6-2-结合状态管理的实时对话" class="headerlink" title="6.2 结合状态管理的实时对话"></a>6.2 结合状态管理的实时对话</h3><p>将流式输出与会话状态管理结合，实现带有记忆的实时对话体验：</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">from</span> llama_index.core.workflow <span class="hljs-keyword">import</span> Context
+
+<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">stateful_streaming_chat</span>(<span class="hljs-params">query, ctx=<span class="hljs-literal">None</span></span>):</span>
+    <span class="hljs-comment"># 如果没有上下文，创建新的上下文</span>
+    <span class="hljs-keyword">if</span> ctx <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+        ctx = Context(workflow)
+    
+    <span class="hljs-comment"># 使用上下文执行流式输出</span>
+    handler = workflow.run(user_msg=query, ctx=ctx)
+    
+    accumulated_output = <span class="hljs-string">&quot;&quot;</span>
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, AgentStream) <span class="hljs-keyword">and</span> event.delta:
+            accumulated_output += event.delta
+            <span class="hljs-keyword">yield</span> event.delta  <span class="hljs-comment"># 生成器逐字返回</span>
+    
+    <span class="hljs-comment"># 返回累积输出和更新后的上下文</span>
+    <span class="hljs-keyword">return</span> accumulated_output, ctx</code></pre></div>
+
+<p>使用示例：</p>
+<div class="code-wrapper"><pre><code class="hljs python">ctx = <span class="hljs-literal">None</span>  <span class="hljs-comment"># 初始上下文为空</span>
+
+<span class="hljs-comment"># 第一轮对话</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> token <span class="hljs-keyword">in</span> stateful_streaming_chat(<span class="hljs-string">&quot;你好，我叫张三&quot;</span>):
+    <span class="hljs-built_in">print</span>(token, end=<span class="hljs-string">&quot;&quot;</span>, flush=<span class="hljs-literal">True</span>)
+result, ctx = <span class="hljs-keyword">await</span> stateful_streaming_chat(<span class="hljs-string">&quot;你好，我叫张三&quot;</span>, ctx)
+
+<span class="hljs-comment"># 第二轮对话（带有上下文）</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> token <span class="hljs-keyword">in</span> stateful_streaming_chat(<span class="hljs-string">&quot;我叫什么名字？&quot;</span>, ctx):
+    <span class="hljs-built_in">print</span>(token, end=<span class="hljs-string">&quot;&quot;</span>, flush=<span class="hljs-literal">True</span>)</code></pre></div>
+
+<h2 id="7-最佳实践与建议"><a href="#7-最佳实践与建议" class="headerlink" title="7. 最佳实践与建议"></a>7. 最佳实践与建议</h2><ol>
+<li><p><strong>异步处理</strong>：流式输出本质上是异步操作，确保正确使用<code>async/await</code>语法</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process_stream</span>():</span>
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+        <span class="hljs-comment"># 处理事件</span>
+
+<span class="hljs-comment"># 启动异步函数</span>
+asyncio.run(process_stream())</code></pre></div></li>
+<li><p><strong>异常处理</strong>：添加完善的异常捕获机制，防止流式过程中断</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">try</span>:
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+        <span class="hljs-comment"># 处理事件</span>
+<span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+    logger.error(<span class="hljs-string">f&quot;流式处理出错: <span class="hljs-subst">&#123;<span class="hljs-built_in">str</span>(e)&#125;</span>&quot;</span>)
+    <span class="hljs-comment"># 优雅处理错误</span></code></pre></div></li>
+<li><p><strong>模型选择</strong>：不同模型的流式输出性能有差异，测试多个模型以选择最适合的</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-comment"># 测试不同模型的流式输出延迟和质量</span>
+models = [
+    <span class="hljs-string">&quot;Qwen/Qwen2.5-7B-Instruct&quot;</span>,
+    <span class="hljs-string">&quot;deepseek/deepseek-chat-v3-0324&quot;</span> 
+]
+
+<span class="hljs-keyword">for</span> model_name <span class="hljs-keyword">in</span> models:
+    <span class="hljs-comment"># 测试每个模型的流式输出延迟和质量</span></code></pre></div></li>
+<li><p><strong>增量处理</strong>：在收到增量内容时可以立即开始处理，不必等待全部生成完成</p>
+<div class="code-wrapper"><pre><code class="hljs python"><span class="hljs-keyword">async</span> <span class="hljs-keyword">for</span> event <span class="hljs-keyword">in</span> handler.stream_events():
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(event, AgentStream) <span class="hljs-keyword">and</span> event.delta:
+        <span class="hljs-comment"># 实时处理每个片段，如情感分析、关键词提取等</span>
+        process_incremental_content(event.delta)</code></pre></div></li>
+</ol>
+<p>以上是LlamaIndex的流式输出的基础能力和尝试步骤。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/AI%E7%9B%B8%E5%85%B3/">AI相关</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/LlamaIndex/">LlamaIndex</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/04/22/LlamaIndex%E5%AD%A6%E4%B9%A04-1%EF%BC%9Arag%E5%B0%9D%E8%AF%95-%E5%90%91%E9%87%8F%E7%B4%A2%E5%BC%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">LlamaIndex学习4-1：RAG尝试-向量索引</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/04/16/LlamaIndex%E5%AD%A6%E4%B9%A02%E4%BC%9A%E8%AF%9D%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86%E4%B8%8E%E6%8C%81%E4%B9%85%E5%8C%96/">
+                        <span class="hidden-mobile">LlamaIndex学习2：会话状态管理与持久化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/wenkil" target="_blank" rel="nofollow noopener"><span>My Github</span></a> 
+  </div>
+  
+
+  
+  <!-- 备案信息 -->
+  <div class="beian">
+    <span>
+      <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+        
+      </a>
+    </span>
+    
+  </div>
+
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
