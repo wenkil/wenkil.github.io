@@ -16,8 +16,6 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
-  <script>LA.init({id:"",ck:""})</script>
   <meta name="description" content="背景 公司的移动端和PC端，分别是angular和vue库开发的项目，每次在打包发布新版本后，用户都需要手动刷新页面获取最新代码或样式，否则发布的最新的js\css\image等资源文件得不到更新，为解决此问题对两个项目做了以下改造；  技术方案说明 项目在打包时利用插件生成一个时间戳作为版本信息，打入到一个json文件里  前端路由拦截器里监听到路由变化时，请求这个json文件，和本地的loca">
 <meta property="og:type" content="article">
 <meta property="og:title" content="前端版本更新技术方案">
@@ -489,6 +487,8 @@ fs.writeFileSync(<span class="hljs-string">&#x27;./dist/assets/version.json&#x27
 
 
   
+  <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+  <script>LA.init({id:"",ck:""})</script>
 </footer>
 
 

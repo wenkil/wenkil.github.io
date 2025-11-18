@@ -16,8 +16,6 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
-  <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
-  <script>LA.init({id:"",ck:""})</script>
   <meta name="description" content="在上一篇文章中，通过学习官方示例构建了一个基础的Langgraph chatbot工作流。今天更进一步，探索如何让chatbot能够调用工具来完成特定任务。 定义工具简单定义一个无任何逻辑的工具函数，该函数直接会返回天气查询的结果来模拟LLM调用天气api的流程： from langchain_core.tools import tool from langchain_core.utils.fun">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Langgraph学习2：LLM自动调用工具">
@@ -845,6 +843,8 @@ app_graph = workflow.<span class="hljs-built_in">compile</span>()
 
 
   
+  <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+  <script>LA.init({id:"",ck:""})</script>
 </footer>
 
 
