@@ -16,6 +16,8 @@
   <meta name="description" content="">
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
+  <script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
+  <script>LA.init({id:"",ck:""})</script>
   <meta name="description" content="虚拟机首次安装打开centos 系统后的一些常见问题 1.无法查看ip（原因：网络配置没打开） vi &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens33  ONBOOT&#x3D;no  改为 ONBOOT&#x3D;yes 然后运行service network restart  重启网络 这个时候使用 ping www.baidu.com 测试网络是否可用 然后输入命令 ip a">
 <meta property="og:type" content="article">
 <meta property="og:title" content="虚拟机首次安装centos系统常见问题">
