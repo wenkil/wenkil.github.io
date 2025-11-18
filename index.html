@@ -46,7 +46,7 @@
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":21994425,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
   </script>
   <script  src="/js/utils.js" ></script>
   <script  src="/js/color-schema.js" ></script>
@@ -353,6 +353,56 @@ Snip
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2025/10/21/%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0MCP%E5%B7%A5%E5%85%B7%E8%BF%9B%E8%A1%8C%E4%BB%A3%E7%A0%81review/" target="_self">
+          开发一个本地MCP Server进行code review
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2025/10/21/%E5%BC%80%E5%8F%91%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0MCP%E5%B7%A5%E5%85%B7%E8%BF%9B%E8%A1%8C%E4%BB%A3%E7%A0%81review/" target="_self">
+          
+          
+            
+          
+          背景目前开发团队会定期使用AI提效进行code review，但由于每个开发人员使用的不同的AI编程工具，有不同的LLM和IDE，各自提交的审查报告风格和统计会因为LLM的不同而不统一。尝试开发一个本地的MCP工具，这样大家可以用统一模型、统一工具进行code review工作，以保证使用相同的AI模型输出结果的质量和风格是区别不大的。之所以开发本地的，是因为前期需要实验这个mcp工具的实际效果，
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-10-21 14:15" pubdate>
+              2025-10-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/AI%E7%9B%B8%E5%85%B3/">AI相关</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/MCP/">MCP</a>
             
           </div>
         
@@ -679,59 +729,6 @@ chat_bot → search_tool → crawl4ai_tool →
     </article>
   </div>
 
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2025/04/12/Langgraph%E5%AD%A6%E4%B9%A05%EF%BC%9A%E5%B0%9D%E8%AF%95AI%E7%88%AC%E5%8F%96%E5%B7%A5%E5%85%B7crawl4ai/" target="_self">
-          Langgraph学习5：AI爬取工具crawl4ai
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2025/04/12/Langgraph%E5%AD%A6%E4%B9%A05%EF%BC%9A%E5%B0%9D%E8%AF%95AI%E7%88%AC%E5%8F%96%E5%B7%A5%E5%85%B7crawl4ai/" target="_self">
-          
-          
-            
-          
-          随着大语言模型(LLM)应用的发展，获取高质量的网络内容成为构建智能应用的重要环节。本文将介绍一个专为AI设计的爬虫工具——crawl4ai，并展示如何将其集成到Langgraph框架中，为AI助手提供更强大的信息获取能力。
-1. crawl4ai简介GitHub：https://github.com/unclecode/crawl4ai文档地址：https://docs.crawl4ai.com
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2025-04-12 20:30" pubdate>
-              2025-04-12
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/AI%E7%9B%B8%E5%85%B3/">AI相关</a>
-            
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/Langgraph/">Langgraph</a>
-            
-              <a href="/tags/crawl4ai/">crawl4ai</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
 
 
   <nav aria-label="navigation">
@@ -865,6 +862,22 @@ chat_bot → search_tool → crawl4ai_tool →
 
 
 
+
+
+  
+
+  
+
+  
+
+  
+
+  
+    <!-- 51.la Analytics -->
+    <script defer type="text/javascript" src="//js.users.51.la/21994425.js"></script>
+  
+
+  
 
 
 
