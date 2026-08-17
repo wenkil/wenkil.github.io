@@ -57,7 +57,7 @@
 <meta property="og:image" content="http://example.com/img/blog/AI/ai-code-trusted-delivery/slide-32.webp">
 <meta property="og:image" content="http://example.com/img/blog/AI/ai-code-trusted-delivery/slide-33.webp">
 <meta property="article:published_time" content="2026-08-14T06:00:00.000Z">
-<meta property="article:modified_time" content="2026-08-14T06:20:33.311Z">
+<meta property="article:modified_time" content="2026-08-17T09:11:42.796Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Vibe Coding">
 <meta name="twitter:card" content="summary_large_image">
@@ -230,7 +230,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      12k 字
+      13k 字
     </span>
   
 
@@ -395,18 +395,23 @@
 <li><strong>Context</strong>：以哪个分支、接口版本、设计稿、日志和现有测试为事实基线。</li>
 <li><strong>Contract</strong>：目标、非目标、系统不变量和验收条件是什么。</li>
 <li><strong>Validation</strong>：哪些结论必须由类型、测试、真实请求、日志或 Review 证明。</li>
-<li><strong>Responsibility</strong>：谁确认需求、谁 Review 代码、谁接受风险、谁最终放行。</li>
+<li><strong>Responsibility</strong>：谁说明本次改动、哪些目录必须经过 CODEOWNER 或模块 Owner 审查、哪些 CI 检查必须通过，以及谁有权限决定合并。</li>
 </ul>
-<p>Lint、类型检查、自动测试和范围检查等可判定规则，可以持续交给机器；需求歧义、架构取舍、例外处理和风险接受仍然要有明确的人。团队可以利用 <a target="_blank" rel="noopener" href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">GitHub CODEOWNERS</a>固化审查责任，并参考 <a target="_blank" rel="noopener" href="https://csrc.nist.gov/pubs/sp/800/218/final">NIST Secure Software Development Framework</a>建立安全开发基线。</p>
+<p>这里的 Responsibility 不是增加一个线下签字环节，也不是要求每个 AI 辅助任务都再走一套额外审批流程。更实际的做法，是把责任落实到团队已有的 PR 流程中：PR 作者讲清楚为什么改、实际改了什么；涉及特定目录时，由对应的 CODEOWNER 或模块 Owner Review；Lint、类型检查、自动测试和范围检查等必需条件全部通过以后，再由拥有权限的人决定是否合并。</p>
+<p>这些证据本来就会留在 PR 里，包括改动说明、Review 意见、Approval 状态、CI 结果和最终合并人。团队可以利用 <a target="_blank" rel="noopener" href="https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners">GitHub CODEOWNERS</a>固定特定代码范围的审查责任，并通过 <a target="_blank" rel="noopener" href="https://docs.github.com/en/repositories/configuring-branches-and-merges/managing-rulesets/about-rulesets">GitHub Rulesets</a>约束必需审查、状态检查和合并条件。</p>
+<p>机器适合持续执行确定性规则，但需求有没有理解对、架构取舍是否合理、例外能不能接受，仍然需要 Reviewer 或模块 Owner 判断。这里真正要避免的，是让 Agent 自己生成代码、自己证明没有问题，最后再由自己决定合并。对于安全要求更高的项目，还可以参考 <a target="_blank" rel="noopener" href="https://csrc.nist.gov/pubs/sp/800/218/final">NIST Secure Software Development Framework</a>补充相应的安全开发基线。</p>
 <h3 id="2-从“它说做完了”变成证据闭环"><a href="#2-从“它说做完了”变成证据闭环" class="headerlink" title="2. 从“它说做完了”变成证据闭环"></a>2. 从“它说做完了”变成证据闭环</h3><p>很多 AI Coding 流程是：写 Prompt、生成代码、点击接受、创建 PR。这条路径上的每一步都可能只有 Agent 自己声称完成，却没有独立证据。</p>
 <p>更稳妥的流程是先用任务契约固定目标和边界，再按风险决定 Agent 能做多少；写入前由人明确授权；实施过程在独立分支或工作区小批次推进；之后通过类型、测试、安全和契约等确定性的质量门。</p>
 <p><img src="/img/blog/AI/ai-code-trusted-delivery/slide-29.webp" srcset="/img/loading.gif" lazyload></p>
 <p>AI 可以根据真实 diff 做自审，但不能替代独立人工 Review。随后还要进行真实联调、最新主干组合复验，以及发布后的监控和回滚准备。</p>
 <p>这种闭环也要求把失败经验写回工程系统：联调发现字段语义不一致，不应该只修改页面，还要同步更新接口 Schema、交付文档、契约测试或仓库规则。关于变更规模，可以参考 Google 的 <a target="_blank" rel="noopener" href="https://google.github.io/eng-practices/review/developer/small-cls.html">Small CLs 实践</a>；多个 PR 并发进入主干时，则可以参考 GitHub 的 <a target="_blank" rel="noopener" href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue">Managing a merge queue</a>。</p>
-<h3 id="3-四份文档对应四个容易丢上下文的交接点"><a href="#3-四份文档对应四个容易丢上下文的交接点" class="headerlink" title="3. 四份文档对应四个容易丢上下文的交接点"></a>3. 四份文档对应四个容易丢上下文的交接点</h3><p>这里并不是要求团队同时填写四份长报告，而是希望在四个关键交接点留下足够的信息。</p>
+<h3 id="3-高质量-AI-辅助开发，需要四类关键信息"><a href="#3-高质量-AI-辅助开发，需要四类关键信息" class="headerlink" title="3. 高质量 AI 辅助开发，需要四类关键信息"></a>3. 高质量 AI 辅助开发，需要四类关键信息</h3><p>把 AI 辅助开发做得更规范，不等于每个任务都要额外填写四份文档。真正需要保证的，是任务从提出到合并的过程中，四类关键信息没有缺失：AI 知道要做什么、准备怎么做；人能够看懂它实际改了什么，也能根据证据判断它有没有做对。</p>
 <p><img src="/img/blog/AI/ai-code-trusted-delivery/slide-30.webp" srcset="/img/loading.gif" lazyload></p>
-<p>需求分析先分开当前事实、目标、非目标、不变量和验收标准；开发计划再比较方案、修改范围、数据流、验证和回滚；后端交付文档向前端说明业务规则、字段、状态机、权限、错误和真实交付状态；联调报告只记录真实环境中的请求、响应、日志、页面行为和未验证项。</p>
-<p>低风险任务可以缩短篇幅，但不能用一句“应该没问题”代替这些决策接口。PR 或变更说明的写法可以参考 Google 的 <a target="_blank" rel="noopener" href="https://google.github.io/eng-practices/review/developer/cl-descriptions.html">Writing good CL descriptions</a>。</p>
+<p>第一类是<strong>任务边界</strong>。这里需要讲清楚目标、修改范围、约束条件和验收标准，同时明确哪些内容不在本次任务中。它可以写在需求卡片、Issue 或任务描述里。边界不清楚时，AI 即使生成了可以运行的代码，也可能解决了错误的问题。</p>
+<p>第二类是<strong>改动方案</strong>。对于简单任务，几句话说明准备修改哪些位置、怎样验证就够了；只有涉及多个模块、接口、数据或高风险逻辑时，才需要进一步记录影响范围、技术取舍、风险和回滚方式。这个过程的重点不是把计划写长，而是在 AI 写入以前发现方向性错误。</p>
+<p>第三类是<strong>变更说明</strong>。代码完成以后，需要能够回答实际改了什么、影响了哪些文件和行为、是否偏离原计划，以及还有什么遗留问题。这些内容可以直接放在 PR 描述、Commit 或 Agent 的执行摘要中，不一定单独形成一份交付文档。PR 描述的组织方式可以参考 Google 的 <a target="_blank" rel="noopener" href="https://google.github.io/eng-practices/review/developer/cl-descriptions.html">Writing good CL descriptions</a>。</p>
+<p>第四类是<strong>验证证据</strong>。自动检查是否通过、运行了哪些测试、Reviewer 关注了什么、哪些内容还没有验证，都应该明确留下来。只有修改确实跨越前后端、服务或外部系统时，才需要增加相应的联调记录；一个样式调整或局部空值修复，没有必要为了流程专门生成一份前后端联调报告。</p>
+<p>所以，这四类信息并不对应四份固定模板。小改动可以把它们浓缩在一张任务卡和一个 PR 里；影响范围越大、不可逆性越高，方案和验证证据才需要越完整。目标不是增加文书工作，而是让 AI 的改动可理解、可检查、可验证。</p>
 <h3 id="4-根据风险调整流程重量"><a href="#4-根据风险调整流程重量" class="headerlink" title="4. 根据风险调整流程重量"></a>4. 根据风险调整流程重量</h3><p>流程一刀切会出现两个问题：小改动觉得太重，真正危险的改动又不够严。我通常先看四个变量：目标和原因有多不确定、出错后能否快速恢复、影响多少用户和模块，以及最后要付出多大成本才能证明正确。</p>
 <p><img src="/img/blog/AI/ai-code-trusted-delivery/slide-31.webp" srcset="/img/loading.gif" lazyload></p>
 <ul>
